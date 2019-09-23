@@ -28,10 +28,10 @@ public class Step {
 
 	}
 
-	public Step(int stepCount, LocalDateTime start, LocalDateTime end) {
+	public Step(int stepCount, String start, String end) {
 		this.stepCount = stepCount;
-		this.start = start;
-		this.end = end;
+		this.start = LocalDateTime.parse(start);
+		this.end = LocalDateTime.parse(end);
 	}
 
 	public long getId() {
