@@ -1,4 +1,4 @@
-package se.sigma.boostapp.boost_app_java.step;
+package se.sigma.boostapp.boost_app_java.model;
 
 import java.time.LocalDateTime;
 

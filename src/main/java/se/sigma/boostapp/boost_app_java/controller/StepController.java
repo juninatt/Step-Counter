@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
-import se.sigma.boostapp.boost_app_java.step.Step;
+import se.sigma.boostapp.boost_app_java.model.Step;
 
 @RestController
 @RequestMapping("/steps")
