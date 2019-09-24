@@ -7,21 +7,23 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name ="step")
 public class Step {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
-	@Column
+	@Column(name = "step_count")
 	private int stepCount;
 
-	@Column
+	@Column(name = "start")
 	private LocalDateTime start;
 
-	@Column
+	@Column(name = "end")
 	private LocalDateTime end;
 
 	public Step() {
