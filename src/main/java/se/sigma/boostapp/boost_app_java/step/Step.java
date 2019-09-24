@@ -20,11 +20,11 @@ public class Step {
 	@Column(name = "step_count")
 	private int stepCount;
 
-	@Column(name = "start")
-	private LocalDateTime start;
+	@Column(name = "start_time")
+	private LocalDateTime startTime;
 
-	@Column(name = "end")
-	private LocalDateTime end;
+	@Column(name = "end_time")
+	private LocalDateTime endTime;
 
 	public Step() {
 
@@ -32,8 +32,8 @@ public class Step {
 
 	public Step(int stepCount, String start, String end) {
 		this.stepCount = stepCount;
-		this.start = LocalDateTime.parse(start);
-		this.end = LocalDateTime.parse(end);
+		this.startTime = LocalDateTime.parse(start);
+		this.endTime = LocalDateTime.parse(end);
 	}
 
 	public long getId() {
@@ -53,19 +53,19 @@ public class Step {
 	}
 
 	public LocalDateTime getStart() {
-		return start;
+		return startTime;
 	}
 
 	public void setStart(LocalDateTime start) {
-		this.start = start;
+		this.startTime = start;
 	}
 
 	public LocalDateTime getEnd() {
-		return end;
+		return endTime;
 	}
 
 	public void setEnd(LocalDateTime end) {
-		this.end = end;
+		this.endTime = end;
 	}
 
 }
