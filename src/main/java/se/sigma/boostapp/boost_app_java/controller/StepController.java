@@ -8,26 +8,25 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 import se.sigma.boostapp.boost_app_java.model.Step;
+import se.sigma.boostapp.boost_app_java.service.StepService;
 
 @RestController
 @RequestMapping("/steps")
 public class StepController {
-
-	@Autowired 
-	private StepRepository stepRepository;
+	
+	@Autowired
+	private StepService stepService;
 	
 	@GetMapping
-	public Iterable<Step> getAll() {
-		return stepRepository.findAll();
+	public Iterable<Step> getSteps() {
+		return stepService.getStepsService();
 	}
 	
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-	public Step registerSteps(@RequestBody Step step) {
-		return stepRepository.save(step);
+	Step registerSteps(@RequestBody Step step) {
+		return stepService.saveStepService(step);
+	
 	}
-	
-	
 	
 }
