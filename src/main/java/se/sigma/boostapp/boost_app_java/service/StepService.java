@@ -9,15 +9,15 @@ import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 @Service
 public class StepService {
 	
-	@Autowired
+	@Autowired 
 	private StepRepository stepRepository;
 	
-	public Iterable<Step> getStepsService() {
+	public Iterable<Step> getAllSteps() {
 		return stepRepository.findAll();
 	}
 	
-	public Step saveStepService(Step step) {
+	public Step registerSteps(Step step) {
 		return stepRepository.save(step);
 	}
-	
+
 }

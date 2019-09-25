@@ -14,19 +14,18 @@ import se.sigma.boostapp.boost_app_java.service.StepService;
 @RestController
 @RequestMapping("/steps")
 public class StepController {
-	
+
 	@Autowired
 	private StepService stepService;
 	
 	@GetMapping
-	public Iterable<Step> getSteps() {
-		return stepService.getStepsService();
+	public Iterable<Step> getAll() {
+		return stepService.getAllSteps();
 	}
 	
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-	Step registerSteps(@RequestBody Step step) {
-		return stepService.saveStepService(step);
-	
+	public Step registerSteps(@RequestBody Step step) {
+		return stepService.registerSteps(step);
 	}
-	
+
 }
