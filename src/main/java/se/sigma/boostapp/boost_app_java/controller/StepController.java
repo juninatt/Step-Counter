@@ -1,5 +1,6 @@
 package se.sigma.boostapp.boost_app_java.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,11 @@ public class StepController {
 
 	@Autowired
 	private StepService stepService;
+	
+	@GetMapping("/get/{stepCount}")
+	public List<Step> findByStepCount(@PathVariable int stepCount){
+		return stepService.findByStepCount(stepCount);
+	}
 	
 	@GetMapping("/{id}")
 	public Optional<Step> getById(@PathVariable long id){

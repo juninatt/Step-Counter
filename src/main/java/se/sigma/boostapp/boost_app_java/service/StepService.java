@@ -15,6 +15,9 @@ public class StepService {
 	@Autowired 
 	private StepRepository stepRepository;
 	
+	public List<Step> findByStepCount(int stepCount){
+		return stepRepository.findByStepCount(stepCount);
+	}
 	
 	public Optional<Step> getStepById(long id){
 		return stepRepository.findById(id);
