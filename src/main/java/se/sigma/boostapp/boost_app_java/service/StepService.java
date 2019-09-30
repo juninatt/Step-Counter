@@ -1,5 +1,6 @@
 package se.sigma.boostapp.boost_app_java.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +23,10 @@ public class StepService {
 	public Optional<Step> getStepById(long id){
 		return stepRepository.findById(id);
 		
+	}
+	
+	public List<Step> findByStartTime(String startTime) {
+		return stepRepository.findByStartTime(LocalDateTime.parse(startTime));
 	}
 	
 	public Iterable<Step> getAllSteps() {

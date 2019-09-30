@@ -37,6 +37,11 @@ public class StepController {
 		return stepService.getAllSteps();
 	}
 	
+	@GetMapping("/start/{startTime}")
+	public Iterable<Step> getByStartTime(@PathVariable String startTime) {
+		return stepService.findByStartTime(startTime);
+	}
+	
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
 	public Step registerSteps(@RequestBody Step step) {
 		return stepService.registerSteps(step);
