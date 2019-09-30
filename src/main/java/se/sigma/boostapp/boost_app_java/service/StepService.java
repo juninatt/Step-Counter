@@ -1,5 +1,8 @@
 package se.sigma.boostapp.boost_app_java.service;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +14,12 @@ public class StepService {
 	
 	@Autowired 
 	private StepRepository stepRepository;
+	
+	
+	public Optional<Step> getStepById(long id){
+		return stepRepository.findById(id);
+		
+	}
 	
 	public Iterable<Step> getAllSteps() {
 		return stepRepository.findAll();
