@@ -9,20 +9,28 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 @Entity
-@Table(name ="step")
+@Table(name = "step")
+@ApiModel(description = "All details about the Employee. ")
 public class Step {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@ApiModelProperty(notes = "The database generated employee ID")
 	private long id;
 
+	@ApiModelProperty(notes = "Users steps")
 	@Column(name = "step_count")
 	private int stepCount;
-
+	
+	@ApiModelProperty(notes = "Start time")
 	@Column(name = "start_time")
 	private LocalDateTime startTime;
-
+	
+	@ApiModelProperty(notes = "End time")
 	@Column(name = "end_time")
 	private LocalDateTime endTime;
 
