@@ -10,10 +10,10 @@
 
 	<name>boost-app-java</name>
 	<url>http://maven.apache.org</url>
-
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>11</java.version>
+		<docker.image.prefix>sigma</docker.image.prefix>
 	</properties>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -96,6 +96,40 @@
 						<version>6.2</version> <!-- Use newer version of ASM -->
 					</dependency>
 				</dependencies>
+			</plugin>
+			<plugin>
+            	<groupId>com.spotify</groupId>
+            	<artifactId>dockerfile-maven-plugin</artifactId>
+            	<version>1.4.9</version>
+            	<configuration>
+                	<repository>${docker.image.prefix}/${project.artifactId}</repository>
+            	</configuration>
+        	</plugin>
+        	<plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-dependency-plugin</artifactId>
+			    <executions>
+			        <execution>
+			            <id>unpack</id>
+			            <phase>package</phase>
+			            <goals>
+			                <goal>unpack</goal>
+			            </goals>
+			            <configuration>
+			                <artifactItems>
+			                    <artifactItem>
+			                        <groupId>${project.groupId}</groupId>
+			                        <artifactId>${project.artifactId}</artifactId>
+			                        <version>${project.version}</version>
+			                    </artifactItem>
+			                </artifactItems>
+			            </configuration>
+			        </execution>
+			    </executions>
 			</plugin>
 		</plugins>
 	</build>
