@@ -33,14 +33,12 @@ public class StepController {
 	@Autowired
 	private VerifierJWT verifier;
 
-	@ApiOperation(value = "Get users steps", response = List.class)
-	@ApiResponses(
-				value = { 
-			@ApiResponse(code = 200, message = "Successfully retrieved list"),
+	// Get step by step counts
+	@ApiOperation(value = "Get step counts", response = List.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),
 			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
-			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") 
-			})
+			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
 
 	@GetMapping("/get/{stepCount}")
 	public ResponseEntity<List<Step>> findByStepCount(@PathVariable int stepCount,
@@ -53,21 +51,48 @@ public class StepController {
 			return new ResponseEntity<List<Step>>(data, HttpStatus.OK);
 		}
 	}
-	
+
+	// Get step by ID
+	@ApiOperation(value = "Get by id", response = List.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),
+			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
+
 	@GetMapping("/{id}")
 	public Optional<Step> getById(@PathVariable long id) {
 		return stepService.getStepById(id);
 	}
+
+	// Get all step
+	@ApiOperation(value = "Get all", response = List.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),
+			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
 
 	@GetMapping
 	public Iterable<Step> getAll() {
 		return stepService.getAllSteps();
 	}
 
+	// Get step by date time
+	@ApiOperation(value = "Get all", response = List.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),
+			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
+
 	@GetMapping("/start/{startTime}")
 	public Iterable<Step> getByStartTime(@PathVariable String startTime) {
 		return stepService.findByStartTime(startTime);
 	}
+
+	// Post step
+	@ApiOperation(value = "Register steps", response = List.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Invalid request"),
+			@ApiResponse(code = 400, message = "Request is not authorized"),
+			@ApiResponse(code = 404, message = "Error processing request") })
 
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
 	public Step registerSteps(@RequestBody Step step) {

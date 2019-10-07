@@ -14,15 +14,15 @@ import io.swagger.annotations.ApiModelProperty;
 
 @Entity
 @Table(name = "step")
-@ApiModel(description = "All details about the Employee. ")
+@ApiModel(description = "All details about the step entity. ")
 public class Step {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@ApiModelProperty(notes = "The database generated employee ID")
+	@ApiModelProperty(notes = "The database generated step ID")
 	private long id;
 
-	@ApiModelProperty(notes = "Users steps")
+	@ApiModelProperty(notes = "step count")
 	@Column(name = "step_count")
 	private int stepCount;
 	
