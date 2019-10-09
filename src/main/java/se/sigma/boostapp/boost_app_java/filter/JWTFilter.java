@@ -1,14 +1,13 @@
 package se.sigma.boostapp.boost_app_java.filter;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -22,8 +21,10 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 
+
 @Component
 @PropertySource("classpath:jwt.properties")
+@WebFilter(urlPatterns = {"/steps/*"})
 public class JWTFilter implements Filter {
 
 	@Value("${jwt.secret}")
@@ -35,6 +36,13 @@ public class JWTFilter implements Filter {
 
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
+		String path = ((HttpServletRequest) request).getRequestURI();
+		
+		// Let Swagger UI pass filter
+		if (path.contains("/swagger-ui.html") || path.contains("/webjars") 
+				|| path.contains("/swagger-resources") || path.contains("/v2") || path.contains("/favicon.ico")) {
+			chain.doFilter(httpRequest, httpResponse);
+		}
 		
 		if (httpRequest.getHeader("Authorization") == null) {
 			httpResponse.setStatus(403);
