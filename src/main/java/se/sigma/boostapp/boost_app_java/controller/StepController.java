@@ -33,12 +33,12 @@ public class StepController {
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
 
 	@GetMapping("/get/{stepCount}")
-	public Iterable<Step> findByStepCount(@PathVariable int stepCount) {
+	public List<Step> findByStepCount(@PathVariable int stepCount) {
 		return stepService.findByStepCount(stepCount);
 	}
 
 	// Get step by ID
-	@ApiOperation(value = "Get by id", response = List.class)
+	@ApiOperation(value = "Get steps by id", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),
 			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
@@ -62,7 +62,7 @@ public class StepController {
 	}
 
 	// Get step by date time
-	@ApiOperation(value = "Get all", response = List.class)
+	@ApiOperation(value = "Get step by datetime", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),
 			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
