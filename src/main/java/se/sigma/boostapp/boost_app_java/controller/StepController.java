@@ -75,7 +75,7 @@ public class StepController {
 
 	// Post step
 	@ApiOperation(value = "Register steps", response = List.class)
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Invalid request"),
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully post request"),
 			@ApiResponse(code = 400, message = "Request is not authorized"),
 			@ApiResponse(code = 404, message = "Error processing request") })
 
