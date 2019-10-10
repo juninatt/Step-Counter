@@ -1,13 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
 	<groupId>se.sigma.boostapp</groupId>
 	<artifactId>boost-app-java</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
-
 	<name>boost-app-java</name>
 	<url>http://maven.apache.org</url>
 	<properties>
@@ -58,7 +58,6 @@
 			<artifactId>liquibase-core</artifactId>
 			<version>3.6.3</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jdbc</artifactId>
@@ -73,9 +72,7 @@
 			<artifactId>java-jwt</artifactId>
 			<version>3.8.3</version>
 		</dependency>
-
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -89,45 +86,45 @@
 					<dependency>
 						<groupId>org.ow2.asm</groupId>
 						<artifactId>asm</artifactId>
-						<version>6.2</version> <!-- Use newer version of ASM -->
+						<version>6.2</version>
+						<!-- Use newer version of ASM -->
 					</dependency>
 				</dependencies>
 			</plugin>
 			<plugin>
-            	<groupId>com.spotify</groupId>
-            	<artifactId>dockerfile-maven-plugin</artifactId>
-            	<version>1.4.9</version>
-            	<configuration>
-                	<repository>${docker.image.prefix}/${project.artifactId}</repository>
-            	</configuration>
-        	</plugin>
-        	<plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-			    <groupId>org.apache.maven.plugins</groupId>
-			    <artifactId>maven-dependency-plugin</artifactId>
-			    <executions>
-			        <execution>
-			            <id>unpack</id>
-			            <phase>package</phase>
-			            <goals>
-			                <goal>unpack</goal>
-			            </goals>
-			            <configuration>
-			                <artifactItems>
-			                    <artifactItem>
-			                        <groupId>${project.groupId}</groupId>
-			                        <artifactId>${project.artifactId}</artifactId>
-			                        <version>${project.version}</version>
-			                    </artifactItem>
-			                </artifactItems>
-			            </configuration>
-			        </execution>
-			    </executions>
+				<groupId>com.spotify</groupId>
+				<artifactId>dockerfile-maven-plugin</artifactId>
+				<version>1.4.9</version>
+				<configuration>
+					<repository>${docker.image.prefix}/${project.artifactId}</repository>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>unpack</id>
+						<phase>package</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>${project.artifactId}</artifactId>
+									<version>${project.version}</version>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
-
 </project>

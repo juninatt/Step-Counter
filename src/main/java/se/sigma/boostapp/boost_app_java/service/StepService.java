@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import se.sigma.boostapp.boost_app_java.model.Step;
+import se.sigma.boostapp.boost_app_java.model.StepDTO;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 
 @Service
@@ -31,8 +32,8 @@ public class StepService {
 		return stepRepository.findAll();
 	}
 	
-	public Step registerSteps(Step step) {
-		return stepRepository.save(step);
+	public Step registerSteps(StepDTO stepDto) {
+		return stepRepository.save(new Step(stepDto.getStepCount(), stepDto.getStartTime().toString(), stepDto.getEndTime().toString()));
 	}
 
 }

@@ -16,6 +16,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import se.sigma.boostapp.boost_app_java.model.Step;
+import se.sigma.boostapp.boost_app_java.model.StepDTO;
 import se.sigma.boostapp.boost_app_java.service.StepService;
 
 @RestController
@@ -80,7 +81,7 @@ public class StepController {
 			@ApiResponse(code = 404, message = "Error processing request") })
 
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-	public Step registerSteps(@RequestBody Step step) {
+	public Step registerSteps(@RequestBody StepDTO step) {
 		return stepService.registerSteps(step);
 	}
 
