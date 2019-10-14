@@ -1,0 +1,27 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 1
+      author: Sigma
+      changes:
+        - createTable:
+            tableName: step
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: step_count
+                  type: int
+              - column:
+                  name: start_time
+                  type: datetime
+                  constraints:
+                    nullable: false
+              - column:
+                  name: end_time
+                  type: datetime
