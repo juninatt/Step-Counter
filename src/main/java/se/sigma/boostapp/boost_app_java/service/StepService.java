@@ -33,7 +33,7 @@ public class StepService {
 	}
 	
 	public Step registerSteps(StepDTO stepDto) {
-		return stepRepository.save(new Step(stepDto.getStepCount(), stepDto.getStartTime().toString(), stepDto.getEndTime().toString()));
+		return stepRepository.save(new Step(stepDto.getUserId(),stepDto.getStepCount(), stepDto.getStartTime().toString(), stepDto.getEndTime().toString()));
 	}
 
 }

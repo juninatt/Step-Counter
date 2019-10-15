@@ -22,7 +22,11 @@ public class Step {
 	@ApiModelProperty(notes = "The database generated step ID")
 	private long id;
 
-	@ApiModelProperty(notes = "step count")
+	@Column(name = "user_id")
+	@ApiModelProperty(notes = "User Id")
+	private int userId;
+	
+	@ApiModelProperty(notes = "Step count")
 	@Column(name = "step_count")
 	private int stepCount;
 	
@@ -38,10 +42,19 @@ public class Step {
 
 	}
 
-	public Step(int stepCount, String start, String end) {
+	public Step(int userId, int stepCount, String start, String end) {
+		this.userId = userId;
 		this.stepCount = stepCount;
 		this.startTime = LocalDateTime.parse(start);
 		this.endTime = LocalDateTime.parse(end);
+	}
+
+	public int getUserId() {
+		return userId;
+	}
+
+	public void setUserId(int userId) {
+		this.userId = userId;
 	}
 
 	public long getId() {
