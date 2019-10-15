@@ -25,3 +25,9 @@ databaseChangeLog:
               - column:
                   name: end_time
                   type: datetime
+              - column:
+                  name: user_id
+                  type: int
+              - column:
+                  name: uploaded
+                  type: datetime

@@ -81,8 +81,8 @@ public class StepController {
 			@ApiResponse(code = 404, message = "Error processing request") })
 
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-	public Step registerSteps(@RequestBody StepDTO step) {
-		return stepService.registerSteps(step);
+	public Step registerSteps(@RequestBody StepDTO stepDTO) {
+		return stepService.registerSteps(stepDTO);
 	}
 
 }

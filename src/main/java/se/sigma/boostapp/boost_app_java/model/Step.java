@@ -22,7 +22,11 @@ public class Step {
 	@ApiModelProperty(notes = "The database generated step ID")
 	private long id;
 
-	@ApiModelProperty(notes = "step count")
+	@Column(name = "user_id")
+	@ApiModelProperty(notes = "User Id")
+	private int userId;
+	
+	@ApiModelProperty(notes = "Step count")
 	@Column(name = "step_count")
 	private int stepCount;
 	
@@ -33,15 +37,29 @@ public class Step {
 	@ApiModelProperty(notes = "End time")
 	@Column(name = "end_time")
 	private LocalDateTime endTime;
+	
+	@ApiModelProperty(notes = "Uploaded")
+	@Column(name = "uploaded")
+	private LocalDateTime uploadedTime;
 
 	public Step() {
 
 	}
 
-	public Step(int stepCount, String start, String end) {
+	public Step(int userId, int stepCount, String start, String end, String uploadedTime) {
+		this.userId = userId;
 		this.stepCount = stepCount;
 		this.startTime = LocalDateTime.parse(start);
 		this.endTime = LocalDateTime.parse(end);
+		this.uploadedTime = LocalDateTime.parse(uploadedTime);
+	}
+
+	public int getUserId() {
+		return userId;
+	}
+
+	public void setUserId(int userId) {
+		this.userId = userId;
 	}
 
 	public long getId() {
@@ -74,6 +92,14 @@ public class Step {
 
 	public void setEnd(LocalDateTime end) {
 		this.endTime = end;
+	}
+
+	public LocalDateTime getUploadedTime() {
+		return uploadedTime;
+	}
+
+	public void setUploadedTime(LocalDateTime uploadedSteps) {
+		this.uploadedTime = uploadedSteps;
 	}
 
 }
