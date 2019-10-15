@@ -37,6 +37,11 @@ public class StepDTO {
 		this.uploadedTime = LocalDateTime.parse(uploadedTime);
 	}
 	
+	public StepDTO(int userId, int stepCount) {
+		this.userId = userId;
+		this.stepCount = stepCount;
+	}
+	
 	public void setUserId(int userId) {
 		this.userId = userId;
 	}

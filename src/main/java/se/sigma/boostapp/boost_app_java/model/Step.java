@@ -31,27 +31,32 @@ public class Step {
 	private int stepCount;
 	
 	@ApiModelProperty(notes = "Start time")
-	@Column(name = "start_time")
+	@Column(name = "start_time", nullable=true)
 	private LocalDateTime startTime;
 	
 	@ApiModelProperty(notes = "End time")
-	@Column(name = "end_time")
+	@Column(name = "end_time", nullable=true)
 	private LocalDateTime endTime;
-	
+
 	@ApiModelProperty(notes = "Uploaded")
-	@Column(name = "uploaded")
+	@Column(name = "uploaded", nullable=true)
 	private LocalDateTime uploadedTime;
 
 	public Step() {
 
 	}
 
-	public Step(int userId, int stepCount, String start, String end, String uploadedTime) {
+	public Step(int userId, int stepCount, LocalDateTime start, LocalDateTime end, LocalDateTime uploadedTime) {
 		this.userId = userId;
 		this.stepCount = stepCount;
-		this.startTime = LocalDateTime.parse(start);
-		this.endTime = LocalDateTime.parse(end);
-		this.uploadedTime = LocalDateTime.parse(uploadedTime);
+		this.startTime = start;
+		this.endTime = end;
+		this.uploadedTime = uploadedTime;
+	}
+	
+	public Step(int userId, int stepCount) {
+		this.userId = userId;
+		this.stepCount = stepCount;
 	}
 
 	public int getUserId() {

@@ -28,12 +28,24 @@ public class StepService {
 		return stepRepository.findByStartTime(LocalDateTime.parse(startTime));
 	}
 	
+	public List<Step> findByUserId(int userId) {
+		return stepRepository.findByUserId(userId);
+	}
+	
 	public Iterable<Step> getAllSteps() {
 		return stepRepository.findAll();
 	}
 	
 	public Step registerSteps(StepDTO stepDto) {
-		return stepRepository.save(new Step(stepDto.getUserId(),stepDto.getStepCount(), stepDto.getStartTime().toString(), stepDto.getEndTime().toString(), stepDto.getUploadedTime().toString()));
+		return stepRepository.save(new Step(stepDto.getUserId(),
+				stepDto.getStepCount(), 
+				stepDto.getStartTime(), 
+				stepDto.getEndTime(), 
+				stepDto.getUploadedTime()));
+	}
+	
+	public void deleteById(long id) {
+		stepRepository.deleteById(id);
 	}
 
 }

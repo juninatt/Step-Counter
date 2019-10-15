@@ -11,5 +11,5 @@ public interface StepRepository extends CrudRepository<Step, Long>{
 
 	List<Step> findByStepCount(int stepCount);
 	List<Step> findByStartTime(LocalDateTime startTime);
-	
+	List<Step> findByUserId(int userId);
 }
