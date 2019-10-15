@@ -25,14 +25,9 @@ databaseChangeLog:
               - column:
                   name: end_time
                   type: datetime
-                  
-  - changeSet:
-      id: 2
-      author: Sigma
-      changes:
-        - addColumn:
-            tableName: step
-            columns:
               - column:
                   name: user_id
                   type: int
+              - column:
+                  name: uploaded
+                  type: datetime

@@ -2,6 +2,8 @@ package se.sigma.boostapp.boost_app_java.model;
 
 import java.time.LocalDateTime;
 
+import javax.persistence.Column;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -20,15 +22,19 @@ public class StepDTO {
 	@ApiModelProperty(notes = "End time")
 	private LocalDateTime endTime;
 	
+	@ApiModelProperty(notes = "Uploaded")
+	private LocalDateTime uploadedTime;
+	
 	
 	public StepDTO() {
 		
 	}
-	public StepDTO(int userId, int stepCount, String start, String end) {
+	public StepDTO(int userId, int stepCount, String start, String end, String uploadedTime) {
 		this.userId = userId;
 		this.stepCount = stepCount;
 		this.startTime = LocalDateTime.parse(start);
 		this.endTime = LocalDateTime.parse(end);
+		this.uploadedTime = LocalDateTime.parse(uploadedTime);
 	}
 	
 	public void setUserId(int userId) {
@@ -61,5 +67,11 @@ public class StepDTO {
 	public void setEndTime(LocalDateTime endTime) {
 		this.endTime = endTime;
 	}
-	
+
+	public LocalDateTime getUploadedTime() {
+		return uploadedTime;
+	}
+	public void setUploadedTime(LocalDateTime uploadedSteps) {
+		this.uploadedTime = uploadedSteps;
+	}
 }
