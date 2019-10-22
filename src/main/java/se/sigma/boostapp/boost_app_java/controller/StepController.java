@@ -89,6 +89,18 @@ public class StepController {
 		return stepService.getAllStepsByUserAndWeek(userId, date);
 	}
 
+	// Get step count by user ID and month
+	@ApiOperation(value = "Get steps by user id", response = List.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
+			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
+
+	@GetMapping("/user/{userId}/month")
+	public int getByUserAndMonth(@PathVariable int userId, @RequestParam String date) {
+		return stepService.getAllStepsByUserAndMonth(userId, date);
+	}
+
 	// Get all step
 	@ApiOperation(value = "Get all", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),

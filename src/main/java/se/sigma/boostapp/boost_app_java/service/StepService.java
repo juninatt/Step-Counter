@@ -65,9 +65,14 @@ public class StepService {
 		return getStepCount(allSteps);
 	}
 	
-	public int getAllStepsByUserAndMonth() {
+	public int getAllStepsByUserAndMonth(int userId, String date) {
+		LocalDate dateOfMonth = LocalDate.parse(date);
+		LocalDateTime firstDay = dateOfMonth.with(TemporalAdjusters.firstDayOfMonth()).atStartOfDay();
+		LocalDateTime lastDay = dateOfMonth.with(TemporalAdjusters.lastDayOfMonth()).atTime(23, 59, 59);
 		
-		return 0;
+		List<Step> allSteps = stepRepository.findByUserIdAndStartTimeGreaterThanAndEndTimeLessThan(
+				userId, firstDay, lastDay);
+		return getStepCount(allSteps);
 	}
 	
 	public int getStepCount(List<Step> steps) {
