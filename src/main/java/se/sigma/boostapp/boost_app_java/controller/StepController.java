@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
@@ -52,17 +53,30 @@ public class StepController {
 	}
 
 	// Get step by user ID
-		@ApiOperation(value = "Get steps by user id", response = List.class)
-		@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),
-				@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
-				@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
-				@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
+	@ApiOperation(value = "Get steps by user id", response = List.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),
+			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
 
-		@GetMapping("/user/{userId}")
-		public List<Step> getByUserId(@PathVariable int userId) {
-			return stepService.findByUserId(userId);
-		}
-	
+	@GetMapping("/user/{userId}")
+	public List<Step> getByUserId(@PathVariable int userId) {
+		return stepService.findByUserId(userId);
+	}
+
+	// Get step count by user ID, start date and end date
+	@ApiOperation(value = "Get steps by user id", response = List.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
+			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
+
+	@GetMapping("/user/{userId}/date")
+	public int getByUserAndDays(
+			@PathVariable int userId, @RequestParam String startDate, @RequestParam String endDate) {
+		return stepService.getAllStepsByUserAndDays(userId, startDate, endDate);
+	}
+
 	// Get all step
 	@ApiOperation(value = "Get all", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),
@@ -75,18 +89,6 @@ public class StepController {
 		return stepService.getAllSteps();
 	}
 
-	// Get step by date time
-	@ApiOperation(value = "Get step by datetime", response = List.class)
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),
-			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
-			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
-			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
-
-	@GetMapping("/start/{startTime}")
-	public Iterable<Step> getByStartTime(@PathVariable String startTime) {
-		return stepService.findByStartTime(startTime);
-	}
-
 	// Post step
 	@ApiOperation(value = "Register steps", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully post request"),
@@ -97,7 +99,7 @@ public class StepController {
 	public Step registerSteps(@RequestBody StepDTO stepDTO) {
 		return stepService.registerSteps(stepDTO);
 	}
-	
+
 	// Delete step
 	@ApiOperation(value = "Delete steps", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully deleted steps"),

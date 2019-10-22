@@ -1,6 +1,6 @@
 package se.sigma.boostapp.boost_app_java.service;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +24,6 @@ public class StepService {
 		return stepRepository.findById(id);
 	}
 	
-	public List<Step> findByStartTime(String startTime) {
-		return stepRepository.findByStartTime(LocalDateTime.parse(startTime));
-	}
-	
 	public List<Step> findByUserId(int userId) {
 		return stepRepository.findByUserId(userId);
 	}
@@ -46,6 +42,17 @@ public class StepService {
 	
 	public void deleteById(long id) {
 		stepRepository.deleteById(id);
+	}
+	
+	public int getAllStepsByUserAndDays(int userId, String startDate, String endDate) {
+		List<Step> allSteps = stepRepository.findByUserIdAndStartTimeGreaterThanAndEndTimeLessThan(
+				userId, LocalDate.parse(startDate).atStartOfDay(), LocalDate.parse(endDate).atTime(23, 59, 59));
+		int total = 0;
+		for (Step step : allSteps) {
+			total += step.getStepCount();
+		}
+		
+		return total;
 	}
 
 }
