@@ -21,6 +21,7 @@ steps:
     testResultsFiles: '**/TEST-*.xml'
     goals: 'package'
 - task: Docker@2
+  displayName: Build and push
   inputs:
     containerRegistry: 'BoostAppConnection'
     repository: 'BoostAppReg'
