@@ -13,16 +13,6 @@ public class Application {
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 		
-		// For testing of JSON web token
-		try {
-		    Algorithm algorithm = Algorithm.HMAC256("password");
-		    String token = JWT.create()
-		        .withIssuer("auth0")
-		        .sign(algorithm);
-		    System.out.println(token);
-		} catch (JWTCreationException exception){
-		    //Invalid Signing configuration / Couldn't convert Claims.
-		}
 	}
 
 }
