@@ -27,3 +27,4 @@ steps:
     repository: 'BoostAppReg'
     command: 'buildAndPush'
     Dockerfile: '**/Dockerfile'
+    tags: latest
