@@ -22,6 +22,8 @@ public class Step {
 	@ApiModelProperty(notes = "The database generated step ID")
 	private long id;
 
+	/* TODO Remove userId Column when 
+	 *JWT Claim "sub" is added*/
 	@Column(name = "user_id")
 	@ApiModelProperty(notes = "User Id")
 	private int userId;

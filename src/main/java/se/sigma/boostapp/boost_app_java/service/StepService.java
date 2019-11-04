@@ -20,14 +20,12 @@ public class StepService {
 	@Autowired 
 	private StepRepository stepRepository;
 	
-	public List<Step> findByStepCount(int stepCount){
-		return stepRepository.findByStepCount(stepCount);
-	}
-	
 	public Optional<Step> getStepById(long id){
 		return stepRepository.findById(id);
 	}
 	
+	/* TODO Remove findByUserId when 
+	 *JWT Claim "sub" is added*/
 	public List<Step> findByUserId(int userId) {
 		return stepRepository.findByUserId(userId);
 	}

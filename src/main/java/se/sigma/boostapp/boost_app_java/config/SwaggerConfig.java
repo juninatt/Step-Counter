@@ -25,14 +25,14 @@ public class SwaggerConfig {
 				.apis(RequestHandlerSelectors.basePackage("se.sigma.boostapp.boost_app_java.controller"))
 				.paths(PathSelectors.regex("/.*"))
 				.build()
-				.globalOperationParameters(
-						Collections.singletonList(new ParameterBuilder()
-						.name("Authorization")
-						.description("JWT Authorization token")
-						.modelRef(new ModelRef("string"))
-						.parameterType("header")
-						.required(false)
-						.build()))
+//				.globalOperationParameters(
+//						Collections.singletonList(new ParameterBuilder()
+//						.name("Authorization")
+//						.description("JWT Authorization token")
+//						.modelRef(new ModelRef("string"))
+//						.parameterType("header")
+//						.required(false)
+//						.build()))
 				.apiInfo(apiInfo());
 	}
 	

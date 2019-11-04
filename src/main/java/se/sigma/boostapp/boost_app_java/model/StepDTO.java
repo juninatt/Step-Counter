@@ -13,7 +13,9 @@ public class StepDTO {
 	@ApiModelProperty(notes = "step count")
 	private int stepCount;
 	
-	@ApiModelProperty(notes = "User Id")
+	/* TODO Remove userId Column when 
+	 *JWT Claim "sub" is added*/
+ 	@ApiModelProperty(notes = "User Id")
 	private int userId;
 	
 	@ApiModelProperty(notes = "Start time")
