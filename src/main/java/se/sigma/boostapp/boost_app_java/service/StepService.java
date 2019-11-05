@@ -24,8 +24,6 @@ public class StepService {
 		return stepRepository.findById(id);
 	}
 	
-	/* TODO Remove findByUserId when 
-	 *JWT Claim "sub" is added*/
 	public List<Step> findByUserId(int userId) {
 		return stepRepository.findByUserId(userId);
 	}
