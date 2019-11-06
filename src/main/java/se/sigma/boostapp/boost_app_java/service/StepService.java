@@ -4,6 +4,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -81,17 +82,19 @@ public class StepService {
 		return total;
 	}
 	
-	public int getStepCountByUsersAndDate(BulkDTO bulkDTO) {
-		int total = 0;
+	public List<Integer> getStepCountByUsersAndDate(BulkDTO bulkDTO) {
+//		int total = 0;
+		
 		LocalDateTime startTime = bulkDTO.getStartTime();
+		List<Integer> userStepCount = new ArrayList<>();
 		List<Step> stepList;
 		for (Integer userId : bulkDTO.getUserList()) {
 			stepList = stepRepository
 					.findByUserIdAndStartTimeGreaterThanEqualAndEndTimeLessThanEqual(userId, startTime, LocalDateTime.now());
-			total += getStepCount(stepList);
+			userStepCount.add(getStepCount(stepList));
 		}
 		
-		return total;
+		return userStepCount;
 	}
 
 }

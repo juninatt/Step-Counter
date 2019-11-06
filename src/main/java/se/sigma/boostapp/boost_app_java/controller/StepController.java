@@ -132,14 +132,14 @@ public class StepController {
 		stepService.deleteById(id);
 	}
 	
-	// Post userIds and start time to get sum of users' step count
+	// Post userIds and start time to get each of users' step count
 	@ApiOperation(value = "Register steps", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully post request"),
 			@ApiResponse(code = 400, message = "Request is not authorized"),
 			@ApiResponse(code = 404, message = "Error processing request") })
 
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, path = "/stepcount/bulk")
-	public int getBulkStepCount(@RequestBody BulkDTO bulkDTO) {
+	public List<Integer> getBulkStepCount(@RequestBody BulkDTO bulkDTO) {
 		return stepService.getStepCountByUsersAndDate(bulkDTO);
 	}
 
