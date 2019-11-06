@@ -47,7 +47,7 @@ public class StepService {
 	}
 	
 	public int getAllStepsByUserAndDays(int userId, String startDate, String endDate) {
-		List<Step> allSteps = stepRepository.findByUserIdAndStartTimeGreaterThanAndEndTimeLessThan(
+		List<Step> allSteps = stepRepository.findByUserIdAndStartTimeGreaterThanEqualAndEndTimeLessThanEqual(
 				userId, LocalDate.parse(startDate).atStartOfDay(), LocalDate.parse(endDate).atTime(23, 59, 59));
 		return getStepCount(allSteps);
 	}
@@ -58,7 +58,7 @@ public class StepService {
 				.atStartOfDay();
 		LocalDateTime sunday = monday.plusDays(6).plusHours(23).plusMinutes(59).plusSeconds(59);
 		
-		List<Step> allSteps = stepRepository.findByUserIdAndStartTimeGreaterThanAndEndTimeLessThan(
+		List<Step> allSteps = stepRepository.findByUserIdAndStartTimeGreaterThanEqualAndEndTimeLessThanEqual(
 				userId, monday, sunday);
 		return getStepCount(allSteps);
 	}
@@ -68,7 +68,7 @@ public class StepService {
 		LocalDateTime firstDay = dateOfMonth.with(TemporalAdjusters.firstDayOfMonth()).atStartOfDay();
 		LocalDateTime lastDay = dateOfMonth.with(TemporalAdjusters.lastDayOfMonth()).atTime(23, 59, 59);
 		
-		List<Step> allSteps = stepRepository.findByUserIdAndStartTimeGreaterThanAndEndTimeLessThan(
+		List<Step> allSteps = stepRepository.findByUserIdAndStartTimeGreaterThanEqualAndEndTimeLessThanEqual(
 				userId, firstDay, lastDay);
 		return getStepCount(allSteps);
 	}
@@ -87,7 +87,7 @@ public class StepService {
 		List<Step> stepList;
 		for (Integer userId : bulkDTO.getUserList()) {
 			stepList = stepRepository
-					.findByUserIdAndStartTimeGreaterThanAndEndTimeLessThan(userId, startTime, LocalDateTime.now());
+					.findByUserIdAndStartTimeGreaterThanEqualAndEndTimeLessThanEqual(userId, startTime, LocalDateTime.now());
 			total += getStepCount(stepList);
 		}
 		

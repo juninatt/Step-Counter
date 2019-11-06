@@ -10,6 +10,6 @@ import se.sigma.boostapp.boost_app_java.model.Step;
 public interface StepRepository extends CrudRepository<Step, Long>{
 
 	List<Step> findByUserId(int userId);
-	List<Step> findByUserIdAndStartTimeGreaterThanAndEndTimeLessThan(
+	List<Step> findByUserIdAndStartTimeGreaterThanEqualAndEndTimeLessThanEqual(
 			int userId, LocalDateTime startTime, LocalDateTime endTime);
 }
