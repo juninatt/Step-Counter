@@ -11,7 +11,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import se.sigma.boostapp.boost_app_java.model.BulkDTO;
+import se.sigma.boostapp.boost_app_java.model.BulkUsersStepsDTO;
 import se.sigma.boostapp.boost_app_java.model.Step;
 import se.sigma.boostapp.boost_app_java.model.StepDTO;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
@@ -82,7 +82,7 @@ public class StepService {
 		return total;
 	}
 	
-	public List<Integer> getStepCountByUsersAndDate(BulkDTO bulkDTO) {
+	public List<Integer> getStepCountByUsersAndDate(BulkUsersStepsDTO bulkDTO) {
 //		int total = 0;
 		
 		LocalDateTime startTime = bulkDTO.getStartTime();

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import se.sigma.boostapp.boost_app_java.model.BulkDTO;
+import se.sigma.boostapp.boost_app_java.model.BulkUsersStepsDTO;
 import se.sigma.boostapp.boost_app_java.model.Step;
 import se.sigma.boostapp.boost_app_java.model.StepDTO;
 import se.sigma.boostapp.boost_app_java.service.StepService;
@@ -139,7 +139,7 @@ public class StepController {
 			@ApiResponse(code = 404, message = "Error processing request") })
 
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, path = "/stepcount/bulk")
-	public List<Integer> getBulkStepCount(@RequestBody BulkDTO bulkDTO) {
+	public List<Integer> getBulkStepCount(@RequestBody BulkUsersStepsDTO bulkDTO) {
 		return stepService.getStepCountByUsersAndDate(bulkDTO);
 	}
 
