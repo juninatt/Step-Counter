@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import se.sigma.boostapp.boost_app_java.model.BulkDTO;
 import se.sigma.boostapp.boost_app_java.model.Step;
 import se.sigma.boostapp.boost_app_java.model.StepDTO;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
@@ -32,6 +33,7 @@ public class StepService {
 		return stepRepository.findAll();
 	}
 	
+	// Persist steps
 	public Step registerSteps(StepDTO stepDto) {
 		return stepRepository.save(new Step(stepDto.getUserId(),
 				stepDto.getStepCount(), 
@@ -76,6 +78,19 @@ public class StepService {
 		for (Step step : steps) {
 			total += step.getStepCount();
 		}
+		return total;
+	}
+	
+	public int getStepCountByUsersAndDate(BulkDTO bulkDTO) {
+		int total = 0;
+		LocalDateTime startTime = bulkDTO.getStartTime();
+		List<Step> stepList;
+		for (Integer userId : bulkDTO.getUserList()) {
+			stepList = stepRepository
+					.findByUserIdAndStartTimeGreaterThanAndEndTimeLessThan(userId, startTime, LocalDateTime.now());
+			total += getStepCount(stepList);
+		}
+		
 		return total;
 	}
 
