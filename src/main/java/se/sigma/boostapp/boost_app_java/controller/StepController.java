@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -50,9 +51,9 @@ public class StepController {
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
 
-	@GetMapping("/user/{userId}")
-	public List<Step> getByUserId(@PathVariable int userId) {
-		return stepService.findByUserId(userId);
+	@GetMapping("/user")
+	public List<Step> getByUserId(@RequestHeader("Authorization") String token) {
+		return stepService.findByUserId(stepService.getJwt(token));
 	}
 
 	// Get step count by user ID, start date and end date
@@ -64,10 +65,10 @@ public class StepController {
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
 
-	@GetMapping("/user/{userId}/date")
-	public int getByUserAndDays(@PathVariable int userId, @RequestParam String startDate,
+	@GetMapping("/user/date")
+	public int getByUserAndDays(@RequestHeader("Authorization") String token, @RequestParam String startDate,
 			@RequestParam String endDate) {
-		return stepService.getAllStepsByUserAndDays(userId, startDate, endDate);
+		return stepService.getAllStepsByUserAndDays(stepService.getJwt(token), startDate, endDate);
 	}
 
 	// Get step count by user ID and week
@@ -79,9 +80,9 @@ public class StepController {
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
 
-	@GetMapping("/user/{userId}/week")
-	public int getByUserAndWeek(@PathVariable int userId, @RequestParam String date) {
-		return stepService.getAllStepsByUserAndWeek(userId, date);
+	@GetMapping("/user/week")
+	public int getByUserAndWeek(@RequestHeader("Authorization") String token, @RequestParam String date) {
+		return stepService.getAllStepsByUserAndWeek(stepService.getJwt(token), date);
 	}
 
 	// Get step count by user ID and month
@@ -93,9 +94,9 @@ public class StepController {
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
 
-	@GetMapping("/user/{userId}/month")
-	public int getByUserAndMonth(@PathVariable int userId, @RequestParam String date) {
-		return stepService.getAllStepsByUserAndMonth(userId, date);
+	@GetMapping("/user/month")
+	public int getByUserAndMonth(@RequestHeader("Authorization") String token, @RequestParam String date) {
+		return stepService.getAllStepsByUserAndMonth(stepService.getJwt(token), date);
 	}
 
 	// Get all step
@@ -117,8 +118,8 @@ public class StepController {
 			@ApiResponse(code = 404, message = "Error processing request") })
 
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-	public Step registerSteps(@RequestBody StepDTO stepDTO) {
-		return stepService.registerSteps(stepDTO);
+	public Step registerSteps(@RequestHeader("Authorization") String token, @RequestBody StepDTO stepDTO) {
+		return stepService.registerSteps(stepService.getJwt(token), stepDTO);
 	}
 
 	// Delete step

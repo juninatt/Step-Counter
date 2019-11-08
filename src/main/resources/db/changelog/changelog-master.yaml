@@ -1,7 +1,7 @@
 databaseChangeLog:
 
   - changeSet:
-      id: 1
+      id: boost-app-step-1.0
       author: Sigma
       changes:
         - createTable:
@@ -27,7 +27,7 @@ databaseChangeLog:
                   type: datetime
               - column:
                   name: user_id
-                  type: int
+                  type: varchar
                   constraints:
                      nullable: false
               - column:

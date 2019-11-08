@@ -13,11 +13,6 @@ public class StepDTO {
 	@ApiModelProperty(notes = "step count")
 	private int stepCount;
 	
-	/* TODO Remove userId Column when 
-	 *JWT Claim "sub" is added*/
- 	@ApiModelProperty(notes = "User Id")
-	private int userId;
-	
 	@ApiModelProperty(notes = "Start time")
 	private LocalDateTime startTime;
 	
@@ -31,26 +26,17 @@ public class StepDTO {
 	public StepDTO() {
 		
 	}
-	public StepDTO(int userId, int stepCount, String start, String end, String uploadedTime) {
-		this.userId = userId;
+	public StepDTO(int stepCount, String start, String end, String uploadedTime) {
 		this.stepCount = stepCount;
 		this.startTime = LocalDateTime.parse(start);
 		this.endTime = LocalDateTime.parse(end);
 		this.uploadedTime = LocalDateTime.parse(uploadedTime);
 	}
 	
-	public StepDTO(int userId, int stepCount) {
-		this.userId = userId;
+	public StepDTO(int stepCount) {
 		this.stepCount = stepCount;
 	}
 	
-	public void setUserId(int userId) {
-		this.userId = userId;
-	}
-	
-	public int getUserId() {
-		return userId;
-	}
 	public int getStepCount() {
 		return stepCount;
 	}

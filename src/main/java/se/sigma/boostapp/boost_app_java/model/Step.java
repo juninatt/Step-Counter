@@ -24,7 +24,7 @@ public class Step {
 
 	@Column(name = "user_id")
 	@ApiModelProperty(notes = "User Id")
-	private int userId;
+	private String userId;
 	
 	@ApiModelProperty(notes = "Step count")
 	@Column(name = "step_count")
@@ -46,7 +46,7 @@ public class Step {
 
 	}
 
-	public Step(int userId, int stepCount, LocalDateTime start, LocalDateTime end, LocalDateTime uploadedTime) {
+	public Step(String userId, int stepCount, LocalDateTime start, LocalDateTime end, LocalDateTime uploadedTime) {
 		this.userId = userId;
 		this.stepCount = stepCount;
 		this.startTime = start;
@@ -54,16 +54,16 @@ public class Step {
 		this.uploadedTime = uploadedTime;
 	}
 	
-	public Step(int userId, int stepCount) {
+	public Step(String userId, int stepCount) {
 		this.userId = userId;
 		this.stepCount = stepCount;
 	}
 
-	public int getUserId() {
+	public String getUserId() {
 		return userId;
 	}
 
-	public void setUserId(int userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 

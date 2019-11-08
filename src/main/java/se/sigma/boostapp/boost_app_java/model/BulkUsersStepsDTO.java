@@ -7,9 +7,9 @@ public class BulkUsersStepsDTO {
 	
 	private LocalDateTime startTime;
 	
-	private List<Integer> userList;
+	private List<String> userList;
 	
-	public BulkUsersStepsDTO(String startTime, List<Integer> userIdList) {
+	public BulkUsersStepsDTO(String startTime, List<String> userIdList) {
 		this.startTime = LocalDateTime.parse(startTime);
 		this.userList = userIdList;
 	}
@@ -22,11 +22,11 @@ public class BulkUsersStepsDTO {
 		this.startTime = startTime;
 	}
 
-	public List<Integer> getUserList() {
+	public List<String> getUserList() {
 		return userList;
 	}
 
-	public void setUserList(List<Integer> userIdList) {
+	public void setUserList(List<String> userIdList) {
 		this.userList = userIdList;
 	}
 	
