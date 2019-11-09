@@ -98,10 +98,10 @@ public class StepService {
 	}
 
 	// Decode JWT, get oid
-	public String getJwt(String token) {
-		JsonParser parser = JsonParserFactory.getJsonParser();
-		Map<String, ?> tokenData = parser.parseMap(JwtHelper.decode(token.substring(7)).getClaims());
-		return (String) tokenData.get("oid");
-	}
+//	public String getJwt(String token) {
+//		JsonParser parser = JsonParserFactory.getJsonParser();
+//		Map<String, ?> tokenData = parser.parseMap(JwtHelper.decode(token.substring(7)).getClaims());
+//		return (String) tokenData.get("oid");
+//	}
 
 }

@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,8 +54,8 @@ public class StepController {
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
 
 	@GetMapping("/user")
-	public List<Step> getByUserId(@RequestHeader("Authorization") String token) {
-		return stepService.findByUserId(stepService.getJwt(token));
+	public List<Step> getByUserId(final @AuthenticationPrincipal Jwt jwt) {
+		return stepService.findByUserId((String) jwt.getClaims().get("oid"));
 	}
 
 	// Get step count by user ID, start date and end date
@@ -66,9 +68,9 @@ public class StepController {
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
 
 	@GetMapping("/user/date")
-	public int getByUserAndDays(@RequestHeader("Authorization") String token, @RequestParam String startDate,
+	public int getByUserAndDays(final @AuthenticationPrincipal Jwt jwt, @RequestParam String startDate,
 			@RequestParam String endDate) {
-		return stepService.getAllStepsByUserAndDays(stepService.getJwt(token), startDate, endDate);
+		return stepService.getAllStepsByUserAndDays((String) jwt.getClaims().get("oid"), startDate, endDate);
 	}
 
 	// Get step count by user ID and week
@@ -81,8 +83,8 @@ public class StepController {
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
 
 	@GetMapping("/user/week")
-	public int getByUserAndWeek(@RequestHeader("Authorization") String token, @RequestParam String date) {
-		return stepService.getAllStepsByUserAndWeek(stepService.getJwt(token), date);
+	public int getByUserAndWeek(final @AuthenticationPrincipal Jwt jwt, @RequestParam String date) {
+		return stepService.getAllStepsByUserAndWeek((String) jwt.getClaims().get("oid"), date);
 	}
 
 	// Get step count by user ID and month
@@ -95,8 +97,8 @@ public class StepController {
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
 
 	@GetMapping("/user/month")
-	public int getByUserAndMonth(@RequestHeader("Authorization") String token, @RequestParam String date) {
-		return stepService.getAllStepsByUserAndMonth(stepService.getJwt(token), date);
+	public int getByUserAndMonth(final @AuthenticationPrincipal Jwt jwt, @RequestParam String date) {
+		return stepService.getAllStepsByUserAndMonth((String) jwt.getClaims().get("oid"), date);
 	}
 
 	// Get all step
@@ -107,7 +109,8 @@ public class StepController {
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
 
 	@GetMapping
-	public Iterable<Step> getAll() {
+	public Iterable<Step> getAll(final @AuthenticationPrincipal Jwt jwt) {
+//		System.out.println("OID:" + jwt.getClaims().get("oid"));
 		return stepService.getAllSteps();
 	}
 
@@ -118,8 +121,8 @@ public class StepController {
 			@ApiResponse(code = 404, message = "Error processing request") })
 
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-	public Step registerSteps(@RequestHeader("Authorization") String token, @RequestBody StepDTO stepDTO) {
-		return stepService.registerSteps(stepService.getJwt(token), stepDTO);
+	public Step registerSteps(final @AuthenticationPrincipal Jwt jwt, @RequestBody StepDTO stepDTO) {
+		return stepService.registerSteps((String) jwt.getClaims().get("oid"), stepDTO);
 	}
 
 	// Delete step
