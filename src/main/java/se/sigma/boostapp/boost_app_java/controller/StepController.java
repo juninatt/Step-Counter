@@ -110,7 +110,7 @@ public class StepController {
 
 	@GetMapping
 	public Iterable<Step> getAll(final @AuthenticationPrincipal Jwt jwt) {
-//		System.out.println("OID:" + jwt.getClaims().get("oid"));
+		System.out.println("OID:" + jwt.getClaims().get("oid"));
 		return stepService.getAllSteps();
 	}
 
