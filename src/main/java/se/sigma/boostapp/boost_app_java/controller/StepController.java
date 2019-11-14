@@ -44,9 +44,6 @@ public class StepController {
 		return stepService.getStepById(id);
 	}
 
-	// Get step by user ID
-	/* TODO Change endpoints to user when JWT claim "sub" 
-	 * is added*/
 	@ApiOperation(value = "Get steps by user id", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),
 			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
@@ -58,9 +55,6 @@ public class StepController {
 		return stepService.findByUserId((String) jwt.getClaims().get("oid"));
 	}
 
-	// Get step count by user ID, start date and end date
-	/* TODO Change endpoints to /user/date when JWT claim "sub" 
-	 * is added*/
 	@ApiOperation(value = "Get steps by user id", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
 			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
@@ -72,10 +66,19 @@ public class StepController {
 			@RequestParam String endDate) {
 		return stepService.getAllStepsByUserAndDays((String) jwt.getClaims().get("oid"), startDate, endDate);
 	}
+	
+	@ApiOperation(value = "Get steps by user id", response = List.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
+			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
 
-	// Get step count by user ID and week
-	/* TODO Change endpoints to /user/week when JWT claim "sub" 
-	 * is added*/
+	@GetMapping("/user/date/bulk")
+	public List<Integer> getByUserAndDaysAsList(final @AuthenticationPrincipal Jwt jwt, @RequestParam String startDate,
+			@RequestParam String endDate) {
+		return stepService.getAllStepsByUserAndDaysAsList((String) jwt.getClaims().get("oid"), startDate, endDate);
+	}
+
 	@ApiOperation(value = "Get steps by user id", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
 			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
@@ -87,9 +90,6 @@ public class StepController {
 		return stepService.getAllStepsByUserAndWeek((String) jwt.getClaims().get("oid"), date);
 	}
 
-	// Get step count by user ID and month
-	/* TODO Change endpoints to /user/month when JWT claim "sub" 
-	 * is added*/
 	@ApiOperation(value = "Get steps by user id", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
 			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),

@@ -53,6 +53,19 @@ public class StepService {
 				LocalDate.parse(startDate).atStartOfDay(), LocalDate.parse(endDate).atTime(23, 59, 59));
 		return getStepCount(allSteps);
 	}
+	
+	public List<Integer> getAllStepsByUserAndDaysAsList(String userId, String startDate, String endDate) {
+		LocalDate start = LocalDate.parse(startDate);
+		LocalDate end = LocalDate.parse(endDate);
+		List<Step> userStepsPerDay;
+		List<Integer> userStepCountPerDay = new ArrayList<Integer>();
+		for (LocalDate date = start; date.isBefore(end.plusDays(1)); date = date.plusDays(1)) {
+			userStepsPerDay = stepRepository.findByUserIdAndStartTimeGreaterThanEqualAndEndTimeLessThanEqual(
+					userId, date.atStartOfDay(), date.atTime(23, 59, 59));
+			userStepCountPerDay.add(Integer.valueOf(getStepCount(userStepsPerDay)));
+		}
+		return userStepCountPerDay;
+	}
 
 	public int getAllStepsByUserAndWeek(String userId, String date) {
 		LocalDateTime monday = LocalDate.parse(date).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
@@ -83,8 +96,6 @@ public class StepService {
 	}
 
 	public List<Integer> getStepCountByUsersAndDate(BulkUsersStepsDTO bulkDTO) {
-//		int total = 0;
-
 		LocalDateTime startTime = bulkDTO.getStartTime();
 		List<Integer> userStepCount = new ArrayList<>();
 		List<Step> stepList;
@@ -96,12 +107,5 @@ public class StepService {
 
 		return userStepCount;
 	}
-
-	// Decode JWT, get oid
-//	public String getJwt(String token) {
-//		JsonParser parser = JsonParserFactory.getJsonParser();
-//		Map<String, ?> tokenData = parser.parseMap(JwtHelper.decode(token.substring(7)).getClaims());
-//		return (String) tokenData.get("oid");
-//	}
 
 }
