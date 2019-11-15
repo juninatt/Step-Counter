@@ -95,17 +95,17 @@ public class StepService {
 		return total;
 	}
 
-	public List<Integer> getStepCountByUsersAndDate(BulkUsersStepsDTO bulkDTO) {
-		LocalDateTime startTime = bulkDTO.getStartTime();
+	public List<List<Integer>> getStepCountByUsersAndDate(BulkUsersStepsDTO bulkDTO) {
+		String startTime = bulkDTO.getStartDate().toString();
+		String endTime = LocalDate.now().toString();
 		List<Integer> userStepCount = new ArrayList<>();
-		List<Step> stepList;
+		List<List<Integer>> stepList = new ArrayList<>();
 		for (String userId : bulkDTO.getUserList()) {
-			stepList = stepRepository.findByUserIdAndStartTimeGreaterThanEqualAndEndTimeLessThanEqual(userId, startTime,
-					LocalDateTime.now());
-			userStepCount.add(getStepCount(stepList));
+			userStepCount = getAllStepsByUserAndDaysAsList(userId, startTime, endTime);
+			stepList.add(userStepCount);
 		}
 
-		return userStepCount;
+		return stepList;
 	}
 
 }

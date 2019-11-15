@@ -55,7 +55,7 @@ public class StepController {
 		return stepService.findByUserId((String) jwt.getClaims().get("oid"));
 	}
 
-	@ApiOperation(value = "Get steps by user id", response = List.class)
+	@ApiOperation(value = "Get sum of steps by user id, start date and end date", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
 			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
@@ -67,7 +67,7 @@ public class StepController {
 		return stepService.getAllStepsByUserAndDays((String) jwt.getClaims().get("oid"), startDate, endDate);
 	}
 	
-	@ApiOperation(value = "Get steps by user id", response = List.class)
+	@ApiOperation(value = "Get step count per day by user id, start date and end date as array", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
 			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
@@ -79,7 +79,7 @@ public class StepController {
 		return stepService.getAllStepsByUserAndDaysAsList((String) jwt.getClaims().get("oid"), startDate, endDate);
 	}
 
-	@ApiOperation(value = "Get steps by user id", response = List.class)
+	@ApiOperation(value = "Get sum of steps by user id and date for week", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
 			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
@@ -90,7 +90,7 @@ public class StepController {
 		return stepService.getAllStepsByUserAndWeek((String) jwt.getClaims().get("oid"), date);
 	}
 
-	@ApiOperation(value = "Get steps by user id", response = List.class)
+	@ApiOperation(value = "Get sum of steps by user id and date for month", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
 			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
@@ -102,7 +102,7 @@ public class StepController {
 	}
 
 	// Get all step
-	@ApiOperation(value = "Get all", response = List.class)
+	@ApiOperation(value = "Get all steps", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),
 			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
@@ -115,7 +115,7 @@ public class StepController {
 	}
 
 	// Post step
-	@ApiOperation(value = "Register steps", response = List.class)
+	@ApiOperation(value = "Register step entity", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully post request"),
 			@ApiResponse(code = 400, message = "Request is not authorized"),
 			@ApiResponse(code = 404, message = "Error processing request") })
@@ -126,7 +126,7 @@ public class StepController {
 	}
 
 	// Delete step
-	@ApiOperation(value = "Delete steps", response = List.class)
+	@ApiOperation(value = "Delete step entity", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully deleted steps"),
 			@ApiResponse(code = 400, message = "Request is not authorized"),
 			@ApiResponse(code = 404, message = "Error processing request") })
@@ -137,13 +137,13 @@ public class StepController {
 	}
 	
 	// Post userIds and start time to get each of users' step count
-	@ApiOperation(value = "Register steps", response = List.class)
+	@ApiOperation(value = "Get step count per day for a list of users", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully post request"),
 			@ApiResponse(code = 400, message = "Request is not authorized"),
 			@ApiResponse(code = 404, message = "Error processing request") })
 
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, path = "/stepcount/bulk")
-	public List<Integer> getBulkStepCount(@RequestBody BulkUsersStepsDTO bulkDTO) {
+	public List<List<Integer>> getBulkStepCount(@RequestBody BulkUsersStepsDTO bulkDTO) {
 		return stepService.getStepCountByUsersAndDate(bulkDTO);
 	}
 
