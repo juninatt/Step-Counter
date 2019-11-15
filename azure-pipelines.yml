@@ -23,7 +23,7 @@ steps:
 - task: Docker@2
   displayName: Build and push
   inputs:
-    containerRegistry: 'BoostAppConnection'
+    containerRegistry: 'BoostAppTestConnection'
     repository: 'boostapp_step'
     command: 'buildAndPush'
     Dockerfile: '**/Dockerfile'
