@@ -6,11 +6,18 @@ import java.util.List;
 public class BulkUsersStepsDTO {
 	
 	private LocalDate startDate;
+	private LocalDate endDate;
 	private List<String> userList;
 	
-	public BulkUsersStepsDTO(LocalDate startDate, List<String> userList) {
-		super();
+	public BulkUsersStepsDTO(LocalDate startDate, LocalDate endDate, List<String> userList) {
 		this.startDate = startDate;
+		this.endDate = endDate;
+		this.userList = userList;
+	}
+	
+	public BulkUsersStepsDTO(LocalDate startDate, List<String> userList) {
+		this.startDate = startDate;
+		this.endDate = LocalDate.now();
 		this.userList = userList;
 	}
 
@@ -22,6 +29,14 @@ public class BulkUsersStepsDTO {
 		this.startDate = startDate;
 	}
 
+	public LocalDate getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(LocalDate endDate) {
+		this.endDate = endDate;
+	}
+
 	public List<String> getUserList() {
 		return userList;
 	}
@@ -29,6 +44,5 @@ public class BulkUsersStepsDTO {
 	public void setUserList(List<String> userList) {
 		this.userList = userList;
 	}
-	
 
 }

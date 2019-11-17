@@ -97,7 +97,7 @@ public class StepService {
 
 	public List<List<Integer>> getStepCountByUsersAndDate(BulkUsersStepsDTO bulkDTO) {
 		String startTime = bulkDTO.getStartDate().toString();
-		String endTime = LocalDate.now().toString();
+		String endTime = bulkDTO.getEndDate().toString();
 		List<Integer> userStepCount = new ArrayList<>();
 		List<List<Integer>> stepList = new ArrayList<>();
 		for (String userId : bulkDTO.getUserList()) {
