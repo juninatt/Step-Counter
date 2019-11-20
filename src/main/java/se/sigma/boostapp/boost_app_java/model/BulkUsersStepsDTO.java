@@ -20,6 +20,10 @@ public class BulkUsersStepsDTO {
 		this.endDate = LocalDate.now();
 		this.userList = userList;
 	}
+	
+	public BulkUsersStepsDTO() {
+		
+	}
 
 	public LocalDate getStartDate() {
 		return startDate;
