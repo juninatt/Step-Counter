@@ -6,13 +6,9 @@ import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.json.JsonParser;
-import org.springframework.boot.json.JsonParserFactory;
-import org.springframework.security.jwt.JwtHelper;
 import org.springframework.stereotype.Service;
 
 import se.sigma.boostapp.boost_app_java.model.BulkUsersStepsDTO;
@@ -49,19 +45,30 @@ public class StepService {
 	}
 
 	public int getAllStepsByUserAndDays(String userId, String startDate, String endDate) {
+		LocalDateTime end;
+		if (endDate == null || endDate.equals("")) {
+			end = LocalDateTime.now();
+		} else {
+			end = LocalDate.parse(endDate).atTime(23, 59, 59);
+		}
 		List<Step> allSteps = stepRepository.findByUserIdAndStartTimeGreaterThanEqualAndEndTimeLessThanEqual(userId,
-				LocalDate.parse(startDate).atStartOfDay(), LocalDate.parse(endDate).atTime(23, 59, 59));
+				LocalDate.parse(startDate).atStartOfDay(), end);
 		return getStepCount(allSteps);
 	}
-	
+
 	public List<Integer> getAllStepsByUserAndDaysAsList(String userId, String startDate, String endDate) {
 		LocalDate start = LocalDate.parse(startDate);
-		LocalDate end = LocalDate.parse(endDate);
+		LocalDate end;
+		if (endDate == null || endDate.equals("")) {
+			end = LocalDate.now();
+		} else {
+			end = LocalDate.parse(endDate);
+		}
 		List<Step> userStepsPerDay;
 		List<Integer> userStepCountPerDay = new ArrayList<Integer>();
 		for (LocalDate date = start; date.isBefore(end.plusDays(1)); date = date.plusDays(1)) {
-			userStepsPerDay = stepRepository.findByUserIdAndStartTimeGreaterThanEqualAndEndTimeLessThanEqual(
-					userId, date.atStartOfDay(), date.atTime(23, 59, 59));
+			userStepsPerDay = stepRepository.findByUserIdAndStartTimeGreaterThanEqualAndEndTimeLessThanEqual(userId,
+					date.atStartOfDay(), date.atTime(23, 59, 59));
 			userStepCountPerDay.add(Integer.valueOf(getStepCount(userStepsPerDay)));
 		}
 		return userStepCountPerDay;

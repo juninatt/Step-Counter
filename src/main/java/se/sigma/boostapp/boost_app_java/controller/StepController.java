@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,7 +54,7 @@ public class StepController {
 		return stepService.findByUserId((String) jwt.getClaims().get("oid"));
 	}
 
-	@ApiOperation(value = "Get sum of steps by user id, start date and end date", response = List.class)
+	@ApiOperation(value = "Get sum of steps by user id, start date and end date (optional. Use today's date if end date is missing)", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
 			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
@@ -63,11 +62,11 @@ public class StepController {
 
 	@GetMapping("/user/date")
 	public int getByUserAndDays(final @AuthenticationPrincipal Jwt jwt, @RequestParam String startDate,
-			@RequestParam String endDate) {
+			@RequestParam(required = false) String endDate) {
 		return stepService.getAllStepsByUserAndDays((String) jwt.getClaims().get("oid"), startDate, endDate);
 	}
 	
-	@ApiOperation(value = "Get step count per day by user id, start date and end date as array", response = List.class)
+	@ApiOperation(value = "Get step count per day by user id, start date and end date (optional. Use today's date if end date is missing) as array", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
 			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
@@ -75,7 +74,7 @@ public class StepController {
 
 	@GetMapping("/user/date/bulk")
 	public List<Integer> getByUserAndDaysAsList(final @AuthenticationPrincipal Jwt jwt, @RequestParam String startDate,
-			@RequestParam String endDate) {
+			@RequestParam(required = false) String endDate) {
 		return stepService.getAllStepsByUserAndDaysAsList((String) jwt.getClaims().get("oid"), startDate, endDate);
 	}
 
