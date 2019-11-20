@@ -25,6 +25,15 @@ public class StepService {
 				stepDto.getEndTime(), stepDto.getUploadedTime()));
 	}
 
+//	Helper method. Get total step count from a list of Steps
+	public int getStepCount(List<Step> steps) {
+		int total = 0;
+		for (Step step : steps) {
+			total += step.getStepCount();
+		}
+		return total;
+	}
+
 //	Get step count by userId, start date and end Date. 
 	public int getAllStepsByUserAndDays(String userId, String startDate, String endDate) {
 		LocalDateTime end;
@@ -68,15 +77,6 @@ public class StepService {
 			stepList.add(userStepCount);
 		}
 		return stepList;
-	}
-
-//	Helper method. Get total step count from a list of Steps
-	public int getStepCount(List<Step> steps) {
-		int total = 0;
-		for (Step step : steps) {
-			total += step.getStepCount();
-		}
-		return total;
 	}
 
 }
