@@ -295,4 +295,43 @@ databaseChangeLog:
                 -  column:
                      name: uploaded
                      value: 2019-11-18T10:46:00
-                     
+   -  changeSet:
+         id: insert-values-step-1.2
+         author: Sigma
+         changes:
+         -   insert:
+                tableName: step
+                columns:
+                -  column:
+                     name: step_count
+                     value: 2000
+                -  column:
+                     name: start_time
+                     value: 2019-11-14T10:00:00
+                -  column:
+                     name: end_time
+                     value: 2019-11-14T13:00:00
+                -  column:
+                     name: user_id
+                     value: f3a8948f-1485-49ea-b3a0-e0feb19266af
+                -  column:
+                     name: uploaded
+                     value: 2019-11-18T10:46:00   
+         -   insert:
+                tableName: step
+                columns:
+                -  column:
+                     name: step_count
+                     value: 2000
+                -  column:
+                     name: start_time
+                     value: 2019-11-16T10:00:00
+                -  column:
+                     name: end_time
+                     value: 2019-11-16T13:00:00
+                -  column:
+                     name: user_id
+                     value: f3a8948f-1485-49ea-b3a0-e0feb19266af
+                -  column:
+                     name: uploaded
+                     value: 2019-11-18T10:46:00                    
