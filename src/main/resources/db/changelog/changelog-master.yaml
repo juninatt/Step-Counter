@@ -27,7 +27,7 @@ databaseChangeLog:
                   type: datetime
               - column:
                   name: user_id
-                  type: varchar
+                  type: varchar(255)
                   constraints:
                      nullable: false
               - column:
