@@ -24,6 +24,18 @@ To Run:<br>
 To view the API documentation in swagger when server is running, 
 go to [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) in your browser.
 
+### To run prod enviroment:
+
+To Run:<br>
+
+`mvn springboot:run`
+
+Data will regist in Azure SQL Database
+You can find connection **url** and **password** to Azure SQL database in application-prod.properties
+
+To view the API documentation in swagger when server is running, 
+go to [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) in your browser.
+
 ### Notes:
 * This application validate JWT's from Sigma's Azure Active Directory
 * Validation of JWT is done class webSecurityConfig
