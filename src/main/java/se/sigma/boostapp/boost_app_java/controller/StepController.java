@@ -39,7 +39,7 @@ public class StepController {
 			@RequestParam(required = false) String endDate) {
 		return stepService.getAllStepsByUserAndDays((String) jwt.getClaims().get("oid"), startDate, endDate);
 	}
-	
+
 	@ApiOperation(value = "Get step count per day by user id, start date and end date (optional. Use today's date if end date is missing) as array", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
 			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
