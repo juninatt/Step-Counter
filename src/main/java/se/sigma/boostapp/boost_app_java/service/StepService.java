@@ -8,7 +8,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import se.sigma.boostapp.boost_app_java.model.BulkUsersStepsDTO;
 import se.sigma.boostapp.boost_app_java.model.Step;
 import se.sigma.boostapp.boost_app_java.model.StepDTO;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
@@ -34,8 +33,8 @@ public class StepService {
 		return total;
 	}
 
-//	Get step count by userId, start date and end Date. 
-	public int getAllStepsByUserAndDays(String userId, String startDate, String endDate) {
+//	Get sum of step count by userId, start date and end Date.
+	public int getStepSumByUser(String userId, String startDate, String endDate) {
 		LocalDateTime end;
 		if (endDate == null || endDate.equals("")) {
 			end = LocalDateTime.now();
@@ -47,36 +46,24 @@ public class StepService {
 		return getStepCount(allSteps);
 	}
 
-//	Get step count per day as list by userId, start date and end Date. 
-	public List<Integer> getAllStepsByUserAndDaysAsList(String userId, String startDate, String endDate) {
-		LocalDate start = LocalDate.parse(startDate);
-		LocalDate end;
+// Get step count per day by user ID
+	public List getStepsByUser(String userId, String startDate, String endDate) {
 		if (endDate == null || endDate.equals("")) {
-			end = LocalDate.now();
-		} else {
-			end = LocalDate.parse(endDate);
+			endDate = LocalDateTime.now().toString();
 		}
-		List<Step> userStepsPerDay;
-		List<Integer> userStepCountPerDay = new ArrayList<Integer>();
-		for (LocalDate date = start; date.isBefore(end.plusDays(1)); date = date.plusDays(1)) {
-			userStepsPerDay = stepRepository.findByUserIdAndStartTimeGreaterThanEqualAndEndTimeLessThanEqual(userId,
-					date.atStartOfDay(), date.atTime(23, 59, 59));
-			userStepCountPerDay.add(Integer.valueOf(getStepCount(userStepsPerDay)));
-		}
-		return userStepCountPerDay;
+		return stepRepository.getStepCount(userId, startDate, endDate);
 	}
-	
-//	Get a list of lists of each user's step count by userId's, start date and end Date.
-	public List<List<Integer>> getStepCountByUsersAndDate(BulkUsersStepsDTO bulkDTO) {
-		String startTime = bulkDTO.getStartDate().toString();
-		String endTime = bulkDTO.getEndDate().toString();
-		List<Integer> userStepCount = new ArrayList<>();
-		List<List<Integer>> stepList = new ArrayList<>();
-		for (String userId : bulkDTO.getUserList()) {
-			userStepCount = getAllStepsByUserAndDaysAsList(userId, startTime, endTime);
-			stepList.add(userStepCount);
+
+// Get step count per day per multiple users
+	public List getStepsByMultipleUsers(List<String> users, String startDate, String endDate) {
+		if (endDate == null || endDate.equals("")) {
+			endDate = LocalDateTime.now().toString();
 		}
-		return stepList;
+		List<List> userStepList = new ArrayList<>();
+		for (String s : users) {
+			userStepList.add(stepRepository.getStepCount(s, startDate, endDate));
+		}
+		return userStepList;
 	}
 
 }
