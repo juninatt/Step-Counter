@@ -55,7 +55,7 @@ public class StepService {
 		Date firstDate = Date.valueOf(startDate);
 		Date lastDate;
 		if (endDate == null || endDate.equals("")) {
-			lastDate = Date.valueOf(LocalDateTime.now().toString());
+			lastDate = Date.valueOf(LocalDate.now());
 		} else {
 			lastDate = Date.valueOf(endDate);
 		}
@@ -67,7 +67,7 @@ public class StepService {
 		Date firstDate = Date.valueOf(startDate);
 		Date lastDate;
 		if (endDate == null || endDate.equals("")) {
-			lastDate = Date.valueOf(LocalDateTime.now().toString());
+			lastDate = Date.valueOf(LocalDate.now());
 		} else {
 			lastDate = Date.valueOf(endDate);
 		}

@@ -36,7 +36,7 @@ public class StepControllerDev {
     }
 
     // Get sum of step count by user ID, start date and end date
-    @ApiOperation(value = "Get sum of steps by user id, start date and end date (optional. Use today's date if end date is missing)", response = List.class)
+    @ApiOperation(value = "Get sum of steps by user ID, start date and end date (optional)", response = List.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
             @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
@@ -48,7 +48,7 @@ public class StepControllerDev {
     }
 
     // Get step count per day by user ID and start date
-    @ApiOperation(value = "Get a user's step count per day", response = List.class)
+    @ApiOperation(value = "Get a user's step count per day by user ID, start date and end date optional)", response = List.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
             @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
@@ -60,7 +60,7 @@ public class StepControllerDev {
     }
 
     // Post userIds and start date to get each of users' step count
-    @ApiOperation(value = "Get step count per day for a list of users.", response = List.class)
+    @ApiOperation(value = "Get step count per day for a list of users by start date and end date (optional).", response = List.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully post request"),
             @ApiResponse(code = 401, message = "Request is not authorized"),
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
