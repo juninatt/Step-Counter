@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import se.sigma.boostapp.boost_app_java.model.Step;
@@ -16,8 +15,12 @@ import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 @Service
 public class StepService {
 
-	@Autowired
-	private StepRepository stepRepository;
+
+	private final StepRepository stepRepository;
+
+	public StepService(final StepRepository stepRepository) {
+		this.stepRepository = stepRepository;
+	}
 
 // Persist a single Step
 	public Step registerSteps(String userId, StepDTO stepDto) {

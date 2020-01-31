@@ -3,7 +3,6 @@ package se.sigma.boostapp.boost_app_java.controller;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +17,12 @@ import java.util.List;
 @RequestMapping("/steps")
 public class StepControllerDev {
 
-    @Autowired
-    private StepService stepService;
+
+    private final StepService stepService;
+
+    public StepControllerDev(StepService stepService) {
+        this.stepService = stepService;
+    }
 
     // Post step
     @ApiOperation(value = "Register step entity", response = List.class)

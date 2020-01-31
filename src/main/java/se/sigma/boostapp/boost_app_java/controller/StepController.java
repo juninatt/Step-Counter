@@ -2,7 +2,6 @@ package se.sigma.boostapp.boost_app_java.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,8 +20,12 @@ import se.sigma.boostapp.boost_app_java.service.StepService;
 @RequestMapping("/steps")
 public class StepController {
 
-	@Autowired
-	private StepService stepService;
+
+	private final StepService stepService;
+
+	public StepController(final StepService stepService) {
+		this.stepService = stepService;
+	}
 
 	// Post step
 	@ApiOperation(value = "Register step entity", response = List.class)
