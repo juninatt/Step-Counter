@@ -70,7 +70,7 @@ public class StepController {
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
 	@PostMapping(value = "/stepcount/bulk/date", produces = MediaType.APPLICATION_JSON_VALUE)
 	public List getTheStepsByUsers(final @RequestBody List<String> users, final @RequestParam String startDate,
-								   final @RequestParam String endDate) {
+								   final @RequestParam(required = false) String endDate) {
 		return stepService.getStepsByMultipleUsers(users, startDate, endDate);
 	}
 

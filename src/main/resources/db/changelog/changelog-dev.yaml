@@ -334,4 +334,16 @@ databaseChangeLog:
                      value: f3a8948f-1485-49ea-b3a0-e0feb19266af
                 -  column:
                      name: uploaded
-                     value: 2019-11-18T10:46:00                    
+                     value: 2019-11-18T10:46:00
+   - changeSet:
+       id: boost-app-step-index
+       author: Sigma
+       changes:
+         - createIndex:
+             catalogName: cat-step
+             clustered: false
+             columns:
+               - column:
+                   name: user_id
+             indexName: idx_user_id
+             tableName: step

@@ -3,7 +3,6 @@ package se.sigma.boostapp.boost_app_java.repository;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;

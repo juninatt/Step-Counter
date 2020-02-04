@@ -33,3 +33,14 @@ databaseChangeLog:
               - column:
                   name: uploaded
                   type: datetime
+  - changeSet:
+      id: boost-app-step-index
+      author: Sigma
+      changes:
+        - createIndex:
+            clustered: false
+            columns:
+              - column:
+                  name: user_id
+            indexName: idx_user_id
+            tableName: step
