@@ -56,7 +56,7 @@ public class StepController {
 			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
-	@GetMapping("/stepcount/{userId}/date")
+	@GetMapping("/stepcount/date")
 	public List getUserSteps(final @AuthenticationPrincipal Jwt jwt, final @RequestParam String startDate,
 							 final @RequestParam(required = false) String endDate) {
 		return stepService.getStepsByUser((String) jwt.getClaims().get("oid"), startDate, endDate);
