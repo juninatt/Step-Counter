@@ -1,52 +1,32 @@
 package se.sigma.boostapp.boost_app_java.model;
 
-import java.time.LocalDate;
 import java.util.List;
 
 public class BulkUsersStepsDTO {
 	
-	private LocalDate startDate;
-	private LocalDate endDate;
-	private List<String> userList;
-	
-	public BulkUsersStepsDTO(LocalDate startDate, LocalDate endDate, List<String> userList) {
-		this.startDate = startDate;
-		this.endDate = endDate;
-		this.userList = userList;
-	}
-	
-	public BulkUsersStepsDTO(LocalDate startDate, List<String> userList) {
-		this.startDate = startDate;
-		this.endDate = LocalDate.now();
-		this.userList = userList;
-	}
-	
-	public BulkUsersStepsDTO() {
-		
+	private String userId;
+	private List stepList;
+
+	public BulkUsersStepsDTO(String userId, List stepList) {
+		this.userId = userId;
+		this.stepList = stepList;
 	}
 
-	public LocalDate getStartDate() {
-		return startDate;
+	public BulkUsersStepsDTO() {}
+
+	public String getUserId() {
+		return userId;
 	}
 
-	public void setStartDate(LocalDate startDate) {
-		this.startDate = startDate;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
-	public LocalDate getEndDate() {
-		return endDate;
+	public List getStepList() {
+		return stepList;
 	}
 
-	public void setEndDate(LocalDate endDate) {
-		this.endDate = endDate;
+	public void setStepList(List stepList) {
+		this.stepList = stepList;
 	}
-
-	public List<String> getUserList() {
-		return userList;
-	}
-
-	public void setUserList(List<String> userList) {
-		this.userList = userList;
-	}
-
 }

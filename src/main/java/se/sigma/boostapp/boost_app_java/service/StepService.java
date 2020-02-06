@@ -8,8 +8,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import se.sigma.boostapp.boost_app_java.model.BulkUsersStepsDTO;
 import se.sigma.boostapp.boost_app_java.model.Step;
 import se.sigma.boostapp.boost_app_java.model.StepDTO;
+import se.sigma.boostapp.boost_app_java.model.StepDateDTO;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 
 @Service
@@ -51,7 +53,7 @@ public class StepService {
 	}
 
 // Get step count per day by user ID
-	public List getStepsByUser(String userId, String startDate, String endDate) {
+	public List<StepDateDTO> getStepsByUser(String userId, String startDate, String endDate) {
 		Date firstDate = Date.valueOf(startDate);
 		Date lastDate;
 		if (endDate == null || endDate.equals("")) {
@@ -63,7 +65,7 @@ public class StepService {
 	}
 
 // Get step count per day per multiple users
-	public List getStepsByMultipleUsers(List<String> users, String startDate, String endDate) {
+	public List<BulkUsersStepsDTO> getStepsByMultipleUsers(List<String> users, String startDate, String endDate) {
 		Date firstDate = Date.valueOf(startDate);
 		Date lastDate;
 		if (endDate == null || endDate.equals("")) {
@@ -71,11 +73,15 @@ public class StepService {
 		} else {
 			lastDate = Date.valueOf(endDate);
 		}
-		List<List> userStepList = new ArrayList<>();
+		List userStepList;
+		BulkUsersStepsDTO bulkUsersStepsDTO;
+		List<BulkUsersStepsDTO> bulkUsersStepsDTOList = new ArrayList<>();
+
 		for (String s : users) {
-			userStepList.add(stepRepository.getStepCount(s, firstDate, lastDate));
+			bulkUsersStepsDTO = new BulkUsersStepsDTO(s, stepRepository.getStepCount(s, firstDate, lastDate));
+			bulkUsersStepsDTOList.add(bulkUsersStepsDTO);
 		}
-		return userStepList;
+		return bulkUsersStepsDTOList;
 	}
 
 }

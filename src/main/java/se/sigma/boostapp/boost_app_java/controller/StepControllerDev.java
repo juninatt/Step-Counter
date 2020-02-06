@@ -6,8 +6,10 @@ import io.swagger.annotations.ApiResponses;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import se.sigma.boostapp.boost_app_java.model.BulkUsersStepsDTO;
 import se.sigma.boostapp.boost_app_java.model.Step;
 import se.sigma.boostapp.boost_app_java.model.StepDTO;
+import se.sigma.boostapp.boost_app_java.model.StepDateDTO;
 import se.sigma.boostapp.boost_app_java.service.StepService;
 
 import java.util.List;
@@ -54,8 +56,8 @@ public class StepControllerDev {
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
     @GetMapping(value = {"/stepcount/{userId}/date"})
-    public List getUserSteps(final @PathVariable String userId, final @RequestParam String startDate,
-                             final @RequestParam(required = false) String endDate) {
+    public List<StepDateDTO> getUserSteps(final @PathVariable String userId, final @RequestParam String startDate,
+                                          final @RequestParam(required = false) String endDate) {
         return stepService.getStepsByUser(userId, startDate, endDate);
     }
 
@@ -66,8 +68,8 @@ public class StepControllerDev {
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
     @PostMapping(value = {"/stepcount/bulk/date"}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List getTheStepsByUsers(final @RequestBody List<String> users, final @RequestParam String startDate,
-                                   final @RequestParam(required = false) String endDate) {
+    public List<BulkUsersStepsDTO> getTheStepsByUsers(final @RequestBody List<String> users, final @RequestParam String startDate,
+                                                      final @RequestParam(required = false) String endDate) {
         return stepService.getStepsByMultipleUsers(users, startDate, endDate);
     }
 }
