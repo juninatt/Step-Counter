@@ -26,6 +26,7 @@ public class StepService {
 
 // Persist a single Step
 	public Step registerSteps(String userId, StepDTO stepDto) {
+
 		return stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
 				stepDto.getEndTime(), stepDto.getUploadedTime()));
 	}
@@ -82,6 +83,17 @@ public class StepService {
 			bulkUsersStepsDTOList.add(bulkUsersStepsDTO);
 		}
 		return bulkUsersStepsDTOList;
+	}
+
+// Calculate user's star points from steps
+	public int calculateStarPoints(StepDTO stepDTO) {
+		return step.getStepCount();
+	}
+
+// Push star points to the starpoint service
+	public boolean pushStarPointsToService(String userId, int starPoints) {
+		//TODO: Endpoint fix
+		return true;
 	}
 
 }
