@@ -87,7 +87,7 @@ public class StepService {
 
 // Calculate user's star points from steps
 	public int calculateStarPoints(StepDTO stepDTO) {
-		return step.getStepCount();
+		return stepDTO.getStepCount();
 	}
 
 // Push star points to the starpoint service
