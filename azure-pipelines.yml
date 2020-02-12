@@ -25,9 +25,9 @@ steps:
     azureSubscription: 'BoostAppResourceConnection'
     appType: 'webAppLinux'
     appName: 'boostappstepAPI'
-    package: '$(System.DefaultWorkingDirectory)/*.jar'
+    package: '$(System.DefaultWorkingDirectory)/target/*.jar'
     runtimeStack: 'JAVA|11-java11'
-    startUpCommand: 'java -cp *.jar se.sigma.boostapp.boost_app_java.Application'
+    startUpCommand: 'java -cp target/*.jar se.sigma.boostapp.boost_app_java.Application'
 #- task: Docker@2
 #  displayName: Build image
 #  inputs:
