@@ -25,7 +25,7 @@ steps:
     azureSubscription: 'BoostAppResourceConnection'
     appType: 'webAppLinux'
     appName: 'boostappstepAPI'
-    package: '$(System.DefaultWorkingDirectory)/**/*.jar'
+    package: '$(System.DefaultWorkingDirectory)/target/*.jar'
     runtimeStack: 'JAVA|11-java11'
     startUpCommand: 'mvn spring-boot:run'
 #- task: Docker@2
