@@ -27,7 +27,7 @@ steps:
     appName: 'boostappstepAPI'
     package: '$(System.DefaultWorkingDirectory)/target/*.jar'
     runtimeStack: 'JAVA|11-java11'
-    startUpCommand: 'java -cp target/*.jar se.sigma.boostapp.boost_app_java.Application'
+    startUpCommand: '-cp target/*.jar se.sigma.boostapp.boost_app_java.Application'
 #- task: Docker@2
 #  displayName: Build image
 #  inputs:
