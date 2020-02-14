@@ -20,7 +20,7 @@ steps:
     publishJUnitResults: false
     testResultsFiles: '**/TEST-*.xml'
 - script: |
-    mvn package --DBOOSTAPPDBUSER=$(BOOSTAPPDBUSER) --DBOOSTAPPDBSECRET=$(BOOSTAPPDBSECRET)
+    mvn --DBOOSTAPPDBUSER=$(BOOSTAPPDBUSER) --DBOOSTAPPDBSECRET=$(BOOSTAPPDBSECRET) package
 - task: CopyFiles@2
   inputs:
     SourceFolder: 'target'
