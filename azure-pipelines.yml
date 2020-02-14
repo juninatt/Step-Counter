@@ -21,13 +21,13 @@ steps:
     testResultsFiles: '**/TEST-*.xml'
     goals: 'package'
 
-- task: AzureWebApp@1
-  inputs:
-    azureSubscription: 'BoostAppResourceConnection'
-    appType: 'webAppLinux'
-    appName: 'boostappstepAPI'
-    package: '$(System.DefaultWorkingDirectory)/target/*.jar'
-    runtimeStack: 'TOMCAT|9.0-java11'
+#- task: AzureWebApp@1
+#  inputs:
+#    azureSubscription: 'BoostAppResourceConnection'
+#    appType: 'webAppLinux'
+#    appName: 'boostappstepAPI'
+#    package: '$(System.DefaultWorkingDirectory)/target/*.jar'
+#    runtimeStack: 'TOMCAT|9.0-java11'
 #- task: AzureWebApp@1
 #  inputs:
 #    azureSubscription: 'BoostAppResourceConnection'
