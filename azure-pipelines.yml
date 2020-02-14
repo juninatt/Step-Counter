@@ -31,11 +31,6 @@ steps:
     pathtoPublish: '$(Build.ArtifactStagingDirectory)'
     artifactName: boostapp-step
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
 #- task: AzureWebApp@1
 #  inputs:
 #    azureSubscription: 'BoostAppResourceConnection'
