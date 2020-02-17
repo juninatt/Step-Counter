@@ -10,26 +10,26 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- task: Maven@3
-  inputs:
-    mavenPomFile: 'pom.xml'
-    mavenOptions: '-Xmx3072m'
-    javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '1.11'
-    jdkArchitectureOption: 'x64'
-    publishJUnitResults: false
-    testResultsFiles: '**/TEST-*.xml'
-- script: |
-    mvn -DBOOSTAPPDBUSER=$(BOOSTAPPDBUSER) -DBOOSTAPPDBSECRET=$(BOOSTAPPDBSECRET) package
-- task: CopyFiles@2
-  inputs:
-    SourceFolder: 'target'
-    Contents: '*.jar'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)'
-- task: PublishBuildArtifacts@1
-  inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    artifactName: boostapp-step
+#- task: Maven@3
+#  inputs:
+#    mavenPomFile: 'pom.xml'
+#    mavenOptions: '-Xmx3072m'
+#    javaHomeOption: 'JDKVersion'
+#    jdkVersionOption: '1.11'
+#    jdkArchitectureOption: 'x64'
+#    publishJUnitResults: false
+#    testResultsFiles: '**/TEST-*.xml'
+#- script: |
+#    mvn -DBOOSTAPPDBUSER=$(BOOSTAPPDBUSER) -DBOOSTAPPDBSECRET=$(BOOSTAPPDBSECRET) package
+#- task: CopyFiles@2
+#  inputs:
+#    SourceFolder: 'target'
+#    Contents: '*.jar'
+#    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+#- task: PublishBuildArtifacts@1
+#  inputs:
+#    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+#    artifactName: boostapp-step
 
 #- task: AzureWebApp@1
 #  inputs:
@@ -46,22 +46,23 @@ steps:
 #    package: '$(System.DefaultWorkingDirectory)/target/*.jar'
 #    runtimeStack: 'JAVA|11-java11'
 #    startUpCommand: 'java -jar $(package) --BOOSTAPPDBUSER=$(BOOSTAPPDBUSER) --BOOSTAPPDBSECRET=$(BOOSTAPPDBSECRET)'
-#- task: Docker@2
-#  displayName: Build image
-#  inputs:
-#    containerRegistry: 'BoostAppConnection'
-#    repository: 'boostapp_step'
-#    command: 'build'
-#    arguments: '--build-arg BOOSTAPPDBUSER=$(BOOSTAPPDBUSER) --build-arg BOOSTAPPDBSECRET=$(BOOSTAPPDBSECRET)'
-#    Dockerfile: '**/Dockerfile'
-#    tags: latest
-#- task: Docker@2
-#  displayName: Push image
-#  inputs:
-#    containerRegistry: 'BoostAppConnection'
-#    repository: 'boostapp_step'
-#    command: 'push'
-#    tags: latest
+
+- task: Docker@2
+  displayName: Build image
+  inputs:
+    containerRegistry: 'BoostAppConnection'
+    repository: 'boostapp_step'
+    command: 'build'
+    arguments: '--build-arg BOOSTAPPDBUSER=$(BOOSTAPPDBUSER) --build-arg BOOSTAPPDBSECRET=$(BOOSTAPPDBSECRET)'
+    Dockerfile: '**/Dockerfile'
+    tags: latest
+- task: Docker@2
+  displayName: Push image
+  inputs:
+    containerRegistry: 'BoostAppConnection'
+    repository: 'boostapp_step'
+    command: 'push'
+    tags: latest
 
 #- task: Docker@2
 #  displayName: Build and push
