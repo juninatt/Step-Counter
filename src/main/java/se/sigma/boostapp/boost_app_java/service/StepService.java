@@ -93,16 +93,4 @@ public class StepService {
 				.collect(Collectors.toList());
 		return starPointList;
 	}
-
-// Calculate user's star points from steps
-	public int calculateStarPoints(StepDTO stepDTO) {
-		return stepDTO.getStepCount();
-	}
-
-// Push star points to the starpoint service
-	public boolean pushStarPointsToService(String userId, int starPoints) {
-		//TODO: Endpoint fix
-		return true;
-	}
-
 }
