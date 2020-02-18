@@ -5,13 +5,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import se.sigma.boostapp.boost_app_java.model.BulkUsersStepsDTO;
+import se.sigma.boostapp.boost_app_java.dto.*;
 import se.sigma.boostapp.boost_app_java.model.Step;
-import se.sigma.boostapp.boost_app_java.model.StepDTO;
-import se.sigma.boostapp.boost_app_java.model.StepDateDTO;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 
 @Service
@@ -74,7 +73,6 @@ public class StepService {
 		} else {
 			lastDate = Date.valueOf(endDate);
 		}
-		List userStepList;
 		BulkUsersStepsDTO bulkUsersStepsDTO;
 		List<BulkUsersStepsDTO> bulkUsersStepsDTOList = new ArrayList<>();
 
@@ -83,6 +81,17 @@ public class StepService {
 			bulkUsersStepsDTOList.add(bulkUsersStepsDTO);
 		}
 		return bulkUsersStepsDTOList;
+	}
+
+// Translate steps to star points
+	public List<BulkUserStarPointsDTO> getStarPointsByMultipleUsers(List<String> users, String startDate, String endDate) {
+		List<BulkUsersStepsDTO> stepsList = getStepsByMultipleUsers(users, startDate, endDate);
+		List<BulkUserStarPointsDTO> starPointList = stepsList.stream()
+				.map(x -> new BulkUserStarPointsDTO(x.getUserId(), "steps", x.getStepList().stream()
+				.map(y -> new StarPointDateDTO(y.getDate(), (long) Math.ceil(y.getSteps() * 0.01)))
+						.collect(Collectors.toList())))
+				.collect(Collectors.toList());
+		return starPointList;
 	}
 
 // Calculate user's star points from steps
