@@ -19,33 +19,6 @@ steps:
     jdkArchitectureOption: 'x64'
     publishJUnitResults: false
     testResultsFiles: '**/TEST-*.xml'
-#- script: |
-#    mvn -DBOOSTAPPDBUSER=$(BOOSTAPPDBUSER) -DBOOSTAPPDBSECRET=$(BOOSTAPPDBSECRET) package
-#- task: CopyFiles@2
-#  inputs:
-#    SourceFolder: 'target'
-#    Contents: '*.jar'
-#    TargetFolder: '$(Build.ArtifactStagingDirectory)'
-#- task: PublishBuildArtifacts@1
-#  inputs:
-#    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-#    artifactName: boostapp-step
-
-#- task: AzureWebApp@1
-#  inputs:
-#    azureSubscription: 'BoostAppResourceConnection'
-#    appType: 'webAppLinux'
-#    appName: 'boostappstepAPI'
-#    package: '$(System.DefaultWorkingDirectory)/target/*.jar'
-#    runtimeStack: 'TOMCAT|9.0-java11'
-#- task: AzureWebApp@1
-#  inputs:
-#    azureSubscription: 'BoostAppResourceConnection'
-#    appType: 'webAppLinux'
-#    appName: 'boostappstepAPI'
-#    package: '$(System.DefaultWorkingDirectory)/target/*.jar'
-#    runtimeStack: 'JAVA|11-java11'
-#    startUpCommand: 'java -jar $(package) --BOOSTAPPDBUSER=$(BOOSTAPPDBUSER) --BOOSTAPPDBSECRET=$(BOOSTAPPDBSECRET)'
 
 - task: Docker@2
   displayName: Build image
@@ -53,7 +26,7 @@ steps:
     containerRegistry: 'BoostAppConnection'
     repository: 'boostapp_step'
     command: 'build'
-    arguments: '--build-arg BOOSTAPPDBUSER=$(BOOSTAPPDBUSER) --build-arg BOOSTAPPDBSECRET=$(BOOSTAPPDBSECRET)'
+#    arguments: '--build-arg BOOSTAPPDBUSER=$(BOOSTAPPDBUSER) --build-arg BOOSTAPPDBSECRET=$(BOOSTAPPDBSECRET)'
     Dockerfile: '**/Dockerfile'
     tags: latest
 - task: Docker@2
@@ -63,12 +36,3 @@ steps:
     repository: 'boostapp_step'
     command: 'push'
     tags: latest
-
-#- task: Docker@2
-#  displayName: Build and push
-#  inputs:
-#    containerRegistry: 'BoostAppConnection'
-#    repository: 'boostapp_step'
-#    command: 'buildAndPush'
-#    Dockerfile: '**/Dockerfile'
-#    tags: latest
