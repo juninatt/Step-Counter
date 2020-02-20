@@ -5,12 +5,10 @@ import java.util.List;
 public class BulkUserStarPointsDTO {
 
     private String userId;
-    private String activity;
     private List<StarPointDateDTO> starPointList;
 
-    public BulkUserStarPointsDTO(String userId, String activity, List<StarPointDateDTO> starPointList) {
+    public BulkUserStarPointsDTO(String userId, List<StarPointDateDTO> starPointList) {
         this.userId = userId;
-        this.activity = activity;
         this.starPointList = starPointList;
     }
 
@@ -20,14 +18,6 @@ public class BulkUserStarPointsDTO {
 
     public void setUserId(String userId) {
         this.userId = userId;
-    }
-
-    public String getActivity() {
-        return activity;
-    }
-
-    public void setActivity(String activity) {
-        this.activity = activity;
     }
 
     public List<StarPointDateDTO> getStarPointList() {

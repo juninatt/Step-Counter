@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiResponses;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import se.sigma.boostapp.boost_app_java.dto.BulkUserStarPointsDTO;
+import se.sigma.boostapp.boost_app_java.dto.RequestStarPointsDTO;
 import se.sigma.boostapp.boost_app_java.service.StepService;
 
 import java.util.List;
@@ -25,9 +26,8 @@ public class StarPointController {
             @ApiResponse(code = 401, message = "Request is not authorized"),
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
-    @PostMapping(value = {"/bulk/date"}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<BulkUserStarPointsDTO> getStarPointsByUsers(final @RequestBody List<String> users, final @RequestParam String startDate,
-                                                              final @RequestParam(required = false) String endDate) {
-        return stepService.getStarPointsByMultipleUsers(users, startDate, endDate);
+    @PostMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<BulkUserStarPointsDTO> getStarPointsByUsers(final @RequestBody RequestStarPointsDTO requestStarPointsDTO) {
+        return stepService.getStarPointsByMultipleUsers(requestStarPointsDTO);
     }
 }

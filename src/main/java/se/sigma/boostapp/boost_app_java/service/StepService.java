@@ -18,6 +18,7 @@ public class StepService {
 
 
 	private final StepRepository stepRepository;
+	private final double starPointFactor = 0.01;
 
 	public StepService(final StepRepository stepRepository) {
 		this.stepRepository = stepRepository;
@@ -66,6 +67,8 @@ public class StepService {
 
 // Get step count per day per multiple users
 	public List<BulkUsersStepsDTO> getStepsByMultipleUsers(List<String> users, String startDate, String endDate) {
+
+		// String startDate → java.sql.Date firstDate
 		Date firstDate = Date.valueOf(startDate);
 		Date lastDate;
 		if (endDate == null || endDate.equals("")) {
@@ -84,13 +87,23 @@ public class StepService {
 	}
 
 // Translate steps to star points
-	public List<BulkUserStarPointsDTO> getStarPointsByMultipleUsers(List<String> users, String startDate, String endDate) {
-		List<BulkUsersStepsDTO> stepsList = getStepsByMultipleUsers(users, startDate, endDate);
+	public List<BulkUserStarPointsDTO> getStarPointsByMultipleUsers(RequestStarPointsDTO requestStarPointsDTO) {
+		List<BulkUsersStepsDTO> stepsList = getStepsByMultipleUsers(requestStarPointsDTO.getUsers(),
+				requestStarPointsDTO.getStartDate().toString(),
+				requestStarPointsDTO.getEndDate().toString());
+
+
 		List<BulkUserStarPointsDTO> starPointList = stepsList.stream()
-				.map(x -> new BulkUserStarPointsDTO(x.getUserId(), "steps", x.getStepList().stream()
-				.map(y -> new StarPointDateDTO(y.getDate(), (long) Math.ceil(y.getSteps() * 0.01)))
+				.map(x -> new BulkUserStarPointsDTO(x.getUserId(), x.getStepList().stream()
+				.map(y -> new StarPointDateDTO(
+						"steps",
+						y.getDate().toString() + "T00:00:00",
+						y.getDate().toString() + "T23:59:59",
+						(long) Math.ceil(y.getSteps() * starPointFactor)))
 						.collect(Collectors.toList())))
 				.collect(Collectors.toList());
+
+
 		return starPointList;
 	}
 }
