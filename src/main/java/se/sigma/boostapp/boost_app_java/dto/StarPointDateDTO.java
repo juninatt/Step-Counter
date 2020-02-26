@@ -4,13 +4,17 @@ public class StarPointDateDTO {
 
     private String activity;
 
+    private String description;
+
     private String startTime;
 
     private String endTime;
+
     private long starPoints;
 
-    public StarPointDateDTO(String activity, String startTime, String endTime, long starPoints) {
+    public StarPointDateDTO(String activity, String description, String startTime, String endTime, long starPoints) {
         this.activity = activity;
+        this.description = description;
         this.startTime = startTime;
         this.endTime = endTime;
         this.starPoints = starPoints;
@@ -22,6 +26,14 @@ public class StarPointDateDTO {
 
     public void setActivity(String activity) {
         this.activity = activity;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getStartTime() {

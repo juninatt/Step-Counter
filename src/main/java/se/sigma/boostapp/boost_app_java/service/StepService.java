@@ -92,18 +92,15 @@ public class StepService {
 				requestStarPointsDTO.getStartDate().toString(),
 				requestStarPointsDTO.getEndDate().toString());
 
-
-		List<BulkUserStarPointsDTO> starPointList = stepsList.stream()
+		return stepsList.stream()
 				.map(x -> new BulkUserStarPointsDTO(x.getUserId(), x.getStepList().stream()
-				.map(y -> new StarPointDateDTO(
-						"steps",
-						y.getDate().toString() + "T00:00:00",
-						y.getDate().toString() + "T23:59:59",
-						(long) Math.ceil(y.getSteps() * starPointFactor)))
+						.map(y -> new StarPointDateDTO(
+								"Steps",
+								"Walking",
+								y.getDate().toString() + "T00:00:00",
+								y.getDate().toString() + "T23:59:59",
+								(long) Math.ceil(y.getSteps() * starPointFactor)))
 						.collect(Collectors.toList())))
 				.collect(Collectors.toList());
-
-
-		return starPointList;
 	}
 }
