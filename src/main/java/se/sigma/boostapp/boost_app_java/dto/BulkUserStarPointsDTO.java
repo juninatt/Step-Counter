@@ -1,15 +1,15 @@
 package se.sigma.boostapp.boost_app_java.dto;
 
-import java.util.List;
-
 public class BulkUserStarPointsDTO {
 
     private String userId;
-    private List<StarPointDateDTO> starPointList;
+    private StarPointDateDTO starPoints;
 
-    public BulkUserStarPointsDTO(String userId, List<StarPointDateDTO> starPointList) {
+    public BulkUserStarPointsDTO() {}
+
+    public BulkUserStarPointsDTO(String userId, StarPointDateDTO starPoints) {
         this.userId = userId;
-        this.starPointList = starPointList;
+        this.starPoints = starPoints;
     }
 
     public String getUserId() {
@@ -20,11 +20,11 @@ public class BulkUserStarPointsDTO {
         this.userId = userId;
     }
 
-    public List<StarPointDateDTO> getStarPointList() {
-        return starPointList;
+    public StarPointDateDTO getStarPoints() {
+        return starPoints;
     }
 
-    public void setStarPointList(List<StarPointDateDTO> starPointList) {
-        this.starPointList = starPointList;
+    public void setStarPoints(StarPointDateDTO starPoints) {
+        this.starPoints = starPoints;
     }
 }

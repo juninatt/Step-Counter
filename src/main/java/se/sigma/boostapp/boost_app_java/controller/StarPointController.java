@@ -21,7 +21,7 @@ public class StarPointController {
         this.stepService = stepService;
     }
 
-    @ApiOperation(value = "Get star points per day for a list of users by start date and end date (optional).", response = List.class)
+    @ApiOperation(value = "Get sum of star points by a start date and end date for a list of users.", response = List.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully post request"),
             @ApiResponse(code = 401, message = "Request is not authorized"),
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
@@ -30,4 +30,5 @@ public class StarPointController {
     public List<BulkUserStarPointsDTO> getStarPointsByUsers(final @RequestBody RequestStarPointsDTO requestStarPointsDTO) {
         return stepService.getStarPointsByMultipleUsers(requestStarPointsDTO);
     }
+
 }

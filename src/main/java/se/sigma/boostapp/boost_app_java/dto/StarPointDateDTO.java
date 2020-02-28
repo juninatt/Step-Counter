@@ -10,9 +10,9 @@ public class StarPointDateDTO {
 
     private String endTime;
 
-    private long starPoints;
+    private int starPoints;
 
-    public StarPointDateDTO(String activity, String description, String startTime, String endTime, long starPoints) {
+    public StarPointDateDTO(String activity, String description, String startTime, String endTime, int starPoints) {
         this.activity = activity;
         this.description = description;
         this.startTime = startTime;
@@ -52,11 +52,11 @@ public class StarPointDateDTO {
         this.endTime = endTime;
     }
 
-    public long getStarPoints() {
+    public int getStarPoints() {
         return starPoints;
     }
 
-    public void setStarPoints(long starPoints) {
+    public void setStarPoints(int starPoints) {
         this.starPoints = starPoints;
     }
 }
