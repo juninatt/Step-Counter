@@ -4,7 +4,9 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import se.sigma.boostapp.boost_app_java.dto.BulkUsersStepsDTO;
 import se.sigma.boostapp.boost_app_java.model.Step;
@@ -28,13 +30,15 @@ public class StepControllerDev {
 
     // Post step
     @ApiOperation(value = "Register step entity", response = List.class)
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully post request"),
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully post steps"),
+            @ApiResponse(code = 400, message = "Steps cannot be persisted. Step count needs to be above zero"),
             @ApiResponse(code = 401, message = "Request is not authorized"),
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
     @PostMapping(value = "/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void registerSteps(final @PathVariable String userId, final @RequestBody StepDTO stepDTO) {
-        stepService.registerSteps(userId, stepDTO);
+    public ResponseEntity<Step> registerSteps(final @PathVariable String userId, final @RequestBody StepDTO stepDTO) {
+        return stepService.registerSteps(userId, stepDTO).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
     // Get sum of step count by user ID, start date and end date

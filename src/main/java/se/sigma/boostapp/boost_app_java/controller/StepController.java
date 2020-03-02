@@ -3,7 +3,9 @@ package se.sigma.boostapp.boost_app_java.controller;
 import java.util.List;
 
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
@@ -36,8 +38,8 @@ public class StepController {
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-	public void registerSteps(final @AuthenticationPrincipal Jwt jwt, final @RequestBody StepDTO stepDTO) {
-		stepService.registerSteps((String) jwt.getClaims().get("oid"), stepDTO);
+	public ResponseEntity<Step> registerSteps(final @AuthenticationPrincipal Jwt jwt, final @RequestBody StepDTO stepDTO) {
+		return stepService.registerSteps((String) jwt.getClaims().get("oid"), stepDTO).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
 	}
 
 	// Get sum of step count by user ID, start date and end date

@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -25,10 +26,15 @@ public class StepService {
 	}
 
 // Persist a single Step (for 1 or more step count)
-	public void registerSteps(String userId, StepDTO stepDto) {
-		if (stepDto.getStepCount() < 1) { return; }
-		stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
-				stepDto.getEndTime(), stepDto.getUploadedTime()));
+	public Optional<Step> registerSteps(String userId, StepDTO stepDto) {
+		Optional<Step> maybeStep;
+		if (stepDto.getStepCount() < 1) {
+			maybeStep = Optional.empty();
+		} else {
+			maybeStep = Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
+					stepDto.getEndTime(), stepDto.getUploadedTime())));
+		}
+		return maybeStep;
 	}
 
 //	Helper method. Get total step count from a list of Steps
