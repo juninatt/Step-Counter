@@ -33,8 +33,8 @@ public class StepControllerDev {
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
     @PostMapping(value = "/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Step registerSteps(final @PathVariable String userId, final @RequestBody StepDTO stepDTO) {
-        return stepService.registerSteps(userId, stepDTO);
+    public void registerSteps(final @PathVariable String userId, final @RequestBody StepDTO stepDTO) {
+        stepService.registerSteps(userId, stepDTO);
     }
 
     // Get sum of step count by user ID, start date and end date

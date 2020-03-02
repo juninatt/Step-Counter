@@ -24,10 +24,10 @@ public class StepService {
 		this.stepRepository = stepRepository;
 	}
 
-// Persist a single Step
-	public Step registerSteps(String userId, StepDTO stepDto) {
-
-		return stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
+// Persist a single Step (for 1 or more step count)
+	public void registerSteps(String userId, StepDTO stepDto) {
+		if (stepDto.getStepCount() < 1) { return; }
+		stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
 				stepDto.getEndTime(), stepDto.getUploadedTime()));
 	}
 
