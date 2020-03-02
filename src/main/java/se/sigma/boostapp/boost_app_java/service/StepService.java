@@ -91,13 +91,14 @@ public class StepService {
 
 		if (requestStarPointsDTO.getUsers() == null) requestStarPointsDTO.setUsers(stepRepository.getAllUsers());
 		return requestStarPointsDTO.getUsers().stream()
+				.filter(user -> (stepRepository.getStepCountSum(user, requestStarPointsDTO.getStartTime(), requestStarPointsDTO.getEndTime())).isPresent())
 				.map(user -> new BulkUserStarPointsDTO(user, new StarPointDateDTO(
 						"Steps",
 						"Walking",
 						requestStarPointsDTO.getStartTime().toString(),
 						requestStarPointsDTO.getEndTime().toString(),
 						(int) Math.ceil(
-								(stepRepository.getStepCountSum(user, requestStarPointsDTO.getStartTime(), requestStarPointsDTO.getEndTime())).orElse(0)
+								(stepRepository.getStepCountSum(user, requestStarPointsDTO.getStartTime(), requestStarPointsDTO.getEndTime())).get()
 										* starPointFactor)
 				))).collect(Collectors.toList());
 	}
