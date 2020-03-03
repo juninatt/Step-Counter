@@ -33,7 +33,8 @@ public class StepController {
 
 	// Post step
 	@ApiOperation(value = "Register step entity", response = List.class)
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully post request"),
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "Successfully post request"),
 			@ApiResponse(code = 401, message = "Request is not authorized"),
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })

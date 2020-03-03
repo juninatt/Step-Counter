@@ -28,7 +28,9 @@ public class StepService {
 // Persist a single Step (for 1 or more step count)
 	public Optional<Step> registerSteps(String userId, StepDTO stepDto) {
 		Optional<Step> maybeStep;
-		if (stepDto.getStepCount() < 1) {
+
+//		Check that step count is over 0 and that uploaded time is after end time, which in turn should be after start time
+		if (stepDto.getStepCount() < 1 || stepDto.getUploadedTime().isBefore(stepDto.getEndTime()) || stepDto.getEndTime().isBefore(stepDto.getStartTime())){
 			maybeStep = Optional.empty();
 		} else {
 			maybeStep = Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
