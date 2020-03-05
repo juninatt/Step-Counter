@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import se.sigma.boostapp.boost_app_java.dto.BulkUsersStepsDTO;
+import se.sigma.boostapp.boost_app_java.exception.NotFoundException;
 import se.sigma.boostapp.boost_app_java.model.Step;
 import se.sigma.boostapp.boost_app_java.dto.StepDTO;
 import se.sigma.boostapp.boost_app_java.dto.StepDateDTO;
@@ -72,8 +73,8 @@ public class StepControllerDev {
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
     @PostMapping(value = {"/stepcount/bulk/date"}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<BulkUsersStepsDTO> getTheStepsByUsers(final @RequestBody List<String> users, final @RequestParam String startDate,
+    public List<BulkUsersStepsDTO> getBulkStepsByUsers(final @RequestBody List<String> users, final @RequestParam String startDate,
                                                       final @RequestParam(required = false) String endDate) {
-        return stepService.getStepsByMultipleUsers(users, startDate, endDate);
+        return stepService.getStepsByMultipleUsers(users, startDate, endDate).orElseThrow(() -> new NotFoundException());
     }
 }

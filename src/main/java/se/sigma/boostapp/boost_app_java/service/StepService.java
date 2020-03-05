@@ -27,16 +27,14 @@ public class StepService {
 
 // Persist a single Step (for 1 or more step count)
 	public Optional<Step> registerSteps(String userId, StepDTO stepDto) {
-		Optional<Step> maybeStep;
 
 //		Check that step count is over 0 and that uploaded time is after end time, which in turn should be after start time
 		if (stepDto.getStepCount() < 1 || stepDto.getUploadedTime().isBefore(stepDto.getEndTime()) || stepDto.getEndTime().isBefore(stepDto.getStartTime())){
-			maybeStep = Optional.empty();
+			return Optional.empty();
 		} else {
-			maybeStep = Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
+			return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
 					stepDto.getEndTime(), stepDto.getUploadedTime())));
 		}
-		return maybeStep;
 	}
 
 //	Helper method. Get total step count from a list of Steps
@@ -74,7 +72,7 @@ public class StepService {
 	}
 
 // Get step count per day per multiple users
-	public List<BulkUsersStepsDTO> getStepsByMultipleUsers(List<String> users, String startDate, String endDate) {
+	public Optional<List<BulkUsersStepsDTO>> getStepsByMultipleUsers(List<String> users, String startDate, String endDate) {
 
 		// String startDate → java.sql.Date firstDate
 		Date firstDate = Date.valueOf(startDate);
@@ -84,14 +82,18 @@ public class StepService {
 		} else {
 			lastDate = Date.valueOf(endDate);
 		}
+		List<String> allUsers = stepRepository.getAllUsers();
+
 		BulkUsersStepsDTO bulkUsersStepsDTO;
 		List<BulkUsersStepsDTO> bulkUsersStepsDTOList = new ArrayList<>();
 
 		for (String s : users) {
+			if (!allUsers.contains(s)) continue;
 			bulkUsersStepsDTO = new BulkUsersStepsDTO(s, stepRepository.getStepCount(s, firstDate, lastDate));
 			bulkUsersStepsDTOList.add(bulkUsersStepsDTO);
 		}
-		return bulkUsersStepsDTOList;
+
+		return bulkUsersStepsDTOList.isEmpty() ? Optional.empty() : Optional.of(bulkUsersStepsDTOList);
 	}
 
 // Translate steps to star points for a list of users
