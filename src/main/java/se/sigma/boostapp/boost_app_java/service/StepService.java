@@ -27,14 +27,8 @@ public class StepService {
 
 // Persist a single Step (for 1 or more step count)
 	public Optional<Step> registerSteps(String userId, StepDTO stepDto) {
-
-//		Check that step count is over 0 and that uploaded time is after end time, which in turn should be after start time
-		if (stepDto.getStepCount() < 1 || stepDto.getUploadedTime().isBefore(stepDto.getEndTime()) || stepDto.getEndTime().isBefore(stepDto.getStartTime())){
-			return Optional.empty();
-		} else {
-			return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
+		return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
 					stepDto.getEndTime(), stepDto.getUploadedTime())));
-		}
 	}
 
 //	Helper method. Get total step count from a list of Steps
