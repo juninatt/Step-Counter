@@ -106,4 +106,12 @@ public class StepService {
 										* starPointFactor)
 				))).collect(Collectors.toList());
 	}
+
+	public Iterable<Step> findAll() {
+		return stepRepository.findAll();
+	}
+
+	public Iterable<Step> findByUserId(String userId) {
+		return stepRepository.findByUserId(userId);
+	}
 }
