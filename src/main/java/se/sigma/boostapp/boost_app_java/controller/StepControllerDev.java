@@ -81,6 +81,17 @@ public class StepControllerDev {
         return stepService.getStepsByMultipleUsers(users, startDate, endDate).orElseThrow(() -> new NotFoundException());
     }
 
+    // Get latest step by user
+    @ApiOperation(value= "Get user's latest step", response = List.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step"),
+            @ApiResponse(code = 401, message = "Request is not authorized"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
+    @GetMapping(value = "/latest/{userId}")
+    public ResponseEntity<Step> getLatestStep(final @PathVariable String userId) {
+        return stepService.getLatestStep(userId).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public List<String> handleValidationExceptions(MethodArgumentNotValidException ex) {

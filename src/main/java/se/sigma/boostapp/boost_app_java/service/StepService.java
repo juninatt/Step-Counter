@@ -31,6 +31,11 @@ public class StepService {
 					stepDto.getEndTime(), stepDto.getUploadedTime())));
 	}
 
+//	Get latest step entity by user
+	public Optional<Step> getLatestStep(String userId) {
+		return stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId);
+	}
+
 //	Helper method. Get total step count from a list of Steps
 	public int getStepCount(List<Step> steps) {
 		int total = 0;

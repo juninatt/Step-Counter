@@ -27,6 +27,8 @@ public interface StepRepository extends CrudRepository<Step, Long>{
 	Optional<Integer> getStepCountSum(@Param("userId") String userId, @Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
 
 	Iterable<Step> findByUserId(String userId);
+
+	Optional<Step> findFirstByUserIdOrderByEndTimeDesc(String userId);
 }
 
 
