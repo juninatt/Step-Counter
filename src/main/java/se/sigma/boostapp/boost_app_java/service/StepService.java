@@ -31,6 +31,15 @@ public class StepService {
 					stepDto.getEndTime(), stepDto.getUploadedTime())));
 	}
 
+//	Persist multiple Step
+	public List<Step> registerMultipleSteps(String userId, List<StepDTO> stepDtoList) {
+		List<Step> stepList = new ArrayList<>();
+		for (StepDTO stepDTO : stepDtoList) {
+			stepList.add(new Step(userId, stepDTO.getStepCount(), stepDTO.getStartTime(), stepDTO.getEndTime(), stepDTO.getUploadedTime()));
+		}
+		return stepList;
+	}
+
 //	Get latest step entity by user
 	public Optional<Step> getLatestStep(String userId) {
 		return stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId);

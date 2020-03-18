@@ -48,6 +48,18 @@ public class StepController {
 		return stepService.registerSteps((String) jwt.getClaims().get("oid"), stepDTO).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
 	}
 
+	// Post multiple step
+	@ApiOperation(value = "Register multiple step entities", response = List.class)
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "Successfully post steps"),
+			@ApiResponse(code = 401, message = "Request is not authorized"),
+			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
+	@PostMapping(value = "/multiple", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public List<Step> registerMultipleSteps(final @AuthenticationPrincipal Jwt jwt, final @RequestBody List<StepDTO> stepDtoList) {
+		return stepService.registerMultipleSteps((String) jwt.getClaims().get("oid"), stepDtoList);
+	}
+
 	// Get sum of step count by user ID, start date and end date
 	@ApiOperation(value = "Get sum of steps by user ID, start date and end date (optional)", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
