@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import se.sigma.boostapp.boost_app_java.dto.BulkUsersStepsDTO;
@@ -16,12 +17,14 @@ import se.sigma.boostapp.boost_app_java.dto.StepDTO;
 import se.sigma.boostapp.boost_app_java.dto.StepDateDTO;
 import se.sigma.boostapp.boost_app_java.service.StepService;
 
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @Profile("dev")
+@Validated
 @RequestMapping("/steps")
 public class StepControllerDev {
 
@@ -52,7 +55,7 @@ public class StepControllerDev {
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
     @PostMapping(value = "/multiple/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public List<Step> registerMultipleSteps(final @PathVariable String userId, final @RequestBody List<StepDTO> stepDtoList) {
+    public List<Step> registerMultipleSteps(final @PathVariable String userId, final @RequestBody List<@Valid StepDTO> stepDtoList) {
         return stepService.registerMultipleSteps(userId, stepDtoList);
     }
 
@@ -105,11 +108,22 @@ public class StepControllerDev {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public List<String> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    public List<String> handleMethodArgumentValidationExceptions(MethodArgumentNotValidException ex) {
         List<String> errors = new ArrayList<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String errorMessage = error.getDefaultMessage();
             errors.add(errorMessage);
+        });
+        return errors;
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ConstraintViolationException.class)
+    public List<String> handleConstraintValidationExceptions(ConstraintViolationException ex) {
+        List<String> errors = new ArrayList<>();
+        ex.getConstraintViolations().forEach((error) -> {
+            String message = error.getMessage();
+            errors.add(message);
         });
         return errors;
     }

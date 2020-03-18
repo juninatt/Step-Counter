@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,10 +23,12 @@ import se.sigma.boostapp.boost_app_java.dto.StepDTO;
 import se.sigma.boostapp.boost_app_java.dto.StepDateDTO;
 import se.sigma.boostapp.boost_app_java.service.StepService;
 
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 
 @RestController
 @Profile("prod")
+@Validated
 @RequestMapping("/steps")
 public class StepController {
 
@@ -56,7 +59,7 @@ public class StepController {
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
 	@PostMapping(value = "/multiple", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public List<Step> registerMultipleSteps(final @AuthenticationPrincipal Jwt jwt, final @RequestBody List<StepDTO> stepDtoList) {
+	public List<Step> registerMultipleSteps(final @AuthenticationPrincipal Jwt jwt, final @RequestBody List<@Valid StepDTO> stepDtoList) {
 		return stepService.registerMultipleSteps((String) jwt.getClaims().get("oid"), stepDtoList);
 	}
 
@@ -107,13 +110,25 @@ public class StepController {
 		return stepService.getLatestStep((String) jwt.getClaims().get("oid")).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 	}
 
+
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public List<String> handleValidationExceptions(MethodArgumentNotValidException ex) {
+	public List<String> handleMethodArgumentValidationExceptions(MethodArgumentNotValidException ex) {
 		List<String> errors = new ArrayList<>();
 		ex.getBindingResult().getAllErrors().forEach((error) -> {
 			String errorMessage = error.getDefaultMessage();
 			errors.add(errorMessage);
+		});
+		return errors;
+	}
+
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(ConstraintViolationException.class)
+	public List<String> handleConstraintValidationExceptions(ConstraintViolationException ex) {
+		List<String> errors = new ArrayList<>();
+		ex.getConstraintViolations().forEach((error) -> {
+			String message = error.getMessage();
+			errors.add(message);
 		});
 		return errors;
 	}
