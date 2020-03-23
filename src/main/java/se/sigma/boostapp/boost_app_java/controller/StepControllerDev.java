@@ -127,14 +127,4 @@ public class StepControllerDev {
         });
         return errors;
     }
-
-    @GetMapping("/all")
-    public Iterable<Step> getAll() {
-        return stepService.findAll();
-    }
-
-    @GetMapping("/all/user/{userId}")
-    public Iterable<Step> getByUser(@PathVariable String userId) {
-        return stepService.findByUserId(userId);
-    }
 }

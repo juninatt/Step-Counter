@@ -35,7 +35,7 @@ public class StepService {
 	public List<Step> registerMultipleSteps(String userId, List<StepDTO> stepDtoList) {
 		List<Step> stepList = new ArrayList<>();
 		for (StepDTO stepDTO : stepDtoList) {
-			stepList.add(new Step(userId, stepDTO.getStepCount(), stepDTO.getStartTime(), stepDTO.getEndTime(), stepDTO.getUploadedTime()));
+			stepList.add(stepRepository.save(new Step(userId, stepDTO.getStepCount(), stepDTO.getStartTime(), stepDTO.getEndTime(), stepDTO.getUploadedTime())));
 		}
 		return stepList;
 	}
