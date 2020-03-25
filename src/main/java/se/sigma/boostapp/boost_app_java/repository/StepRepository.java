@@ -23,7 +23,7 @@ public interface StepRepository extends CrudRepository<Step, Long>{
 	@Query("SELECT DISTINCT s.userId FROM Step s")
 	List<String> getAllUsers();
 
-	@Query("SELECT sum(s.stepCount) FROM Step s WHERE s.userId = :userId AND s.startTime >= :startTime AND s.endTime <= :endTime")
+	@Query("SELECT sum(s.stepCount) FROM Step s WHERE s.userId = :userId AND s.uploadedTime >= :startTime AND s.uploadedTime <= :endTime")
 	Optional<Integer> getStepCountSum(@Param("userId") String userId, @Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
 
 	Iterable<Step> findByUserId(String userId);
