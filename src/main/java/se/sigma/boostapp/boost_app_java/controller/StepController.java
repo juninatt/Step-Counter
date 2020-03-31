@@ -109,27 +109,4 @@ public class StepController {
 	public ResponseEntity<Step> getLatestStep(final @AuthenticationPrincipal Jwt jwt) {
 		return stepService.getLatestStep((String) jwt.getClaims().get("oid")).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 	}
-
-
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public List<String> handleMethodArgumentValidationExceptions(MethodArgumentNotValidException ex) {
-		List<String> errors = new ArrayList<>();
-		ex.getBindingResult().getAllErrors().forEach((error) -> {
-			String errorMessage = error.getDefaultMessage();
-			errors.add(errorMessage);
-		});
-		return errors;
-	}
-
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	@ExceptionHandler(ConstraintViolationException.class)
-	public List<String> handleConstraintValidationExceptions(ConstraintViolationException ex) {
-		List<String> errors = new ArrayList<>();
-		ex.getConstraintViolations().forEach((error) -> {
-			String message = error.getMessage();
-			errors.add(message);
-		});
-		return errors;
-	}
 }

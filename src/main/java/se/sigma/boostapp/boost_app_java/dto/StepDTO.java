@@ -6,7 +6,6 @@ import io.swagger.annotations.ApiModelProperty;
 import org.springframework.format.annotation.DateTimeFormat;
 import se.sigma.boostapp.boost_app_java.validator.DateTimeRange;
 
-import javax.validation.GroupSequence;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
@@ -37,11 +36,11 @@ public class StepDTO {
 	public StepDTO() {
 		
 	}
-	public StepDTO(int stepCount, LocalDateTime startTime, LocalDateTime endTime, String uploadedTime) {
+	public StepDTO(int stepCount, LocalDateTime startTime, LocalDateTime endTime, LocalDateTime uploadedTime) {
 		this.stepCount = stepCount;
 		this.startTime = startTime;
 		this.endTime = endTime;
-		this.uploadedTime = LocalDateTime.parse(uploadedTime);
+		this.uploadedTime = uploadedTime;
 	}
 	
 	public int getStepCount() {
