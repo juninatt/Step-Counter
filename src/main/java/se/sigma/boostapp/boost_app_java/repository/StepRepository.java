@@ -9,9 +9,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 import se.sigma.boostapp.boost_app_java.model.Step;
 import se.sigma.boostapp.boost_app_java.dto.StepDateDTO;
 
+@Repository
 public interface StepRepository extends CrudRepository<Step, Long>{
 
 	List<Step> findByUserIdAndStartTimeGreaterThanEqualAndEndTimeLessThanEqual(
@@ -25,8 +27,6 @@ public interface StepRepository extends CrudRepository<Step, Long>{
 
 	@Query("SELECT sum(s.stepCount) FROM Step s WHERE s.userId = :userId AND s.uploadedTime >= :startTime AND s.uploadedTime <= :endTime")
 	Optional<Integer> getStepCountSum(@Param("userId") String userId, @Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
-
-	Iterable<Step> findByUserId(String userId);
 
 	Optional<Step> findFirstByUserIdOrderByEndTimeDesc(String userId);
 }

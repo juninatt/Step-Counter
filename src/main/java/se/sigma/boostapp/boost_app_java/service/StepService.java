@@ -19,10 +19,7 @@ public class StepService {
 
 
 	private final StepRepository stepRepository;
-	private static final double starPointFactor = 1;
-
-	//remove starPointFactor = 1 after Henriks test
-	//private static final double starPointFactor = 0.01;
+	private static final double starPointFactor = 0.01;
 
 	public StepService(final StepRepository stepRepository) {
 		this.stepRepository = stepRepository;

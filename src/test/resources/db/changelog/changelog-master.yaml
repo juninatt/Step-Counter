@@ -1,0 +1,46 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: boost-app-step-1.0
+      author: Sigma
+      changes:
+        - createTable:
+            tableName: step
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: step_count
+                  type: int
+                  constraints:
+                     nullable: false
+              - column:
+                  name: start_time
+                  type: datetime
+              - column:
+                  name: end_time
+                  type: datetime
+              - column:
+                  name: user_id
+                  type: varchar(255)
+                  constraints:
+                     nullable: false
+              - column:
+                  name: uploaded
+                  type: datetime
+  - changeSet:
+      id: boost-app-step-index
+      author: Sigma
+      changes:
+        - createIndex:
+            clustered: false
+            columns:
+              - column:
+                  name: user_id
+            indexName: idx_user_id
+            tableName: step
