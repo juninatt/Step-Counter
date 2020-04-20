@@ -1,6 +1,5 @@
 package se.sigma.boostapp.boost_app_java.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.context.annotation.Profile;
@@ -10,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import io.swagger.annotations.ApiOperation;
@@ -23,7 +21,6 @@ import se.sigma.boostapp.boost_app_java.dto.StepDTO;
 import se.sigma.boostapp.boost_app_java.dto.StepDateDTO;
 import se.sigma.boostapp.boost_app_java.service.StepService;
 
-import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 
 @RestController
@@ -31,7 +28,6 @@ import javax.validation.Valid;
 @Validated
 @RequestMapping("/steps")
 public class StepController {
-
 
 	private final StepService stepService;
 
