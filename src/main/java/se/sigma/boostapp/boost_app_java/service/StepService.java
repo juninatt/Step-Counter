@@ -17,9 +17,11 @@ import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 @Service
 public class StepService {
 
+	// Temporary star point factor used during development
+	private static final double starPointFactor = 1;
 
 	private final StepRepository stepRepository;
-	private static final double starPointFactor = 0.01;
+//	private static final double starPointFactor = 0.01;
 
 	public StepService(final StepRepository stepRepository) {
 		this.stepRepository = stepRepository;
