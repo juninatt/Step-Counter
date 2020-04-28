@@ -44,3 +44,28 @@ databaseChangeLog:
                   name: user_id
             indexName: idx_user_id
             tableName: step
+  - changeSet:
+      id: boost-app-step-index-date
+      author: Sigma
+      changes:
+        - createIndex:
+            clustered: false
+            columns:
+              - column:
+                  name: start_time
+            indexName: idx_start_date
+            tableName: step
+        - createIndex:
+            clustered: false
+            columns:
+              - column:
+                  name: end_time
+            indexName: idx_end_date
+            tableName: step
+        - createIndex:
+            clustered: false
+            columns:
+              - column:
+                  name: uploaded
+            indexName: idx_uploaded
+            tableName: step
