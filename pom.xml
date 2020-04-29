@@ -146,7 +146,9 @@
 				<version>3.7.0</version>
 				<configuration>
 					<release>10</release>
-				</configuration>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
 				<dependencies>
 					<dependency>
 						<groupId>org.ow2.asm</groupId>
