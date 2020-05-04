@@ -44,11 +44,7 @@ public class StepService {
 
 //	Get latest step entity by user
 	public Optional<Step> getLatestStep(String userId) {
-		Optional<Step> latestStep = stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId);
-		if (!latestStep.isPresent()) {
-			return Optional.of(stepRepository.save(new Step(userId, 0, LocalDateTime.parse("1970-01-01T00:00:00"), LocalDateTime.parse("1970-01-01T00:00:00"), LocalDateTime.parse("1970-01-01T00:00:00"))));
-		}
-		return latestStep;
+		return stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId);
 	}
 
 //	Helper method. Get total step count from a list of Steps
