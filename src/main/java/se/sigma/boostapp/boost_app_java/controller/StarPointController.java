@@ -30,10 +30,4 @@ public class StarPointController {
     public List<BulkUserStarPointsDTO> getStarPointsByUsers(final @RequestBody RequestStarPointsDTO requestStarPointsDTO) {
         return stepService.getStarPointsByMultipleUsers(requestStarPointsDTO);
     }
-
-    @PutMapping("/hej")
-    public String getHej(@RequestBody String hej) {
-        return hej;
-    }
-
 }
