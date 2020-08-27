@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Optional;
 
 //@ExtendWith(MockitoExtension.class)
@@ -25,6 +26,8 @@ public class StepServiceTest {
     private StepRepository stepRepository;
 
     private StepService stepService;
+    private Step step;
+
 
 
 
@@ -32,7 +35,7 @@ public class StepServiceTest {
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
         stepService = new StepService(stepRepository);
-
+        step= new Step();
     }
 
     @Test
@@ -55,26 +58,38 @@ public class StepServiceTest {
 
     }
 
+    /*	public List<Step> registerMultipleSteps(String userId, List<StepDTO> stepDtoList) {
+		List<Step> stepList = new ArrayList<>();
+		for (StepDTO stepDTO : stepDtoList) {
+			stepList.add(stepRepository.save(new Step(userId, stepDTO.getStepCount(), stepDTO.getStartTime(), stepDTO.getEndTime(), stepDTO.getUploadedTime())));
+		}
+		return stepList;
+
+     */
+
     @Test
-    public void shouldNotInsertDataIf_Endtime_of_request_equals_endtime_in_DB(){
+    public void registerMultipleSteps_test(){
 
 
     }
 
     @Test
-    public void shouldUpdateStepcountInDB(){
+    public void getLatestStep_test(){
 
-    }
+        final String endDate= "2020-01-02T00:00:00";
+        final String userID="userId";
+        final int expectedSteg= 100;
 
-    @Test
-    public void shouldNotRegisterANewEntityInDB(){
+        when(stepRepository.findFirstByUserIdOrderByEndTimeDesc(any(String.class))).
+                        thenReturn(Optional.of(new Step("userTest3", 100,
+                        LocalDateTime.parse("2020-01-02T00:00:00"), LocalDateTime.parse("2020-01-02T00:00:00"),
+                        LocalDateTime.parse("2020-01-02T00:00:00"))));
 
+        LocalDateTime userEndTime= (stepService.getLatestStep(userID).get().getEnd());
+        assertEquals(LocalDateTime.parse("2020-01-02T00:00:00"),userEndTime);
 
-    }
-
-    @Test
-    public void shouldAutowireDependencies(){
-        assertNotNull(stepRepository);
-
-    }
+        assertEquals(stepService.getLatestStep(userID).get().getStepCount(),expectedSteg);
 }
+
+}
+
