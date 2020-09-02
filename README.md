@@ -20,6 +20,7 @@ Requirements:
 To Run:<br>
 
 `mvn springboot:run -Pdev`
+'mvn org.springframework.boot:spring-boot-maven-plugin:run -Pdev'
 
 To view the API documentation in swagger when server is running, 
 go to [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) in your browser.

@@ -14,8 +14,11 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.awt.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 //@ExtendWith(MockitoExtension.class)
@@ -58,25 +61,28 @@ public class StepServiceTest {
 
     }
 
-    /*	public List<Step> registerMultipleSteps(String userId, List<StepDTO> stepDtoList) {
-		List<Step> stepList = new ArrayList<>();
-		for (StepDTO stepDTO : stepDtoList) {
-			stepList.add(stepRepository.save(new Step(userId, stepDTO.getStepCount(), stepDTO.getStartTime(), stepDTO.getEndTime(), stepDTO.getUploadedTime())));
-		}
-		return stepList;
-
-     */
 
     @Test
     public void registerMultipleSteps_test(){
+       // final String userId="userId";
+        List<Step> stepList = new ArrayList<>();
 
-// git test 12345
+            stepList.add(new Step("testID2", 100,
+                    LocalDateTime.parse("2020-01-01T00:00:00"),
+                    LocalDateTime.parse("2020-01-01T01:00:00"),
+                    LocalDateTime.parse("2020-01-01T02:00:00")));
 
+            stepList.add(new Step("testID2", 200,
+                    LocalDateTime.parse("2020-01-01T00:00:00"),
+                    LocalDateTime.parse("2020-01-01T01:00:00"),
+                    LocalDateTime.parse("2020-01-01T02:00:00")));
+
+
+            
     }
 
     @Test
     public void getLatestStep_test(){
-
         final String endDate= "2020-01-02T00:00:00";
         final String userID="userId";
         final int expectedSteg= 100;

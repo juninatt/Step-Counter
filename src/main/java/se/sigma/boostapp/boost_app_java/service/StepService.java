@@ -8,11 +8,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.hibernate.annotations.ManyToAny;
 import org.springframework.stereotype.Service;
 
 import se.sigma.boostapp.boost_app_java.dto.*;
 import se.sigma.boostapp.boost_app_java.model.Step;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
+
+import javax.validation.constraints.NotNull;
 
 @Service
 public class StepService {
@@ -28,12 +31,90 @@ public class StepService {
 	}
 
 // Persist a single Step (for 1 or more step count)
+	/*deras metod som funkar och jag kommer att ändrar
 	public Optional<Step> registerSteps(String userId, StepDTO stepDto) {
 		return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
 					stepDto.getEndTime(), stepDto.getUploadedTime())));
 	}
+*/
 
-//	Persist multiple Step
+
+
+//  28.08.2020.
+	//public Optional<Step> registerSteps(String userId, StepDTO stepDto) {
+
+
+		// Persist a single Step (for 1 or more step count)
+
+	public Optional<Step> registerSteps(String userId, StepDTO stepDto) {
+		List<String> usersId = stepRepository.getAllUsers();
+
+		//if (usersId.contains(userId)) {
+		if (usersId.contains(userId)) {
+		Step existingStep = stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).get();
+		if(existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()) {
+			existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
+		}
+			existingStep.setEnd(stepDto.getEndTime());
+			existingStep.setStart(stepDto.getStartTime());
+			existingStep.setUploadedTime(stepDto.getUploadedTime());
+
+			return Optional.of(stepRepository.save(existingStep));
+		}
+		else
+			return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime())));
+
+
+		/*List<String> usersId = stepRepository.getAllUsers();
+
+		if (usersId.contains(userId)) {
+			Step existingStep = stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).get();
+			if (existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()) {
+				existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
+				existingStep.setEnd(stepDto.getEndTime());
+				existingStep.setStart(stepDto.getStartTime());
+				existingStep.setUploadedTime(stepDto.getUploadedTime());
+			}
+				return Optional.of(stepRepository.save(existingStep));
+
+		}else {
+				return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime())));
+			} */
+
+	}
+
+/*
+		List<String> usersId=stepRepository.getAllUsers();
+
+
+		//om userId finns i List usersId
+		if(usersId.contains(userId))
+		{
+
+
+			Step gamlaSteg=stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).get();
+			gamlaSteg.setStepCount(gamlaSteg.getStepCount()+stepDto.getStepCount());
+			gamlaSteg.setEnd(stepDto.getEndTime());
+			gamlaSteg.setStart(stepDto.getStartTime());
+			gamlaSteg.setUploadedTime(stepDto.getUploadedTime());
+
+			return Optional.of(stepRepository.save(gamlaSteg));
+
+
+
+
+
+
+		}
+		else{
+			return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
+				stepDto.getEndTime(), stepDto.getUploadedTime())));
+		}
+
+	}
+
+*/
+	//	Persist multiple Step
 	public List<Step> registerMultipleSteps(String userId, List<StepDTO> stepDtoList) {
 		List<Step> stepList = new ArrayList<>();
 		for (StepDTO stepDTO : stepDtoList) {
