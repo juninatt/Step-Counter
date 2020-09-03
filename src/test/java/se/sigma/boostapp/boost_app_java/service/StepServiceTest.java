@@ -14,7 +14,10 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.awt.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -54,27 +57,7 @@ public class StepServiceTest {
 
     }
 
-    	/*public List<Step> registerMultipleSteps_test(String userId, List<StepDTO> stepDtoList) {
-		List<Step> stepList = new ArrayList<>();
-		for (StepDTO stepDTO : stepDtoList) {
-			stepList.add(stepRepository.save(new Step(userId, stepDTO.getStepCount(), stepDTO.getStartTime(), stepDTO.getEndTime(), stepDTO.getUploadedTime())));
-		}
-		return stepList;*/
 
-
-    @Test
-    public void registerListOfSteps_test() {
-
-
-
-    }
-
-    @Test
-    public void registerMultipleSteps_test() {
-
-// git test 12345
-
-    }
 
     @Test
     public void getLatestStep_test() {
@@ -82,6 +65,7 @@ public class StepServiceTest {
         final String endDate = "2020-01-02T00:00:00";
         final String userID = "userId";
         final int expectedSteg = 100;
+
 
         when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(any(String.class))).
                 thenReturn(Optional.of(new Step("userTest3", 100,
