@@ -1,5 +1,10 @@
 package se.sigma.boostapp.boost_app_java.service;
 
+import org.springframework.stereotype.Service;
+import se.sigma.boostapp.boost_app_java.dto.*;
+import se.sigma.boostapp.boost_app_java.model.Step;
+import se.sigma.boostapp.boost_app_java.repository.StepRepository;
+
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -8,20 +13,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.hibernate.annotations.ManyToAny;
-import org.springframework.stereotype.Service;
-
-import se.sigma.boostapp.boost_app_java.dto.*;
-import se.sigma.boostapp.boost_app_java.model.Step;
-import se.sigma.boostapp.boost_app_java.repository.StepRepository;
-
-import javax.validation.constraints.NotNull;
-
 @Service
 public class StepService {
 
 	// Temporary star point factor used during development
 	private static final double starPointFactor = 1;
+
 
 	private final StepRepository stepRepository;
 //	private static final double starPointFactor = 0.01;
@@ -41,46 +38,28 @@ public class StepService {
 
 
 //  28.08.2020.
-	//public Optional<Step> registerSteps(String userId, StepDTO stepDto) {
-
-
-		// Persist a single Step (for 1 or more step count)
-
+// Persist a single Step (for 1 or more step count)
 	public Optional<Step> registerSteps(String userId, StepDTO stepDto) {
 		List<String> usersId = stepRepository.getAllUsers();
 
-		//if (usersId.contains(userId)) {
-		if (usersId.contains(userId)) {
-		Step existingStep = stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).get();
-		if(existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()) {
-			existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
-		}
-			existingStep.setEnd(stepDto.getEndTime());
-			existingStep.setStart(stepDto.getStartTime());
-			existingStep.setUploadedTime(stepDto.getUploadedTime());
-
-			return Optional.of(stepRepository.save(existingStep));
-		}
-		else
-			return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime())));
-
-
-		/*List<String> usersId = stepRepository.getAllUsers();
-
+		//koden skriver först alla rader (för olika dagar) för en användare och
+		//den alla rader för andra användare ....
 		if (usersId.contains(userId)) {
 			Step existingStep = stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).get();
-			if (existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()) {
+
+			if(existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()) {
 				existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
 				existingStep.setEnd(stepDto.getEndTime());
 				existingStep.setStart(stepDto.getStartTime());
 				existingStep.setUploadedTime(stepDto.getUploadedTime());
-			}
 				return Optional.of(stepRepository.save(existingStep));
+				}
 
-		}else {
-				return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime())));
-			} */
-
+				else if(existingStep.getEnd().getDayOfYear() != stepDto.getEndTime().getDayOfYear())	existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
+					return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime())));
+		}
+		else
+			return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime())));
 	}
 
 /*
