@@ -14,10 +14,7 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import java.awt.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -58,14 +55,12 @@ public class StepServiceTest {
     }
 
 
-
     @Test
     public void getLatestStep_test() {
 
         final String endDate = "2020-01-02T00:00:00";
         final String userID = "userId";
         final int expectedSteg = 100;
-
 
         when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(any(String.class))).
                 thenReturn(Optional.of(new Step("userTest3", 100,
