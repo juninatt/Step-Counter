@@ -28,7 +28,7 @@ public class StepService {
 	}
 
 // Persist a single Step (for 1 or more step count)
-	/*deras metod som funkar och jag kommer att ändrar
+	/*deras metod som funkar och jag kommer att ändra
 	public Optional<Step> registerSteps(String userId, StepDTO stepDto) {
 		return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
 					stepDto.getEndTime(), stepDto.getUploadedTime())));
@@ -62,37 +62,7 @@ public class StepService {
 			return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime())));
 	}
 
-/*
-		List<String> usersId=stepRepository.getAllUsers();
 
-
-		//om userId finns i List usersId
-		if(usersId.contains(userId))
-		{
-
-
-			Step gamlaSteg=stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).get();
-			gamlaSteg.setStepCount(gamlaSteg.getStepCount()+stepDto.getStepCount());
-			gamlaSteg.setEnd(stepDto.getEndTime());
-			gamlaSteg.setStart(stepDto.getStartTime());
-			gamlaSteg.setUploadedTime(stepDto.getUploadedTime());
-
-			return Optional.of(stepRepository.save(gamlaSteg));
-
-
-
-
-
-
-		}
-		else{
-			return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
-				stepDto.getEndTime(), stepDto.getUploadedTime())));
-		}
-
-	}
-
-*/
 	//	Persist multiple Step
 	public List<Step> registerMultipleSteps(String userId, List<StepDTO> stepDtoList) {
 		List<Step> stepList = new ArrayList<>();
