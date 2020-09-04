@@ -26,6 +26,7 @@ public interface StepRepository extends CrudRepository<Step, Long>{
 	@Query("SELECT DISTINCT s.userId FROM Step s")
 	List<String> getAllUsers();
 
+		//kanske kan använda för räkningar av steg per vecka/månad- bara använda nya tabell i databas????
 	@Query("SELECT sum(s.stepCount) FROM Step s WHERE s.userId = :userId AND s.uploadedTime >= :startTime AND s.uploadedTime <= :endTime")
 	Optional<Integer> getStepCountSum(@Param("userId") String userId, @Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
 
@@ -52,6 +53,9 @@ public interface StepRepository extends CrudRepository<Step, Long>{
   public void deleteById(@Param("id") int id);
 	 */
 
+	/* @Transactional
+	@Modifying
+	void deleteById(String id);*/
 
 }
 
