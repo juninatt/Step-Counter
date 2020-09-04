@@ -15,6 +15,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -75,24 +77,21 @@ public class StepServiceTest {
 
     @Test
     public void shouldReturnUpdatedStepCount() {
-
         Step mockStep = new Step("userTest3", 100,
-                LocalDateTime.parse("2020-01-02T00:00:00"), LocalDateTime.parse("2020-01-02T00:00:00"),
-                LocalDateTime.parse("2020-01-02T00:00:00"));
-
+                LocalDateTime.parse("2020-01-02T01:00:00"), LocalDateTime.parse("2020-01-02T01:10:00"),
+                LocalDateTime.parse("2020-01-02T02:00:00"));
+        List<String> usersList = new ArrayList<>();
+        usersList.add("userTest3");
         when(mockedStepRepository.save(any(Step.class))).thenReturn(mockStep);
         when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(any(String.class))).thenReturn(Optional.of(mockStep));
-
-
-        StepDTO stepDto = new StepDTO(50, LocalDateTime.parse("2020-01-01T00:00:00"),
-                LocalDateTime.parse("2020-01-01T01:00:00"),
-                LocalDateTime.parse("2020-01-01T02:00:00"));
-
+        when(mockedStepRepository.getAllUsers()).thenReturn(usersList);
+        StepDTO stepDto = new StepDTO(50, LocalDateTime.parse("2020-01-02T00:00:00"),
+                LocalDateTime.parse("2020-01-02T01:00:00"),
+                LocalDateTime.parse("2020-01-02T02:00:00"));
         assertEquals(150,stepService.registerSteps("userTest3", stepDto).get().getStepCount());
-
     }
 
-    //Detta testet är lite knäppt. ELler mycket. Det fyller noll funktion vid närmare eftertanke
+/*    //Detta testet är lite knäppt. ELler mycket. Det fyller noll funktion vid närmare eftertanke
     @Test
     public void shouldNotUpdateStepCountShouldCreateNewEntryInDB() {
 
@@ -113,6 +112,6 @@ public class StepServiceTest {
                 LocalDateTime.parse("2020-01-01T02:00:00"));
 
         assertEquals(100,stepService.registerSteps("userTest3", stepDto).get().getStepCount());
-    }
+    }*/
 }
 
