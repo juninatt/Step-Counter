@@ -46,8 +46,6 @@ public class StepServiceTest {
                 LocalDateTime.parse("2020-01-01T01:00:00"),
                 LocalDateTime.parse("2020-01-01T02:00:00"));
 
-       int newStep=200;
-
        //användare finns inte i databas
        assertNull(step.getUserId());
 
@@ -57,8 +55,13 @@ public class StepServiceTest {
            public Step answer(InvocationOnMock invocationOnMock) throws Throwable {
                Step step1 = (Step) invocationOnMock.getArguments()[0];
                step1.setUserId("userId");
+               step1.setStepCount(stepDTO.getStepCount());
+               final StepDTO stepDTO2 = new StepDTO(200,
+                       LocalDateTime.parse("2020-01-01T00:00:01"),
+                       LocalDateTime.parse("2020-01-01T01:00:02"),
+                       LocalDateTime.parse("2020-01-01T02:00:03"));
                //100 +200
-               step1.setStepCount(stepDTO.getStepCount()+newStep);
+               step1.setStepCount(stepDTO.getStepCount()+stepDTO2.getStepCount());
                return step1;
            }
 
