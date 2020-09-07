@@ -52,9 +52,9 @@ public class StepService {
 				existingStep.setUploadedTime(stepDto.getUploadedTime());
 				return Optional.of(stepRepository.save(existingStep));
 				}
-
-				else if(existingStep.getEnd().getDayOfYear() != stepDto.getEndTime().getDayOfYear())	existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
-					return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime())));
+			else if(existingStep.getEnd().getDayOfYear() != stepDto.getEndTime().getDayOfYear())
+				existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
+				return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime())));
 		}
 		else
 			return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime())));
@@ -132,6 +132,8 @@ public class StepService {
 	}
 
 //	Get latest step entity by user
+	// //2020-09-03 denna metoden skickar en summa av steg per dag per användare
+	// summan ändrar varje 10-minuter (om man gör nya steg) pga metoden registerSteps som fyller databasen varje 10 minuter
 	public Optional<Step> getLatestStep(String userId) {
 		return stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId);
 	}
@@ -159,6 +161,7 @@ public class StepService {
 	}
 
 // Get step count per day by user ID
+	// getLatestStep nu gör denna räkning
 	public List<StepDateDTO> getStepsByUser(String userId, String startDate, String endDate) {
 		Date firstDate = Date.valueOf(startDate);
 		Date lastDate;
