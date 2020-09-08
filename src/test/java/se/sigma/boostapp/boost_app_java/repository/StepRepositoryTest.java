@@ -58,7 +58,7 @@ public class StepRepositoryTest {
         assertThat(stepList.size()).isEqualTo(2);
     }
 
-    @Test
+   @Test 
     public void findLatestStepById_Test() {
         Optional<Step> step = stepRepository.findFirstByUserIdOrderByEndTimeDesc("4f6648d2-1434-40a5-aa66-7bb07d022841");
         assertThat(step.isPresent()).isEqualTo(true);
@@ -71,12 +71,13 @@ public class StepRepositoryTest {
         assertThat(userList.size()).isEqualTo(3);
     }
 
-    @Test
+   @Test
     public void getStepSum_Test() {
         Optional<Integer> stepSum = stepRepository.getStepCountSum("4f6648d2-1434-40a5-aa66-7bb07d022841",
                 LocalDateTime.parse("2019-12-30T23:00:00"), LocalDateTime.parse("2020-01-05T12:00:00"));
         assertThat(stepSum.get()).isEqualTo(2000);
     }
+    
 
     @Test
     public void getStepCount_test() {
