@@ -58,6 +58,11 @@ public class StepService {
             return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime())));
     }
 
+
+
+
+
+
     //	Persist multiple Step //StepDTO-objects that has the same date will be merged to one where stepCount is summed and startDate is set to earliest in list
     public List<Step> registerMultipleSteps(String userId, List<StepDTO> stepDtoList) {
         List<Step> stepList = new ArrayList<>();
@@ -135,7 +140,11 @@ public class StepService {
         } else {
             return stepDtoList.stream().sorted(Comparator.comparing(StepDTO::getEndTime)).collect(Collectors.toList());
         }
+
     }
+
+
+
 
     //	Get latest step entity by user
     // //2020-09-03 denna metoden skickar en summa av steg per dag per användare
