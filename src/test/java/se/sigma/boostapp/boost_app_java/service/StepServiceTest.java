@@ -109,28 +109,6 @@ public class StepServiceTest {
         assertEquals(150,stepService.registerSteps("userTest3", stepDto).get().getStepCount());
     }
 
-/*    //Detta testet är lite knäppt. ELler mycket. Det fyller noll funktion vid närmare eftertanke
-    @Test
-    public void shouldNotUpdateStepCountShouldCreateNewEntryInDB() {
-
-        Step mockStepExistingInDB = new Step("userTest3", 6000,
-                LocalDateTime.parse("2020-01-01T00:00:00"), LocalDateTime.parse("2020-01-01T00:00:00"),
-                LocalDateTime.parse("2020-01-01T00:00:00"));
-
-        Step mockStep = new Step("userTest3", 100,
-                LocalDateTime.parse("2020-01-02T00:00:00"), LocalDateTime.parse("2020-01-02T00:00:00"),
-                LocalDateTime.parse("2020-01-02T00:00:00"));
-
-        when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(any(String.class))).thenReturn(Optional.of(mockStepExistingInDB));
-        when(mockedStepRepository.save(any(Step.class))).thenReturn(mockStep);
-
-
-        StepDTO stepDto = new StepDTO(100, LocalDateTime.parse("2020-01-01T00:00:00"),
-                LocalDateTime.parse("2020-01-01T01:00:00"),
-                LocalDateTime.parse("2020-01-01T02:00:00"));
-
-        assertEquals(100,stepService.registerSteps("userTest3", stepDto).get().getStepCount());
-    }*/
 
     @Test
     public void sortListByEndTime_test() {
@@ -167,14 +145,14 @@ public class StepServiceTest {
     public void registerMultipleSteps_test() {
         List<StepDTO> mockStepDTOList = new ArrayList<>();
         StepDTO stepDTO1 = new StepDTO(10,
-                LocalDateTime.parse("2020-08-21T00:01:10"),
-                LocalDateTime.parse("2020-01-02T00:00:00"),
-                LocalDateTime.parse("2020-08-21T02:01:20"));
+                LocalDateTime.parse("2020-08-21T02:01:10"),
+                LocalDateTime.parse("2020-08-21T02:10:10"),
+                LocalDateTime.parse("2020-08-21T02:20:20"));
 
         StepDTO stepDTO2 = new StepDTO(12,
-                LocalDateTime.parse("2020-08-22T00:01:20"),
-                LocalDateTime.parse("2020-08-22T01:01:20"),
-                LocalDateTime.parse("2020-08-22T02:01:30"));
+                LocalDateTime.parse("2020-08-21T04:01:20"),
+                LocalDateTime.parse("2020-08-21T04:01:20"),
+                LocalDateTime.parse("2020-08-21T04:01:30"));
 
         StepDTO stepDTO3 = new StepDTO(13,
                 LocalDateTime.parse("2020-08-22T00:01:10"),
@@ -186,19 +164,17 @@ public class StepServiceTest {
         mockStepDTOList.add(stepDTO3);
 
         Step mockStep = new Step("idTest", 100,
-                LocalDateTime.parse("2020-01-02T00:00:00"),
-                LocalDateTime.parse("2020-01-02T00:00:00"),
-                LocalDateTime.parse("2020-01-02T00:00:00"));
+                LocalDateTime.parse("2020-08-21T01:00:00"),
+                LocalDateTime.parse("2020-08-21T01:00:00"),
+                LocalDateTime.parse("2020-08-21T01:00:00"));
 
         when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(Mockito.anyString())).thenReturn(Optional.of(mockStep));
         when(mockedStepRepository.save(any())).thenReturn(mockStep);
 
         var test = stepService.registerMultipleSteps("idTest", mockStepDTOList);
 
+        assertEquals(122, test.get(0).getStepCount());
         assertEquals(2, test.size());
-        assertEquals(100, test.get(0).getStepCount());
-
-
     }
 
     @Test
@@ -248,7 +224,7 @@ public class StepServiceTest {
     }
 
     @Test
-    public void addOrUpdateStepDtoObjectsToDB_shouldReturnCompleteListOfStepObjectsForNewUser_test() {
+    public void registerMultipleSteps_shouldReturnCompleteListOfStepObjectsForNewUser_test() {
         List <StepDTO> mockStepDTOList2 = new ArrayList<>();
         StepDTO stepDTO1 = new StepDTO(1,
                 LocalDateTime.parse("2020-08-21T03:10:00"),
@@ -277,7 +253,7 @@ public class StepServiceTest {
 
         when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(Mockito.anyString())).thenReturn(Optional.empty());
 
-        assertEquals(4, stepService.addOrUpdateStepDtoObjectsToDB("test", mockStepDTOList2).size());
+        assertEquals(4, stepService.registerMultipleSteps("test", mockStepDTOList2).size());
 
     }
 
@@ -285,9 +261,9 @@ public class StepServiceTest {
     public void addOrUpdateStepDtoObjectsToDB_withEarliestEndDateMatchingEntryInDB_test() {
         List <StepDTO> mockStepDTOList2 = new ArrayList<>();
         StepDTO stepDTO1 = new StepDTO(1,
-                LocalDateTime.parse("2020-08-21T03:10:00"),
-                LocalDateTime.parse("2020-08-21T03:20:00"),
-                LocalDateTime.parse("2020-08-21T03:25:00"));
+                LocalDateTime.parse("2020-08-21T02:10:00"),
+                LocalDateTime.parse("2020-08-21T02:20:00"),
+                LocalDateTime.parse("2020-08-21T02:25:00") );
 
         StepDTO stepDTO2 = new StepDTO(2,
                 LocalDateTime.parse("2020-08-22T05:20:00"),
@@ -317,7 +293,7 @@ public class StepServiceTest {
         when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(Mockito.anyString())).thenReturn(Optional.of(step));
         when(mockedStepRepository.save(any())).thenReturn(step);
 
-        var test = stepService.addOrUpdateStepDtoObjectsToDB("test", mockStepDTOList2);
+        var test = stepService.addOrUpdateStepDtoObjectsToDB("test", mockStepDTOList2, step);
 
         assertEquals(31, test.get(0).getStepCount());
         assertEquals(4,test.size());
