@@ -5,6 +5,7 @@ import se.sigma.boostapp.boost_app_java.dto.*;
 import se.sigma.boostapp.boost_app_java.model.Step;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 
+import javax.validation.constraints.NotNull;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,16 +15,16 @@ import java.util.stream.Collectors;
 @Service
 public class StepService {
 
-	// Temporary star point factor used during development
-	private static final double starPointFactor = 1;
+    // Temporary star point factor used during development
+    private static final double starPointFactor = 1;
 
 
-	private final StepRepository stepRepository;
+    private final StepRepository stepRepository;
 //	private static final double starPointFactor = 0.01;
 
-	public StepService(final StepRepository stepRepository) {
-		this.stepRepository = stepRepository;
-	}
+    public StepService(final StepRepository stepRepository) {
+        this.stepRepository = stepRepository;
+    }
 
 // Persist a single Step (for 1 or more step count)
 	/*deras metod som funkar och jag kommer att ändra
@@ -34,9 +35,86 @@ public class StepService {
 */
 
 
+    //	Persist multiple Step //StepDTO-objects that has the same date will be merged to one where stepCount is summed and startDate is set to earliest in list
+    public List<Step> registerMultipleSteps(String userId, List<StepDTO> stepDtoList) {
+        List<Step> stepList = new ArrayList<>();
+        Step latest;
+        //if new user, add all to db
+        if (!stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).isPresent()) {
+            for (StepDTO s : stepDtoList) {
+                stepList.add(addStepToDB(userId, s));
+            }
+        } else {
+            //get latest entry from db
+            latest = stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).get();
+            //filter out any object in list that is before latest entry
+            // TODO: 2020-09-08 communicate conflict with response?
+            stepDtoList = stepDtoList.stream().filter(stepDTO -> stepDTO.getEndTime().isAfter(latest.getEnd())).collect(Collectors.toList());
 
-//  28.08.2020.
-// Persist a single Step (for 1 or more step count)
+            //Group objects in lists by endDate
+            Map<Integer, List<StepDTO>> groupedByDayOfYearMap = stepDtoList.stream()
+                    .collect(Collectors.groupingBy(sDto -> sDto.getEndTime().getDayOfYear()));
+
+            if (!stepDtoList.isEmpty()) {
+                //Return list of merged objects with the same endDate
+                stepDtoList = mergeStepDtoObjectsWithSameDate(groupedByDayOfYearMap);
+                //StepList with entities registered in DB
+                stepList = addOrUpdateStepDtoObjectsToDB(userId, stepDtoList, latest);
+            }
+        }
+
+        return stepList;
+    }
+
+    public List<Step> addOrUpdateStepDtoObjectsToDB(String userId, List<StepDTO> stepDtoList, Step latest) {
+        List<Step> stepList = new ArrayList<>();
+        //Put earliest date first in list
+        stepDtoList = sortListByEndTime(stepDtoList, false);
+
+        if (latest.getEnd().getDayOfYear() == stepDtoList.get(0).getEndTime().getDayOfYear()) {
+            stepList.add(updateEntryinDB(stepDtoList.get(0), latest));
+            for (int i = 1; i < stepDtoList.size(); i++) {
+                stepList.add(addStepToDB(userId, stepDtoList.get(i)));
+            }
+        }
+        return stepList;
+    }
+
+    public Step addStepToDB(String id, StepDTO s) {
+        return stepRepository.save(new Step(id, s.getStepCount(), s.getStartTime(), s.getEndTime(), s.getUploadedTime()));
+    }
+
+    public Step updateEntryinDB(StepDTO stepDTO, Step step) {
+        step.setStepCount(step.getStepCount() + stepDTO.getStepCount());
+        step.setEnd(stepDTO.getEndTime());
+        step.setUploadedTime(stepDTO.getUploadedTime());
+        return stepRepository.save(step);
+    }
+
+    //Helper method to merge objects with same date to one object and return list of StepDTO objects
+    public List<StepDTO> mergeStepDtoObjectsWithSameDate(Map<Integer, List<StepDTO>> map) {
+        List<StepDTO> list = new ArrayList<>();
+
+        map.forEach((key, value) -> {
+            value = sortListByEndTime(value, true); //sort list to object with last endDate at index 0
+            value.get(0).setStepCount(value.stream().mapToInt(StepDTO::getStepCount).sum()); //sum stepCount from all objects in list
+            value.get(0).setStartTime(value.get(value.size() - 1).getStartTime()); //set startDate to earliest startDate in list, (keep end- and uploadedTime)
+            list.add(value.get(0)); //add modified object to new list
+        });
+
+        return list;
+    }
+
+    //Helper method to sort list by EndTime
+    public List<StepDTO> sortListByEndTime(List<StepDTO> stepDtoList, boolean reverseOrder) {
+        if (reverseOrder) {
+            return stepDtoList.stream().sorted(Comparator.comparing(StepDTO::getEndTime).reversed()).collect(Collectors.toList());
+        } else {
+            return stepDtoList.stream().sorted(Comparator.comparing(StepDTO::getEndTime)).collect(Collectors.toList());
+        }
+
+    }
+
 	public Optional<Step> registerSteps(String userId, StepDTO stepDto) {
 		List<String> usersId = stepRepository.getAllUsers();
 
@@ -69,76 +147,6 @@ public class StepService {
 			return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime())));
 	}
 
-	//	Persist multiple Step //StepDTO-objects that has the same date will be merged to one where stepCount is summed and startDate is set to earliest in list
-	public List<Step> registerMultipleSteps(String userId, List<StepDTO> stepDtoList) {
-
-		Map<Integer, List<StepDTO>> groupedByDayOfYearMap = stepDtoList.stream()
-				.collect(Collectors.groupingBy(sDTO -> sDTO.getEndTime().getDayOfYear())); //Group objects in lists by endDate
-
-		stepDtoList = mergeStepDtoObjectsWithSameDate(groupedByDayOfYearMap); //Return list of merged objects with the same endDate
-
-		return addOrUpdateStepDtoObjectsToDB(userId, stepDtoList); //StepList with entities registered in DB
-	}
-
-	public List<Step> addOrUpdateStepDtoObjectsToDB(String userId, List<StepDTO> stepDtoList) {
-		List<Step> stepList = new ArrayList<>();
-		stepDtoList = sortListByEndTime(stepDtoList, false);
-
-		List<StepDTO> finalStepDtoList = stepDtoList;
-		var earliest = finalStepDtoList.get(0);
-
-		stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId)
-				.filter(s -> !s.getEnd().equals(earliest.getEndTime())) //filter out if endDate already exists in DB
-				.ifPresentOrElse(step -> {
-			if(step.getEnd().getDayOfYear() == earliest.getEndTime().getDayOfYear() && !step.getEnd().equals(finalStepDtoList.get(0).getEndTime())){
-				stepList.add(updateEntryinDB(earliest, step));
-				for (int i = 1; i < finalStepDtoList.size(); i++){
-					stepList.add(addStepToDB(userId, finalStepDtoList.get(i)));
-				}
-			}
-			else if(step.getEnd().getDayOfYear() <  earliest.getEndTime().getDayOfYear()){
-				finalStepDtoList.forEach(s-> stepList.add(addStepToDB(userId,s)));
-			}
-		}, () -> finalStepDtoList.forEach(s-> stepList.add(addStepToDB(userId,s))));
-
-		return stepList;
-	}
-
-	public Step addStepToDB(String id, StepDTO s){
-		return stepRepository.save(new Step(id, s.getStepCount(), s.getStartTime(), s.getEndTime(), s.getUploadedTime()));
-	}
-
-	public Step updateEntryinDB(StepDTO earliest, Step step){
-		step.setStepCount(step.getStepCount()+earliest.getStepCount());
-		step.setEnd(earliest.getEndTime());
-		step.setUploadedTime(earliest.getUploadedTime());
-		return stepRepository.save(step);
-	}
-
-	//Helper method to merge objects with same date to one object and return list of StepDTO objects
-	public List<StepDTO> mergeStepDtoObjectsWithSameDate(Map<Integer, List<StepDTO>> map) {
-
-			List<StepDTO> list = new ArrayList<>();
-
-			map.forEach((key, value) -> {
-				value = sortListByEndTime(value, true); //sort list to object with last endDate at index 0
-				value.get(0).setStepCount(value.stream().mapToInt(StepDTO::getStepCount).sum()); //sum stepCount from all objects in list
-				value.get(0).setStartTime(value.get(value.size()-1).getStartTime()); //set startDate to earliest startDate in list, (keep end- and uploadedTime)
-				list.add(value.get(0)); //add modified object to new list
-			});
-
-		return list;
-	}
-
-	//Helper method to sort list by EndTime
-	public List<StepDTO> sortListByEndTime(List<StepDTO> stepDtoList, boolean reverseOrder){
-		if(reverseOrder){
-				 return stepDtoList.stream().sorted(Comparator.comparing(StepDTO::getEndTime).reversed()).collect(Collectors.toList());
-		}
-		else{
-			return stepDtoList.stream().sorted(Comparator.comparing(StepDTO::getEndTime)).collect(Collectors.toList());
-		}
-	}
 
 //	Get latest step entity by user
 	// //2020-09-03 denna metoden skickar en summa av steg per dag per användare
