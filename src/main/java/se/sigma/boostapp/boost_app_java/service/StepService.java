@@ -44,19 +44,28 @@ public class StepService {
 		//den alla rader för andra användare ....
 		if (usersId.contains(userId)) {
 			Step existingStep = stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).get();
-
-			if(existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()) {
-				existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
-				existingStep.setEnd(stepDto.getEndTime());
-				existingStep.setStart(stepDto.getStartTime());
-				existingStep.setUploadedTime(stepDto.getUploadedTime());
+			
+			if(existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()
+				&& existingStep.getEnd().isBefore(stepDto.getEndTime())) {
+							existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
+							existingStep.setEnd(stepDto.getEndTime());
+							existingStep.setStart(stepDto.getStartTime());
+							existingStep.setUploadedTime(stepDto.getUploadedTime());
 				return Optional.of(stepRepository.save(existingStep));
 				}
+			// ta hand bara om end tid
+			else if(existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()
+					&& (existingStep.getEnd().equals(stepDto.getEndTime())
+					|| existingStep.getEnd().isAfter(stepDto.getEndTime()))){
+				//tänka att skriva kod för meddelande till användare
+				return Optional.empty();				
+			}
 			else if(existingStep.getEnd().getDayOfYear() != stepDto.getEndTime().getDayOfYear())
-				existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
+							existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
 				return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime())));
+			
 		}
-		else
+		else 
 			return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime())));
 	}
 
