@@ -93,23 +93,26 @@ public class StepServiceTest {
         assertEquals(stepService.getLatestStep(userID).get().getStepCount(), expectedSteg);
     }
 
-   /*  titta på den Test- it har fel
+   //  titta på den Test- it har fel
       @Test
     public void shouldReturnUpdatedStepCount() {
         Step mockStep = new Step("userTest3", 100,
-                LocalDateTime.parse("2020-01-02T01:00:00"), LocalDateTime.parse("2020-01-02T01:10:00"),
+                LocalDateTime.parse("2020-01-02T01:00:00"),
+                LocalDateTime.parse("2020-01-02T01:10:00"),
                 LocalDateTime.parse("2020-01-02T02:00:00"));
         List<String> usersList = new ArrayList<>();
         usersList.add("userTest3");
-        when(mockedStepRepository.save(any(Step.class))).thenReturn(mockStep);
-        when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(any(String.class))).thenReturn(Optional.of(mockStep));
         when(mockedStepRepository.getAllUsers()).thenReturn(usersList);
-        StepDTO stepDto = new StepDTO(50, LocalDateTime.parse("2020-01-02T00:00:00"),
-                LocalDateTime.parse("2020-01-02T01:00:00"),
+        when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(any(String.class))).thenReturn(Optional.of(mockStep));
+        when(mockedStepRepository.save(any(Step.class))).thenReturn(mockStep);
+
+        StepDTO stepDto = new StepDTO(50,
+                LocalDateTime.parse("2020-01-02T00:00:00"),
+                LocalDateTime.parse("2020-01-02T01:20:00"),
                 LocalDateTime.parse("2020-01-02T02:00:00"));
         assertEquals(150,stepService.registerSteps("userTest3", stepDto).get().getStepCount());
     }
-    */
+
 
 
     @Test
@@ -292,7 +295,6 @@ public class StepServiceTest {
                 LocalDateTime.parse("2020-08-21T02:20:00"),
                 LocalDateTime.parse("2020-08-21T02:25:00") );
 
-        when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(Mockito.anyString())).thenReturn(Optional.of(step));
         when(mockedStepRepository.save(any())).thenReturn(step);
 
         var test = stepService.addOrUpdateStepDtoObjectsToDB("test", mockStepDTOList2, step);
