@@ -39,7 +39,7 @@ public class StepService {
     public List<Step> registerMultipleSteps(String userId, List<StepDTO> stepDtoList) {
         List<Step> stepList = new ArrayList<>();
         Step latest;
-        //if new user, add all to db
+        //if new user, add all to db after grouping by date
         if (!stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).isPresent()) {
             Map<Integer, List<StepDTO>> groupedByDayOfYearMap =  groupObjectsInListsByEndDate(stepDtoList);
             stepDtoList = mergeStepDtoObjectsWithSameDate(groupedByDayOfYearMap);
@@ -68,7 +68,8 @@ public class StepService {
         return stepList;
     }
 
-    public List<Step> addOrUpdateStepDtoObjectsToDB(String userId, List<StepDTO> stepDtoList, Step latest) {
+    //Helper method. Insert StepDTO-list to DB
+    private List<Step> addOrUpdateStepDtoObjectsToDB(String userId, List<StepDTO> stepDtoList, Step latest) {
         List<Step> stepList = new ArrayList<>();
         //Put earliest date first in list
         stepDtoList = sortListByEndTime(stepDtoList, false);
@@ -82,17 +83,19 @@ public class StepService {
         return stepList;
     }
 
-    public Map<Integer, List<StepDTO>> groupObjectsInListsByEndDate(List<StepDTO> list) {
+    //Helper method. Group objects to map by same endDate
+    private Map<Integer, List<StepDTO>> groupObjectsInListsByEndDate(List<StepDTO> list) {
         return list.stream()
                 .collect(Collectors.groupingBy(sDto -> sDto.getEndTime().getDayOfYear()));
     }
 
-
-    public Step addStepToDB(String id, StepDTO s) {
+    //Helper method. Add new entry of steps per day to DB
+    private Step addStepToDB(String id, StepDTO s) {
         return stepRepository.save(new Step(id, s.getStepCount(), s.getStartTime(), s.getEndTime(), s.getUploadedTime()));
     }
 
-    public Step updateEntryinDB(StepDTO stepDTO, Step step) {
+    //Helper method. Update existing entry in DB
+    private Step updateEntryinDB(StepDTO stepDTO, Step step) {
         step.setStepCount(step.getStepCount() + stepDTO.getStepCount());
         step.setEnd(stepDTO.getEndTime());
         step.setUploadedTime(stepDTO.getUploadedTime());
@@ -100,7 +103,7 @@ public class StepService {
     }
 
     //Helper method to merge objects with same date to one object and return list of StepDTO objects
-    public List<StepDTO> mergeStepDtoObjectsWithSameDate(Map<Integer, List<StepDTO>> map) {
+    private List<StepDTO> mergeStepDtoObjectsWithSameDate(Map<Integer, List<StepDTO>> map) {
         List<StepDTO> list = new ArrayList<>();
 
         map.forEach((key, value) -> {
@@ -114,7 +117,7 @@ public class StepService {
     }
 
     //Helper method to sort list by EndTime
-    public List<StepDTO> sortListByEndTime(List<StepDTO> stepDtoList, boolean reverseOrder) {
+    private List<StepDTO> sortListByEndTime(List<StepDTO> stepDtoList, boolean reverseOrder) {
         if (reverseOrder) {
             return stepDtoList.stream().sorted(Comparator.comparing(StepDTO::getEndTime).reversed()).collect(Collectors.toList());
         } else {
@@ -162,7 +165,7 @@ public class StepService {
     }
 
     //	Helper method. Get total step count from a list of Steps
-    public int getStepCount(List<Step> steps) {
+    private int getStepCount(List<Step> steps) {
         int total = 0;
         for (Step step : steps) {
             total += step.getStepCount();
