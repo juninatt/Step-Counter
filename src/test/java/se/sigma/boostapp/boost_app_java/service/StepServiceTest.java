@@ -93,16 +93,16 @@ public class StepServiceTest {
         assertEquals(stepService.getLatestStep(userID).get().getStepCount(), expectedSteg);
     }
 
-   //  titta på den Test- it har fel
+   
       @Test
     public void shouldReturnUpdatedStepCount() {
         Step mockStep = new Step("userTest3", 100,
                 LocalDateTime.parse("2020-01-02T01:00:00"),
                 LocalDateTime.parse("2020-01-02T01:10:00"),
                 LocalDateTime.parse("2020-01-02T02:00:00"));
-        List<String> usersList = new ArrayList<>();
-        usersList.add("userTest3");
-        when(mockedStepRepository.getAllUsers()).thenReturn(usersList);
+      //  List<String> usersList = new ArrayList<>();
+      //  usersList.add("userTest3");
+       // when(mockedStepRepository.getAllUsers()).thenReturn(usersList);
         when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(any(String.class))).thenReturn(Optional.of(mockStep));
         when(mockedStepRepository.save(any(Step.class))).thenReturn(mockStep);
 
