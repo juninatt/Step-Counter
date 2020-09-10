@@ -19,7 +19,10 @@ public class StepService {
     private static final double starPointFactor = 1;
 
 
-    private final StepRepository stepRepository;
+	private final StepRepository stepRepository;
+
+
+
 //	private static final double starPointFactor = 0.01;
 
     public StepService(final StepRepository stepRepository) {
@@ -27,12 +30,58 @@ public class StepService {
     }
 
 // Persist a single Step (for 1 or more step count)
-	/*deras metod som funkar och jag kommer att ändra
+
+	/*
+	 * deras metod som funkar och jag kommer att ändra public Optional<Step>
+	 * registerSteps(String userId, StepDTO stepDto) { return
+	 * Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(),
+	 * stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime()))); }
+	 */
+
+//  28.08.2020.
+// Persist a single Step (for 1 or more step count)
 	public Optional<Step> registerSteps(String userId, StepDTO stepDto) {
-		return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
+
+		// code -write first all rows( for different days) for one user and then all
+		// rows for second user
+		// "stepDTO": "Start time must before end time, which in turn must be before
+		// uploaded time"
+		if (stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).isPresent()) {
+			Step existingStep = stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).get();
+
+			if (existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()
+					&& existingStep.getEnd().isBefore(stepDto.getEndTime())) {
+				existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
+				existingStep.setEnd(stepDto.getEndTime());
+				existingStep.setStart(stepDto.getStartTime());
+				existingStep.setUploadedTime(stepDto.getUploadedTime());
+				return Optional.of(stepRepository.save(existingStep));
+			}
+			// take care only of time
+			else if (existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()
+					&& (existingStep.getEnd().equals(stepDto.getEndTime())
+							|| existingStep.getEnd().isAfter(stepDto.getEndTime()))) {
+				// tänka att skriva kod för meddelande till användare
+				return Optional.empty();
+			} else if (existingStep.getEnd().getDayOfYear() != stepDto.getEndTime().getDayOfYear())
+				existingStep.setStepCount(existingStep.getStepCount() /* + stepDto.getStepCount() */);
+			return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
 					stepDto.getEndTime(), stepDto.getUploadedTime())));
+
+		} else
+			return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
+					stepDto.getEndTime(), stepDto.getUploadedTime())));
+
 	}
-*/
+
+
+//	Get latest step entity by user
+	// //2020-09-03 denna metoden skickar en summa av steg per dag per användare
+	// summan ändrar varje 10-minuter (om man gör nya steg) pga metoden
+	// registerSteps som fyller databasen varje 10 minuter
+	public Optional<Step> getLatestStep(String userId) {
+		return stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId);
+	}
 
 
     //	Persist multiple Step //StepDTO-objects that has the same date will be merged to one where stepCount is summed and startDate is set to earliest in list
@@ -125,45 +174,7 @@ public class StepService {
         }
 
     }
-
-    public Optional<Step> registerSteps(String userId, StepDTO stepDto) {
-        List<String> usersId = stepRepository.getAllUsers();
-
-        //koden skriver först alla rader (för olika dagar) för en användare och
-        //den alla rader för andra användare ....
-        if (usersId.contains(userId)) {
-            Step existingStep = stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).get();
-
-            if (existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()
-                    && existingStep.getEnd().isBefore(stepDto.getEndTime())) {
-                existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
-                existingStep.setEnd(stepDto.getEndTime());
-                existingStep.setStart(stepDto.getStartTime());
-                existingStep.setUploadedTime(stepDto.getUploadedTime());
-                return Optional.of(stepRepository.save(existingStep));
-            }
-            // ta hand bara om end tid
-            else if (existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()
-                    && (existingStep.getEnd().equals(stepDto.getEndTime())
-                    || existingStep.getEnd().isAfter(stepDto.getEndTime()))) {
-                //tänka att skriva kod för meddelande till användare
-                return Optional.empty();
-            } else if (existingStep.getEnd().getDayOfYear() != stepDto.getEndTime().getDayOfYear())
-                existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
-            return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime())));
-
-        } else
-            return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime())));
-    }
-
-
-    //	Get latest step entity by user
-    // //2020-09-03 denna metoden skickar en summa av steg per dag per användare
-    // summan ändrar varje 10-minuter (om man gör nya steg) pga metoden registerSteps som fyller databasen varje 10 minuter
-    public Optional<Step> getLatestStep(String userId) {
-        return stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId);
-    }
-
+    
     //	Helper method. Get total step count from a list of Steps
     private int getStepCount(List<Step> steps) {
         int total = 0;
@@ -239,4 +250,5 @@ public class StepService {
                                         * starPointFactor)
                 ))).collect(Collectors.toList());
     }
+
 }

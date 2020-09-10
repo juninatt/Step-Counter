@@ -372,3 +372,61 @@ databaseChangeLog:
                    name: uploaded
              indexName: idx_uploaded
              tableName: step
+   - changeSet:
+       id: boost-app-stepMonth-1.0
+       author: Sigma
+       changes:
+       - createTable:
+          tableName: stepMonth
+          columns:
+               - column:
+                   name: id
+                   type: int
+                   autoIncrement: true
+                   constraints:
+                        primaryKey: true
+                        nullable: false
+               - column:
+                   name: user_id
+                   type: varchar(255)
+                   constraints:
+                        nullable: false
+               - column:
+                   name: January
+                   type: int
+               - column:
+                   name: February
+                   type: int            
+               - column:
+                   name: March
+                   type: int              
+               - column:
+                   name: April
+                   type: int              
+               - column:
+                   name: May
+                   type: int                
+               - column:
+                   name: June
+                   type: int                
+               - column:
+                   name: July
+                   type: int     
+               - column:
+                   name: Augusty
+                   type: int            
+               - column:
+                   name: September
+                   type: int                
+               - column:
+                   name: October
+                   type: int               
+               - column:
+                   name: November
+                   type: int              
+               - column:
+                   name: December
+                   type: int            
+               - column:
+                   name: Year
+                   type: int
