@@ -38,36 +38,69 @@ public class StepService {
 //  28.08.2020.
 // Persist a single Step (for 1 or more step count)
 	public Optional<Step> registerSteps(String userId, StepDTO stepDto) {
+		
+		//check if satsen . Maybe we can escape .getDayOfYear and use only isBefore, isAfter,isEquel
+		//????????
 		List<String> usersId = stepRepository.getAllUsers();
 
 		//koden skriver först alla rader (för olika dagar) för en användare och
 		//den alla rader för andra användare ....
 		if (usersId.contains(userId)) {
-			Step existingStep = stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).get();
-			
-			if(existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()
-				&& existingStep.getEnd().isBefore(stepDto.getEndTime())) {
-							existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
-							existingStep.setEnd(stepDto.getEndTime());
-							existingStep.setStart(stepDto.getStartTime());
-							existingStep.setUploadedTime(stepDto.getUploadedTime());
-				return Optional.of(stepRepository.save(existingStep));
+					Step existingStep = stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).get();
+					
+				
+					if(existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()
+							&& existingStep.getEnd().isBefore(stepDto.getEndTime())) {
+										existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
+										existingStep.setEnd(stepDto.getEndTime());
+										existingStep.setStart(stepDto.getStartTime());
+										existingStep.setUploadedTime(stepDto.getUploadedTime());
+							return Optional.of(stepRepository.save(existingStep));
+							}
+						// ta hand bara om end tid
+						else if(existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()
+								&& (existingStep.getEnd().equals(stepDto.getEndTime())
+								|| existingStep.getEnd().isAfter(stepDto.getEndTime()))){
+							//tänka att skriva kod för meddelande till användare
+							return Optional.empty();				
+						}
+						else if(existingStep.getEnd().getDayOfYear() != stepDto.getEndTime().getDayOfYear())
+										existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
+							return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime())));
+						
+					}
+					else 
+						return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime())));
+	}
+		
+					/*	if(existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()
+						&& existingStep.getEnd().isBefore(stepDto.getEndTime())) {
+									existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
+									existingStep.setEnd(stepDto.getEndTime());
+									existingStep.setStart(stepDto.getStartTime());
+									existingStep.setUploadedTime(stepDto.getUploadedTime());
+						return Optional.of(stepRepository.save(existingStep));
+						}
+					// ta hand bara om end tid
+					else if(existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()
+							&& (existingStep.getEnd().equals(stepDto.getEndTime())
+							|| existingStep.getEnd().isAfter(stepDto.getEndTime()))){
+						//tänka att skriva kod för meddelande till användare
+						return Optional.empty();				
+					}
+					else if(existingStep.getEnd().getDayOfYear() != stepDto.getEndTime().getDayOfYear()
+							//check it isBefore or isAfter ( maybe can direct comparation
+							//isBefore without !=)
+							)
+								existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
+								return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime())));
+					
+					
 				}
-			// ta hand bara om end tid
-			else if(existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()
-					&& (existingStep.getEnd().equals(stepDto.getEndTime())
-					|| existingStep.getEnd().isAfter(stepDto.getEndTime()))){
-				//tänka att skriva kod för meddelande till användare
-				return Optional.empty();				
-			}
-			else if(existingStep.getEnd().getDayOfYear() != stepDto.getEndTime().getDayOfYear())
-							existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
-				return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime())));
-			
-		}
 		else 
 			return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime())));
 	}
+	*/
 
 	//	Persist multiple Step //StepDTO-objects that has the same date will be merged to one where stepCount is summed and startDate is set to earliest in list
 	public List<Step> registerMultipleSteps(String userId, List<StepDTO> stepDtoList) {
