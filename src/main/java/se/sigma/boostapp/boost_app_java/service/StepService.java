@@ -83,13 +83,6 @@ public class StepService {
 		return stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId);
 	}
 
-	/*deras metod som funkar och jag kommer att ändra
-	public Optional<Step> registerSteps(String userId, StepDTO stepDto) {
-		return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
-					stepDto.getEndTime(), stepDto.getUploadedTime())));
-	}
-*/
-
 
     //	Persist multiple Step //StepDTO-objects that has the same date will be merged to one where stepCount is summed and startDate is set to earliest in list
     public List<Step> registerMultipleSteps(String userId, List<StepDTO> stepDtoList) {
