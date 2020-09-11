@@ -1,5 +1,4 @@
-/*package se.sigma.boostapp.boost_app_java.model;
-//7. semptember, hella class
+package se.sigma.boostapp.boost_app_java.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,7 +7,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import io.swagger.annotations.ApiModelProperty;
 
 @Entity
 @Table(name="stepMonth")
@@ -223,11 +221,6 @@ public class MonthStep {
 	public void setYear(int year) {
 		this.year = year;
 	}
-
-
-
-    
-
  
 }
-*/
+
