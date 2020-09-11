@@ -1,3 +1,4 @@
+package se.sigma.boostapp.boost_app_java.repository;
 /*package se.sigma.boostapp.boost_app_java.repository;
 
 import org.springframework.data.repository.CrudRepository;
