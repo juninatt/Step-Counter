@@ -32,8 +32,8 @@ public class StepService {
 // Persist a single Step (for 1 or more step count)
 
 	/*
-	 * deras metod som funkar och jag kommer att ändra public Optional<Step>
-	 * registerSteps(String userId, StepDTO stepDto) { return
+	 * deras metod som funkar och jag kommer att ändra 
+	 * public Optional<Step> registerSteps(String userId, StepDTO stepDto) { return
 	 * Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(),
 	 * stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime()))); }
 	 */
