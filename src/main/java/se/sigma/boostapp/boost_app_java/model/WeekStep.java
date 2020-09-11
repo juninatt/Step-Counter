@@ -7,6 +7,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import io.swagger.annotations.ApiModelProperty;
+
 
 @Entity
 @Table(name="stepweek")
@@ -14,119 +16,226 @@ public class WeekStep {
 
 		@Id
 		@GeneratedValue(strategy = GenerationType.IDENTITY)
-		//@ApiModelProperty(notes = "The database generated monthStep ID")
-		@Column(name = "id")
+		//@ApiModelProperty(notes = "The database generated weekStep ID")
 		private long id;
+		
 		@Column(name = "user_id")
+		//@ApiModelProperty(notes = "User Id")
 	    private String user_id;
 		
+		//@ApiModelProperty(notes = "Week1")
 		@Column(name = "Week1")
 	    private int week1;
+	
+		//@ApiModelProperty(notes = "Week2")
 		@Column(name = "Week2")
 	    private int week2;
+		
+		//@ApiModelProperty(notes = "Week3")
 		@Column(name = "Week3")
 	    private int week3;
+		
+		//@ApiModelProperty(notes = "Week4")
 		@Column(name = "Week4")
 	    private int week4;
+		
+		//@ApiModelProperty(notes = "Week5")
 		@Column(name = "Week5")
 	    private int week5;
+		
+		//@ApiModelProperty(notes = "Week6")
 		@Column(name = "Week6")
 	    private int week6;
+		
+		//@ApiModelProperty(notes = "Week7")
 		@Column(name = "Week7")
 	    private int week7;
+		
+		//@ApiModelProperty(notes = "Week8")
 		@Column(name = "Week8")
 	    private int week8;
+		
+		//@ApiModelProperty(notes = "Week9")
 		@Column(name = "Week9")
 	    private int week9;
+		
+		//@ApiModelProperty(notes = "Week10")
 		@Column(name = "Week10")
 	    private int week10;
+		
+		//@ApiModelProperty(notes = "Week11")
 		@Column(name = "Week11")
 	    private int week11;
+		
+		//@ApiModelProperty(notes = "Week12")
 		@Column(name = "Week12")
 	    private int week12;
+		
+		//@ApiModelProperty(notes = "Week13")
 		@Column(name = "Week13")
 	    private int week13;
+		
+		//@ApiModelProperty(notes = "Week14")
 		@Column(name = "Week14")
 	    private int week14;
+		
+		//@ApiModelProperty(notes = "Week15")
 		@Column(name = "Week15")
 	    private int week15;
+		
+		//@ApiModelProperty(notes = "Week16")
 		@Column(name = "Week16")
 	    private int week16;
+		
+		//@ApiModelProperty(notes = "Week17")
 		@Column(name = "Week17")
 	    private int week17;
+		
+		//@ApiModelProperty(notes = "Week18")
 		@Column(name = "Week18")
 	    private int week18;
+		
+		//@ApiModelProperty(notes = "Week19")
 		@Column(name = "Week19")
 	    private int week19;
+		
+		//@ApiModelProperty(notes = "Week20")
 		@Column(name = "Week20")
 	    private int week20;
+		
+		//@ApiModelProperty(notes = "Week21")
 		@Column(name = "Week21")
 	    private int week21;
+		
+		//@ApiModelProperty(notes = "Week22")
 		@Column(name = "Week22")
 	    private int week22;
+		
+		//@ApiModelProperty(notes = "Week23")
 		@Column(name = "Week23")
 	    private int week23;
+		
+		//@ApiModelProperty(notes = "Week24")
 		@Column(name = "Week24")
 	    private int week24;
+		
+		//@ApiModelProperty(notes = "Week25")
 		@Column(name = "Week25")
 	    private int week25;
+		
+		//@ApiModelProperty(notes = "Week26")
 		@Column(name = "Week26")
 	    private int week26;
+		
+		//@ApiModelProperty(notes = "Week27")
 		@Column(name = "Week27")
 	    private int week27;
+		
+		//@ApiModelProperty(notes = "Week28")
 		@Column(name = "Week28")
 	    private int week28;
+		
+		//@ApiModelProperty(notes = "Week29")
 		@Column(name = "Week29")
 	    private int week29;
+		
+		//@ApiModelProperty(notes = "Week30")
 		@Column(name = "Week30")
 	    private int week30;
+		
+		//@ApiModelProperty(notes = "Week31")
 		@Column(name = "Week31")
 	    private int week31;
+		
+		//@ApiModelProperty(notes = "Week32")
 		@Column(name = "Week32")
 	    private int week32;
+		
+		//@ApiModelProperty(notes = "Week33")
 		@Column(name = "Week33")
 	    private int week33;
+		
+		//@ApiModelProperty(notes = "Week34")
 		@Column(name = "Week34")
 	    private int week34;
+		
+		//@ApiModelProperty(notes = "Week35")
 		@Column(name = "Week35")
 	    private int week35;
+		
+		//@ApiModelProperty(notes = "Week36")
 		@Column(name = "Week36")
 	    private int week36;
+		
+		//@ApiModelProperty(notes = "Week37")
 		@Column(name = "Week37")
 	    private int week37;
+		
+		//@ApiModelProperty(notes = "Week38")
 		@Column(name = "Week38")
 	    private int week38;
+		
+		//@ApiModelProperty(notes = "Week39")
 		@Column(name = "Week39")
 	    private int week39;
+		
+		//@ApiModelProperty(notes = "Week40")
 		@Column(name = "Week40")
 	    private int week40;
+		
+		//@ApiModelProperty(notes = "Week41")
 		@Column(name = "Week41")
 	    private int week41;
+		
+		//@ApiModelProperty(notes = "Week42")
 		@Column(name = "Week42")
 	    private int week42;
+		
+		//@ApiModelProperty(notes = "Week43")
 		@Column(name = "Week43")
 	    private int week43;
+		
+		//@ApiModelProperty(notes = "Week44")
 		@Column(name = "Week44")
 	    private int week44;
+		
+		//@ApiModelProperty(notes = "Week45")
 		@Column(name = "Week45")
 	    private int week45;
+		
+		//@ApiModelProperty(notes = "Week46")
 		@Column(name = "Week46")
 	    private int week46;
+		
+		//@ApiModelProperty(notes = "Week47")
 		@Column(name = "Week47")
 	    private int week47;
+		
+		//@ApiModelProperty(notes = "Week48")
 		@Column(name = "Week48")
 	    private int week48;
+		
+		//@ApiModelProperty(notes = "Week49")
 		@Column(name = "Week49")
 	    private int week49;
+		
+		//@ApiModelProperty(notes = "Week50")
 		@Column(name = "Week50")
 	    private int week50;
+		
+		//@ApiModelProperty(notes = "Week51")
 		@Column(name = "Week51")
 	    private int week51;
+		
+		//@ApiModelProperty(notes = "Week52")
 		@Column(name = "Week52")
 	    private int week52;
+		
+		//@ApiModelProperty(notes = "Week53")
 		@Column(name = "Week53")
 	    private int week53;
 		
+		//@ApiModelProperty(notes = "Year")
 		@Column(name = "Year")
 	    private int year;
 		
