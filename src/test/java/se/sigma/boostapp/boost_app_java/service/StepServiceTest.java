@@ -12,7 +12,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import se.sigma.boostapp.boost_app_java.dto.StepDTO;
 import se.sigma.boostapp.boost_app_java.model.Step;
+import se.sigma.boostapp.boost_app_java.repository.MonthStepRepository;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
+import se.sigma.boostapp.boost_app_java.repository.WeekStepRepository;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -27,6 +29,10 @@ public class StepServiceTest {
 
     @Mock
     private StepRepository mockedStepRepository;
+    @Mock
+    private WeekStepRepository weekStepRepository;
+    @Mock
+    private MonthStepRepository monthStepRepository;
     @InjectMocks
     private StepService stepService;
     private Step step;
@@ -34,7 +40,7 @@ public class StepServiceTest {
     @Before
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
-        stepService = new StepService(mockedStepRepository);
+        stepService = new StepService(mockedStepRepository, monthStepRepository, weekStepRepository);
         step = new Step();
     }
 

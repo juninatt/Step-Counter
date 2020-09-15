@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-sequence-stepmonth
+      author: svallingson
+      changes:
+        - createSequence:
+            sequenceName: stepmonth_id_seq

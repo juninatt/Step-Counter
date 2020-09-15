@@ -2,10 +2,12 @@ package se.sigma.boostapp.boost_app_java.service;
 
 import org.springframework.stereotype.Service;
 import se.sigma.boostapp.boost_app_java.dto.*;
+import se.sigma.boostapp.boost_app_java.model.MonthStep;
 import se.sigma.boostapp.boost_app_java.model.Step;
+import se.sigma.boostapp.boost_app_java.repository.MonthStepRepository;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
+import se.sigma.boostapp.boost_app_java.repository.WeekStepRepository;
 
-import javax.validation.constraints.NotNull;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -20,13 +22,16 @@ public class StepService {
 
 
 	private final StepRepository stepRepository;
-
+    private final MonthStepRepository monthStepRepository;
+    private final WeekStepRepository weekStepRepository;
 
 
 //	private static final double starPointFactor = 0.01;
 
-    public StepService(final StepRepository stepRepository) {
+    public StepService(final StepRepository stepRepository, final MonthStepRepository monthStepRepository, final WeekStepRepository weekStepRepository) {
         this.stepRepository = stepRepository;
+        this.monthStepRepository = monthStepRepository;
+        this.weekStepRepository = weekStepRepository;
     }
 
 // Persist a single Step (for 1 or more step count)
@@ -94,6 +99,9 @@ public class StepService {
             stepDtoList = mergeStepDtoObjectsWithSameDate(groupedByDayOfYearMap);
         	for (StepDTO s : stepDtoList) {
                 stepList.add(addStepToDB(userId, s));
+                //
+                addStepsToMonthStep(userId, s.getStepCount(), s.getEndTime().getMonthValue(), s.getEndTime().getYear(),false);
+
             }
         } else {
             //get latest entry from db
@@ -111,11 +119,85 @@ public class StepService {
                 stepDtoList = mergeStepDtoObjectsWithSameDate(groupedByDayOfYearMap);
                 //StepList with entities registered in DB
                 stepList = addOrUpdateStepDtoObjectsToDB(userId, stepDtoList, latest);
+                for(StepDTO s : stepDtoList)
+                addStepsToMonthStep(userId, s.getStepCount(),s.getEndTime().getMonthValue(),s.getEndTime().getYear(),true);
             }
         }
 
         return stepList;
     }
+
+    private void addStepsToMonthStep(String userId, int stepCount, int monthValue, int year, boolean exists) {
+        //uppdate stepCount to month column
+        if(!exists) {
+            monthStepRepository.save(new MonthStep(userId, year));
+        }
+
+        monthStepRepository.findFirstByUserId(userId).ifPresent(monthStep -> {
+            switch(monthValue){
+                case 1:
+                    monthStep.setJanuary(monthStep.getJanuary()+stepCount);
+                    monthStepRepository.save(monthStep);
+                    break;
+                case 2:
+                    monthStep.setFebruary(monthStep.getFebruary()+stepCount);
+                    monthStepRepository.save(monthStep);
+                    break;
+                case 3:
+                    monthStep.setMarch(monthStep.getMarch() + stepCount);
+                    monthStepRepository.save(monthStep);
+                    break;
+                case 4:
+                    monthStep.setApril(monthStep.getApril()+stepCount);
+                    monthStepRepository.save(monthStep);
+                    break;
+                case 5:
+                    monthStep.setMay(monthStep.getMay()+stepCount);
+                    monthStepRepository.save(monthStep);
+                    break;
+                case 6:
+                    monthStep.setJune(monthStep.getJune()+stepCount);
+                    monthStepRepository.save(monthStep);
+                    break;
+                case 7:
+                    monthStep.setJuly(monthStep.getJuly()+stepCount);
+                    monthStepRepository.save(monthStep);
+                    break;
+                case 8:
+                    monthStep.setAugust(monthStep.getAugust()+stepCount);
+                    monthStepRepository.save(monthStep);
+                    break;
+                case 9:
+                    monthStep.setSeptember(monthStep.getSeptember()+stepCount);
+                    monthStepRepository.save(monthStep);
+                    break;
+                case 10:
+                    monthStep.setOctober(monthStep.getOctober()+stepCount);
+                    monthStepRepository.save(monthStep);
+                    break;
+                case 11:
+                    monthStep.setNovember(monthStep.getNovember()+stepCount);
+                    monthStepRepository.save(monthStep);
+                    break;
+                case 12:
+                    monthStep.setDecember(monthStep.getDecember()+stepCount);
+                    monthStepRepository.save(monthStep);
+                    break;
+            }
+        });
+        //set 300 where month
+	}
+
+    /*private void addStepsToWeekStep(String userId, StepDTO s) {
+	    weekStepRepository.findByUser_idAndYear(userId, s.getEndTime().getYear()).ifPresentOrElse(
+	            weekStep -> {
+	                //update correct week with step
+	                weekStep.setWeek1(s.getStepCount()+weekStep.getWeek1());
+	                weekStepRepository.save(weekStep);},
+                () -> {weekStepRepository.save(new WeekStep(userId, s.getEndTime().getYear())).setWeek1(s.getStepCount());
+	            }
+                );
+    }*/
 
     //Helper method. Insert StepDTO-list to DB
     private List<Step> addOrUpdateStepDtoObjectsToDB(String userId, List<StepDTO> stepDtoList, Step latest) {
