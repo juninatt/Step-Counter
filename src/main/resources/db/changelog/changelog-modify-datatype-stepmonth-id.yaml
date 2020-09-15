@@ -1,0 +1,9 @@
+databaseChangeLog:
+ - changeSet:
+    id: modify-datatype-stepmonth-id
+    author: johanna
+    changes:
+      - modifyDataType:
+          columnName: id
+          newDataType: Long
+          tableName: stepmonth

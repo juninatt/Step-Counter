@@ -11,68 +11,68 @@ import io.swagger.annotations.ApiModelProperty;
 
 
 @Entity
-@Table(name="stepMonth")
+@Table(name="stepmonth")
 public class MonthStep {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	//@ApiModelProperty(notes = "The database generated monthStep ID")
+	@ApiModelProperty(notes = "The database generated monthStep ID")
 	private long id;
 	
 	@Column(name = "user_id")
-	//@ApiModelProperty(notes = "User Id")
-    private String user_id;
+	@ApiModelProperty(notes = "userId")
+    private String userId;
 	
-	@Column(name = "January")
-	//@ApiModelProperty(notes = "January")
+	@Column(name = "january")
+	@ApiModelProperty(notes = "january")
     private int january;
 	
-	@Column(name = "February")
-	//@ApiModelProperty(notes = "February")
+	@Column(name = "february")
+	//@ApiModelProperty(notes = "february")
     private int february;
 	
-	@Column(name = "March")
-	//@ApiModelProperty(notes = "March")
+	@Column(name = "march")
+	//@ApiModelProperty(notes = "march")
     private int march;
 	
-	@Column(name = "April")
-	//@ApiModelProperty(notes = "April")
+	@Column(name = "april")
+	//@ApiModelProperty(notes = "april")
     private int april;
 	
-	@Column(name = "May")
-	//@ApiModelProperty(notes = "May")
+	@Column(name = "may")
+	//@ApiModelProperty(notes = "may")
     private int may;
 	
-	@Column(name = "June")
-	//@ApiModelProperty(notes = "June")
+	@Column(name = "june")
+	//@ApiModelProperty(notes = "june")
     private int june;
 	
-	@Column(name = "July")
-	//@ApiModelProperty(notes = "July")
+	@Column(name = "july")
+	//@ApiModelProperty(notes = "july")
     private int july;
 	
-	@Column(name = "Augusty")
-	//@ApiModelProperty(notes = "Augusty")
+	@Column(name = "august")
+	//@ApiModelProperty(notes = "august")
     private int august;
 	
-	@Column(name = "September")
-	//@ApiModelProperty(notes = "September")
-    private int semptember;
+	@Column(name = "september")
+	//@ApiModelProperty(notes = "september")
+    private int september;
 	
-	@Column(name = "October")
-	//@ApiModelProperty(notes = "October")
+	@Column(name = "october")
+	//@ApiModelProperty(notes = "october")
     private int october;
 	
-	@Column(name = "November")
-	//@ApiModelProperty(notes = "November")
+	@Column(name = "november")
+	//@ApiModelProperty(notes = "november")
     private int november;
 	
-	@Column(name = "December")
-	//@ApiModelProperty(notes = "December")
+	@Column(name = "december")
+	//@ApiModelProperty(notes = "december")
     private int december;
 	
-	@Column(name = "Year")
-	//@ApiModelProperty(notes = "Year")
+	@Column(name = "year")
+	//@ApiModelProperty(notes = "year")
     private int year;
 
 
@@ -81,11 +81,11 @@ public class MonthStep {
     }
 
 
-	public MonthStep(long id, String user_id, int january, int february, int march, int april, int may, int june,
-			int july, int august, int semptember, int october, int november, int december, int year) {
+	public MonthStep(long id, String userId, int january, int february, int march, int april, int may, int june,
+					 int july, int august, int september, int october, int november, int december, int year) {
 		super();
 		this.id = id;
-		this.user_id = user_id;
+		this.userId = userId;
 		this.january = january;
 		this.february = february;
 		this.march = march;
@@ -94,15 +94,20 @@ public class MonthStep {
 		this.june = june;
 		this.july = july;
 		this.august = august;
-		this.semptember = semptember;
+		this.september = september;
 		this.october = october;
 		this.november = november;
 		this.december = december;
 		this.year = year;
 	}
 
+    public MonthStep(String userId, int year) {
+    	this.userId = userId;
+    	this.year = year;
+    }
 
-	public long getId() {
+
+    public long getId() {
 		return id;
 	}
 
@@ -112,13 +117,13 @@ public class MonthStep {
 	}
 
 
-	public String getUser_id() {
-		return user_id;
+	public String getUserId() {
+		return userId;
 	}
 
 
-	public void setUser_id(String user_id) {
-		this.user_id = user_id;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 
@@ -202,13 +207,13 @@ public class MonthStep {
 	}
 
 
-	public int getSemptember() {
-		return semptember;
+	public int getSeptember() {
+		return september;
 	}
 
 
-	public void setSemptember(int semptember) {
-		this.semptember = semptember;
+	public void setSeptember(int semptember) {
+		this.september = semptember;
 	}
 
 
@@ -252,4 +257,3 @@ public class MonthStep {
 	}
  
 }
-
