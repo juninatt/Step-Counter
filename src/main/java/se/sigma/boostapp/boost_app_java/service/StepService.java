@@ -58,7 +58,6 @@ public class StepService {
 					&& existingStep.getEnd().isBefore(stepDto.getEndTime())) {
 				existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
 				existingStep.setEnd(stepDto.getEndTime());
-				existingStep.setStart(stepDto.getStartTime());
 				existingStep.setUploadedTime(stepDto.getUploadedTime());
 				return Optional.of(stepRepository.save(existingStep));
 			}
@@ -92,7 +91,6 @@ public class StepService {
     //	Persist multiple Step //StepDTO-objects that has the same date will be merged to one where stepCount is summed and startDate is set to earliest in list
     public List<Step> registerMultipleSteps(String userId, List<StepDTO> stepDtoList) {
         List<Step> stepList = new ArrayList<>();
-        Step latest;
         //if new user, add all to db after grouping by date
         if (!stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).isPresent()) {
             Map<Integer, List<StepDTO>> groupedByDayOfYearMap =  groupObjectsInListsByEndDate(stepDtoList);
@@ -100,10 +98,11 @@ public class StepService {
         	for (StepDTO s : stepDtoList) {
                 stepList.add(addStepToDB(userId, s));
                 //
-                addStepsToMonthStep(userId, s.getStepCount(), s.getEndTime().getMonthValue(), s.getEndTime().getYear(),false);
+                addStepsToMonthStep(userId, s.getStepCount(), s.getEndTime().getMonthValue(), s.getEndTime().getYear());
 
             }
         } else {
+            Step latest;
             //get latest entry from db
             latest = stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).get();
             //filter out any object in list that is before latest entry
@@ -120,84 +119,27 @@ public class StepService {
                 //StepList with entities registered in DB
                 stepList = addOrUpdateStepDtoObjectsToDB(userId, stepDtoList, latest);
                 for(StepDTO s : stepDtoList)
-                addStepsToMonthStep(userId, s.getStepCount(),s.getEndTime().getMonthValue(),s.getEndTime().getYear(),true);
+                addStepsToMonthStep(userId, s.getStepCount(),s.getEndTime().getMonthValue(),s.getEndTime().getYear());
             }
         }
 
         return stepList;
     }
 
-    private void addStepsToMonthStep(String userId, int stepCount, int monthValue, int year, boolean exists) {
+    private void addStepsToMonthStep(String userId, int stepCount, int monthValue, int year) {
         //uppdate stepCount to month column
-        if(!exists) {
+        if(!monthStepRepository.findFirstByUserId(userId).isPresent()) {
             monthStepRepository.save(new MonthStep(userId, year));
+            var m = monthStepRepository.findFirstByUserId(userId).get();
+            m.setOneMonth(monthValue, stepCount);
+            monthStepRepository.save(m);
         }
-
-        monthStepRepository.findFirstByUserId(userId).ifPresent(monthStep -> {
-            switch(monthValue){
-                case 1:
-                    monthStep.setJanuary(monthStep.getJanuary()+stepCount);
-                    monthStepRepository.save(monthStep);
-                    break;
-                case 2:
-                    monthStep.setFebruary(monthStep.getFebruary()+stepCount);
-                    monthStepRepository.save(monthStep);
-                    break;
-                case 3:
-                    monthStep.setMarch(monthStep.getMarch() + stepCount);
-                    monthStepRepository.save(monthStep);
-                    break;
-                case 4:
-                    monthStep.setApril(monthStep.getApril()+stepCount);
-                    monthStepRepository.save(monthStep);
-                    break;
-                case 5:
-                    monthStep.setMay(monthStep.getMay()+stepCount);
-                    monthStepRepository.save(monthStep);
-                    break;
-                case 6:
-                    monthStep.setJune(monthStep.getJune()+stepCount);
-                    monthStepRepository.save(monthStep);
-                    break;
-                case 7:
-                    monthStep.setJuly(monthStep.getJuly()+stepCount);
-                    monthStepRepository.save(monthStep);
-                    break;
-                case 8:
-                    monthStep.setAugust(monthStep.getAugust()+stepCount);
-                    monthStepRepository.save(monthStep);
-                    break;
-                case 9:
-                    monthStep.setSeptember(monthStep.getSeptember()+stepCount);
-                    monthStepRepository.save(monthStep);
-                    break;
-                case 10:
-                    monthStep.setOctober(monthStep.getOctober()+stepCount);
-                    monthStepRepository.save(monthStep);
-                    break;
-                case 11:
-                    monthStep.setNovember(monthStep.getNovember()+stepCount);
-                    monthStepRepository.save(monthStep);
-                    break;
-                case 12:
-                    monthStep.setDecember(monthStep.getDecember()+stepCount);
-                    monthStepRepository.save(monthStep);
-                    break;
-            }
-        });
-        //set 300 where month
+        else{
+            var m = monthStepRepository.findFirstByUserId(userId).get();
+            m.setOneMonth(monthValue, stepCount);
+            monthStepRepository.save(m);
+        }
 	}
-
-    /*private void addStepsToWeekStep(String userId, StepDTO s) {
-	    weekStepRepository.findByUser_idAndYear(userId, s.getEndTime().getYear()).ifPresentOrElse(
-	            weekStep -> {
-	                //update correct week with step
-	                weekStep.setWeek1(s.getStepCount()+weekStep.getWeek1());
-	                weekStepRepository.save(weekStep);},
-                () -> {weekStepRepository.save(new WeekStep(userId, s.getEndTime().getYear())).setWeek1(s.getStepCount());
-	            }
-                );
-    }*/
 
     //Helper method. Insert StepDTO-list to DB
     private List<Step> addOrUpdateStepDtoObjectsToDB(String userId, List<StepDTO> stepDtoList, Step latest) {
