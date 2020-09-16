@@ -17,7 +17,7 @@ public interface MonthStepRepository extends CrudRepository<MonthStep,Long>{
    // @Query("SELECT MonthStep FROM MonthStep m WHERE m.userId = :userId AND m.year = :year ORDER BY m.year DESC ")
    // Optional<MonthStep> findFirstByUserIdAndYear(@Param("userId")String userId, @Param("year")int year);
 
-    Optional<MonthStep> findFirstByUserId(String userId);
+    Optional<MonthStep> findFirstByUserIdAndYear(String userId, int year);
 
  /* //  insert into testmonth (user_id, week2) values ('danijela', 900)
 
