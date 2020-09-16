@@ -119,7 +119,7 @@ public class StepServiceTest {
         assertEquals(150,stepService.registerSteps("userTest3", stepDto).get().getStepCount());
     }
 
-    @Test
+/*    @Test
     public void registerMultipleSteps_test() {
         List<StepDTO> mockStepDTOList = new ArrayList<>();
         StepDTO stepDTO1 = new StepDTO(10,
@@ -153,10 +153,10 @@ public class StepServiceTest {
 
         assertEquals(122, test.get(0).getStepCount());
         assertEquals(2, test.size());
-    }
+    }*/
 
 
-    @Test
+    /*@Test
     public void registerMultipleSteps_shouldReturnCompleteListOfStepObjectsForNewUser_test() {
         List <StepDTO> mockStepDTOList2 = new ArrayList<>();
         StepDTO stepDTO1 = new StepDTO(1,
@@ -188,7 +188,7 @@ public class StepServiceTest {
 
         assertEquals(4, stepService.registerMultipleSteps("test", mockStepDTOList2).size());
 
-    }
+    }*/
 
 
 }

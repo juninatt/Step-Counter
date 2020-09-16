@@ -8,9 +8,10 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import io.swagger.annotations.ApiModelProperty;
-
+import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
+@DynamicUpdate
 @Table(name="stepmonth")
 public class MonthStep {
 
@@ -80,7 +81,6 @@ public class MonthStep {
 
     }
 
-
 	public MonthStep(long id, String userId, int january, int february, int march, int april, int may, int june,
 					 int july, int august, int september, int october, int november, int december, int year) {
 		super();
@@ -105,7 +105,6 @@ public class MonthStep {
     	this.userId = userId;
     	this.year = year;
     }
-
 
     public long getId() {
 		return id;
@@ -212,8 +211,8 @@ public class MonthStep {
 	}
 
 
-	public void setSeptember(int semptember) {
-		this.september = semptember;
+	public void setSeptember(int september) {
+		this.september = september;
 	}
 
 
@@ -254,6 +253,48 @@ public class MonthStep {
 
 	public void setYear(int year) {
 		this.year = year;
+	}
+
+	public void setOneMonth(int monthValue, int stepCount){
+
+		switch(monthValue){
+			case 1:
+				this.setJanuary(this.getJanuary()+stepCount);
+				break;
+			case 2:
+				this.setFebruary(this.getFebruary()+stepCount);
+				break;
+			case 3:
+				this.setMarch(this.getMarch()+stepCount);
+				break;
+			case 4:
+				this.setApril(this.getApril()+stepCount);
+				break;
+			case 5:
+				this.setMay(this.getMay()+stepCount);
+				break;
+			case 6:
+				this.setJune(this.getJune()+stepCount);
+				break;
+			case 7:
+				this.setJuly(this.getJuly()+stepCount);
+				break;
+			case 8:
+				this.setAugust(this.getAugust()+stepCount);
+				break;
+			case 9:
+				this.setSeptember(this.getSeptember()+stepCount);
+				break;
+			case 10:
+				this.setOctober(this.getOctober()+stepCount);
+				break;
+			case 11:
+				this.setNovember(this.getNovember()+stepCount);
+				break;
+			case 12:
+				this.setDecember(this.getDecember()+stepCount);
+				break;
+		}
 	}
  
 }
