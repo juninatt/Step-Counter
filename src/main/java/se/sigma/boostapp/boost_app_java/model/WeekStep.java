@@ -21,7 +21,7 @@ public class WeekStep {
 		
 		@Column(name = "user_id")
 		//@ApiModelProperty(notes = "User Id")
-	    private String user_id;
+	    private String userId;
 		
 		//@ApiModelProperty(notes = "Week1")
 		@Column(name = "Week1")
@@ -245,7 +245,13 @@ public class WeekStep {
 		}
 		
 
-		public WeekStep(long id, String user_id, int week1, int week2, int week3, int week4, int week5, int week6,
+		public WeekStep(String userId, int year){
+			this.userId = userId;
+			this.year = year;
+		}
+
+
+		public WeekStep(long id, String userId, int week1, int week2, int week3, int week4, int week5, int week6,
 				int week7, int week8, int week9, int week10, int week11, int week12, int week13, int week14, int week15,
 				int week16, int week17, int week18, int week19, int week20, int week21, int week22, int week23,
 				int week24, int week25, int week26, int week27, int week28, int week29, int week30, int week31,
@@ -254,7 +260,7 @@ public class WeekStep {
 				int week48, int week49, int week50, int week51, int week52, int week53, int year) {
 			super();
 			this.id = id;
-			this.user_id = user_id;
+			this.userId = userId;
 			this.week1 = week1;
 			this.week2 = week2;
 			this.week3 = week3;
@@ -323,13 +329,13 @@ public class WeekStep {
 		}
 
 
-		public String getUser_id() {
-			return user_id;
+		public String getUserId() {
+			return userId;
 		}
 
 
-		public void setUser_id(String user_id) {
-			this.user_id = user_id;
+		public void setUserId(String user_id) {
+			this.userId = user_id;
 		}
 
 
