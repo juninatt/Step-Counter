@@ -4,9 +4,11 @@ import org.springframework.stereotype.Service;
 import se.sigma.boostapp.boost_app_java.dto.*;
 import se.sigma.boostapp.boost_app_java.model.MonthStep;
 import se.sigma.boostapp.boost_app_java.model.Step;
+
 import se.sigma.boostapp.boost_app_java.repository.MonthStepRepository;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 import se.sigma.boostapp.boost_app_java.repository.WeekStepRepository;
+
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -22,17 +24,21 @@ public class StepService {
 
 
 	private final StepRepository stepRepository;
+
     private final MonthStepRepository monthStepRepository;
     private final WeekStepRepository weekStepRepository;
 
 
+
 //	private static final double starPointFactor = 0.01;
+
 
     public StepService(final StepRepository stepRepository, final MonthStepRepository monthStepRepository, final WeekStepRepository weekStepRepository) {
         this.stepRepository = stepRepository;
         this.monthStepRepository = monthStepRepository;
         this.weekStepRepository = weekStepRepository;
     }
+
 
 // Persist a single Step (for 1 or more step count)
 
@@ -43,7 +49,7 @@ public class StepService {
 	 * stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime()))); }
 	 */
 
-//  28.08.2020.
+
 // Persist a single Step (for 1 or more step count)
 	public Optional<Step> registerSteps(String userId, StepDTO stepDto) {
 
@@ -332,5 +338,11 @@ public class StepService {
                                         * starPointFactor)
                 ))).collect(Collectors.toList());
     }
+
+
+
+
+
+	
 
 }

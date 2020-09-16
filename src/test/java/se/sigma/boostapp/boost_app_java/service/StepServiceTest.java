@@ -29,10 +29,12 @@ public class StepServiceTest {
 
     @Mock
     private StepRepository mockedStepRepository;
+
     @Mock
     private WeekStepRepository weekStepRepository;
     @Mock
     private MonthStepRepository monthStepRepository;
+
     @InjectMocks
     private StepService stepService;
     private Step step;
@@ -40,7 +42,9 @@ public class StepServiceTest {
     @Before
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
+
         stepService = new StepService(mockedStepRepository, monthStepRepository, weekStepRepository);
+
         step = new Step();
     }
 
