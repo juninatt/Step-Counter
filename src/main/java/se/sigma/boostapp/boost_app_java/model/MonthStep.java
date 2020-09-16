@@ -7,72 +7,74 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 
 @Entity
 @Table(name="stepMonth")
+@ApiModel(description = "All details about the month step entity. ")
 public class MonthStep {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	//@ApiModelProperty(notes = "The database generated monthStep ID")
+	@ApiModelProperty(notes = "The database generated monthStep ID")
 	private long id;
 	
 	@Column(name = "user_id")
-	//@ApiModelProperty(notes = "User Id")
+	@ApiModelProperty(notes = "User Id")
     private String user_id;
 	
 	@Column(name = "January")
-	//@ApiModelProperty(notes = "January")
+	@ApiModelProperty(notes = "January")
     private int january;
 	
 	@Column(name = "February")
-	//@ApiModelProperty(notes = "February")
+	@ApiModelProperty(notes = "February")
     private int february;
 	
 	@Column(name = "March")
-	//@ApiModelProperty(notes = "March")
+	@ApiModelProperty(notes = "March")
     private int march;
 	
 	@Column(name = "April")
-	//@ApiModelProperty(notes = "April")
+	@ApiModelProperty(notes = "April")
     private int april;
 	
 	@Column(name = "May")
-	//@ApiModelProperty(notes = "May")
+	@ApiModelProperty(notes = "May")
     private int may;
 	
 	@Column(name = "June")
-	//@ApiModelProperty(notes = "June")
+	@ApiModelProperty(notes = "June")
     private int june;
 	
 	@Column(name = "July")
-	//@ApiModelProperty(notes = "July")
+	@ApiModelProperty(notes = "July")
     private int july;
 	
 	@Column(name = "Augusty")
-	//@ApiModelProperty(notes = "Augusty")
+	@ApiModelProperty(notes = "Augusty")
     private int august;
 	
 	@Column(name = "September")
-	//@ApiModelProperty(notes = "September")
+	@ApiModelProperty(notes = "September")
     private int semptember;
 	
 	@Column(name = "October")
-	//@ApiModelProperty(notes = "October")
+	@ApiModelProperty(notes = "October")
     private int october;
 	
 	@Column(name = "November")
-	//@ApiModelProperty(notes = "November")
+	@ApiModelProperty(notes = "November")
     private int november;
 	
 	@Column(name = "December")
-	//@ApiModelProperty(notes = "December")
+	@ApiModelProperty(notes = "December")
     private int december;
 	
 	@Column(name = "Year")
-	//@ApiModelProperty(notes = "Year")
+	@ApiModelProperty(notes = "Year")
     private int year;
 
 

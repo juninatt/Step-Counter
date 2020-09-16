@@ -2,9 +2,14 @@ package se.sigma.boostapp.boost_app_java.service;
 
 import org.springframework.stereotype.Service;
 import se.sigma.boostapp.boost_app_java.dto.*;
+import se.sigma.boostapp.boost_app_java.model.MonthStep;
 import se.sigma.boostapp.boost_app_java.model.Step;
+import se.sigma.boostapp.boost_app_java.model.WeekStep;
+import se.sigma.boostapp.boost_app_java.repository.MonthStepRepository;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
+import se.sigma.boostapp.boost_app_java.repository.WeekStepRepository;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.sql.Date;
 import java.time.LocalDate;
@@ -20,13 +25,21 @@ public class StepService {
 
 
 	private final StepRepository stepRepository;
+	private final WeekStepRepository weekStepRepository;
+	private final MonthStepRepository monthStepRepository;
 
 
 
 //	private static final double starPointFactor = 0.01;
 
-    public StepService(final StepRepository stepRepository) {
+    public StepService(final StepRepository stepRepository, 
+    				   final WeekStepRepository weekStepRepository,
+    				   final MonthStepRepository monthStepRepository){
         this.stepRepository = stepRepository;
+        this.weekStepRepository=weekStepRepository;
+        this.monthStepRepository=monthStepRepository;
+        
+		
     }
 
 // Persist a single Step (for 1 or more step count)
@@ -38,7 +51,7 @@ public class StepService {
 	 * stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime()))); }
 	 */
 
-//  28.08.2020.
+
 // Persist a single Step (for 1 or more step count)
 	public Optional<Step> registerSteps(String userId, StepDTO stepDto) {
 
@@ -250,5 +263,11 @@ public class StepService {
                                         * starPointFactor)
                 ))).collect(Collectors.toList());
     }
+
+
+
+
+
+	
 
 }
