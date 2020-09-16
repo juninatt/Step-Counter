@@ -65,6 +65,8 @@ public class StepService {
 				existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
 				existingStep.setEnd(stepDto.getEndTime());
 				existingStep.setUploadedTime(stepDto.getUploadedTime());
+				//monthStep
+				registerStepsMonth(userId, existingStep.getStepCount(), existingStep.getEnd().getMonthValue(), existingStep.getEnd().getYear());
 				return Optional.of(stepRepository.save(existingStep));
 			}
 			// take care only of time
@@ -75,14 +77,25 @@ public class StepService {
 				return Optional.empty();
 			} else if (existingStep.getEnd().getDayOfYear() != stepDto.getEndTime().getDayOfYear())
 				existingStep.setStepCount(existingStep.getStepCount() /* + stepDto.getStepCount() */);
+			
+			//monthStep
+			registerStepsMonth(userId, existingStep.getStepCount(), existingStep.getEnd().getMonthValue(), existingStep.getEnd().getYear());
+			
 			return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
 					stepDto.getEndTime(), stepDto.getUploadedTime())));
 
 		} else
+			
 			return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
 					stepDto.getEndTime(), stepDto.getUploadedTime())));
 
 	}
+	
+	
+	 private void registerStepsMonth(String userId, int stepCount, int monthValue, int year) {
+	        //uppdate stepCount to month column
+	      
+		}
 
 
 //	Get latest step entity by user
