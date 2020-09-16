@@ -103,26 +103,18 @@ public class StepService {
             stepDtoList = mergeStepDtoObjectsWithSameDate(groupedByDayOfYearMap);
         	for (StepDTO s : stepDtoList) {
                 stepList.add(addStepToDB(userId, s));
-                //
                 addStepsToMonthStep(userId, s.getStepCount(), s.getEndTime().getMonthValue(), s.getEndTime().getYear());
 
             }
         } else {
-            Step latest;
-            //get latest entry from db
-            latest = stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).get();
-            //filter out any object in list that is before latest entry
+            Step latest = stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).get();
             // TODO: 2020-09-08 communicate conflict with response?
 			//objects that conflicts with latest entry in BD will be discarded
             stepDtoList = stepDtoList.stream().filter(stepDTO -> stepDTO.getEndTime().isAfter(latest.getEnd())).collect(Collectors.toList());
-
-            //Group objects in lists by endDate
             Map<Integer, List<StepDTO>> groupedByDayOfYearMap =  groupObjectsInListsByEndDate(stepDtoList);
 
             if (!stepDtoList.isEmpty()) {
-                //Return list of merged objects with the same endDate
                 stepDtoList = mergeStepDtoObjectsWithSameDate(groupedByDayOfYearMap);
-                //StepList with entities registered in DB
                 stepList = addOrUpdateStepDtoObjectsToDB(userId, stepDtoList, latest);
                 for(StepDTO s : stepDtoList)
                 addStepsToMonthStep(userId, s.getStepCount(),s.getEndTime().getMonthValue(),s.getEndTime().getYear());
@@ -134,20 +126,20 @@ public class StepService {
 
     private void addStepsToMonthStep(String userId, int stepCount, int monthValue, int year) {
         //uppdate stepCount to month column
-        if(!monthStepRepository.findFirstByUserId(userId).isPresent()) {
+        if(!monthStepRepository.findFirstByUserIdAndYear(userId, year).isPresent()) {
             monthStepRepository.save(new MonthStep(userId, year));
-            var m = monthStepRepository.findFirstByUserId(userId).get();
+            var m = monthStepRepository.findFirstByUserIdAndYear(userId, year).get();
             m.setOneMonth(monthValue, stepCount);
             monthStepRepository.save(m);
         }
         else{
-            var m = monthStepRepository.findFirstByUserId(userId).get();
+            var m = monthStepRepository.findFirstByUserIdAndYear(userId, year).get();
             m.setOneMonth(monthValue, stepCount);
             monthStepRepository.save(m);
         }
 	}
 
-    //Helper method. Insert StepDTO-list to DB
+    //Helper method. Insert StepDTO-list to stepsPerDay-table
     private List<Step> addOrUpdateStepDtoObjectsToDB(String userId, List<StepDTO> stepDtoList, Step latest) {
         List<Step> stepList = new ArrayList<>();
         //Put earliest date first in list
