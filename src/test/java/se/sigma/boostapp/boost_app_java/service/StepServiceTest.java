@@ -11,6 +11,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import se.sigma.boostapp.boost_app_java.dto.StepDTO;
+import se.sigma.boostapp.boost_app_java.model.MonthStep;
 import se.sigma.boostapp.boost_app_java.model.Step;
 import se.sigma.boostapp.boost_app_java.repository.MonthStepRepository;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
@@ -21,7 +22,7 @@ import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -30,9 +31,9 @@ public class StepServiceTest {
     @Mock
     private StepRepository mockedStepRepository;
     @Mock
-    private WeekStepRepository weekStepRepository;
+    private WeekStepRepository mockedWeekStepRepository;
     @Mock
-    private MonthStepRepository monthStepRepository;
+    private MonthStepRepository mockedMonthStepRepository;
     @InjectMocks
     private StepService stepService;
     private Step step;
@@ -40,7 +41,7 @@ public class StepServiceTest {
     @Before
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
-        stepService = new StepService(mockedStepRepository, monthStepRepository, weekStepRepository);
+        stepService = new StepService(mockedStepRepository, mockedMonthStepRepository, mockedWeekStepRepository);
         step = new Step();
     }
 
@@ -106,9 +107,7 @@ public class StepServiceTest {
                 LocalDateTime.parse("2020-01-02T01:00:00"),
                 LocalDateTime.parse("2020-01-02T01:10:00"),
                 LocalDateTime.parse("2020-01-02T02:00:00"));
-      //  List<String> usersList = new ArrayList<>();
-      //  usersList.add("userTest3");
-       // when(mockedStepRepository.getAllUsers()).thenReturn(usersList);
+
         when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(any(String.class))).thenReturn(Optional.of(mockStep));
         when(mockedStepRepository.save(any(Step.class))).thenReturn(mockStep);
 
@@ -119,7 +118,7 @@ public class StepServiceTest {
         assertEquals(150,stepService.registerSteps("userTest3", stepDto).get().getStepCount());
     }
 
-/*    @Test
+    @Test
     public void registerMultipleSteps_test() {
         List<StepDTO> mockStepDTOList = new ArrayList<>();
         StepDTO stepDTO1 = new StepDTO(10,
@@ -146,17 +145,21 @@ public class StepServiceTest {
                 LocalDateTime.parse("2020-08-21T01:00:00"),
                 LocalDateTime.parse("2020-08-21T01:00:00"));
 
+        MonthStep mockMonth = new MonthStep("userId", 2020);
+
         when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(Mockito.anyString())).thenReturn(Optional.of(mockStep));
         when(mockedStepRepository.save(any())).thenReturn(mockStep);
+        when(mockedMonthStepRepository.findFirstByUserIdAndYear(anyString(), anyInt())).thenReturn(Optional.of(mockMonth));
+        when(mockedMonthStepRepository.save(any(MonthStep.class))).thenReturn(mockMonth);
 
         var test = stepService.registerMultipleSteps("idTest", mockStepDTOList);
 
         assertEquals(122, test.get(0).getStepCount());
         assertEquals(2, test.size());
-    }*/
+    }
 
 
-    /*@Test
+    @Test
     public void registerMultipleSteps_shouldReturnCompleteListOfStepObjectsForNewUser_test() {
         List <StepDTO> mockStepDTOList2 = new ArrayList<>();
         StepDTO stepDTO1 = new StepDTO(1,
@@ -184,12 +187,12 @@ public class StepServiceTest {
         mockStepDTOList2.add(stepDTO3);
         mockStepDTOList2.add(stepDTO4);
 
+        MonthStep mockMonth = new MonthStep("userId", 2020);
+
         when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(Mockito.anyString())).thenReturn(Optional.empty());
+        when(mockedMonthStepRepository.findFirstByUserIdAndYear(anyString(), anyInt())).thenReturn(Optional.of(mockMonth));
+        when(mockedMonthStepRepository.save(any(MonthStep.class))).thenReturn(mockMonth);
 
         assertEquals(4, stepService.registerMultipleSteps("test", mockStepDTOList2).size());
-
-    }*/
-
-
+    }
 }
-
