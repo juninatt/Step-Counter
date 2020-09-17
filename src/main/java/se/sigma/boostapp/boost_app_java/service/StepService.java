@@ -9,8 +9,10 @@ import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 import se.sigma.boostapp.boost_app_java.repository.WeekStepRepository;
 
 import java.sql.Date;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -21,7 +23,6 @@ public class StepService {
 	private static final double starPointFactor = 1;
 
 	private final StepRepository stepRepository;
-
 	private final MonthStepRepository monthStepRepository;
 	private final WeekStepRepository weekStepRepository;
 
@@ -53,37 +54,60 @@ public class StepService {
 		if (stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).isPresent()) {
 			Step existingStep = stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).get();
 
-			if (existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()
+				if (existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()
 					&& existingStep.getEnd().isBefore(stepDto.getEndTime())) {
-				existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
-				existingStep.setEnd(stepDto.getEndTime());
-				existingStep.setUploadedTime(stepDto.getUploadedTime());
-				// monthStep
-				addStepsToMonthStep(userId, stepDto.getStepCount(), stepDto.getEndTime().getMonthValue(),
-						stepDto.getEndTime().getYear());
-				return Optional.of(stepRepository.save(existingStep));
-			}
-			// take care only of time
-			else if (existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()
-					&& (existingStep.getEnd().equals(stepDto.getEndTime())
-							|| existingStep.getEnd().isAfter(stepDto.getEndTime()))) {
-				// tänka att skriva kod för meddelande till användare
-				return Optional.empty();
-			} else if (existingStep.getEnd().getDayOfYear() != stepDto.getEndTime().getDayOfYear())
-				existingStep.setStepCount(existingStep.getStepCount());
-			// monthStep
-			addStepsToMonthStep(userId, stepDto.getStepCount(), stepDto.getEndTime().getMonthValue(),
-					stepDto.getEndTime().getYear());
-			return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
-					stepDto.getEndTime(), stepDto.getUploadedTime())));
+					
+					existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
+					existingStep.setEnd(stepDto.getEndTime());
+					existingStep.setUploadedTime(stepDto.getUploadedTime());
+					
+					// monthStep
+					addStepsToMonthStep(userId, stepDto.getStepCount(), stepDto.getEndTime().getMonthValue(),
+							stepDto.getEndTime().getYear());
+					
+					//delete table after one week
+					deleteTablePerDay(stepDto.getEndTime());
+					
+					return Optional.of(stepRepository.save(existingStep));
+				}
+				// take care only of time
+				else if (existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()
+						&& (existingStep.getEnd().equals(stepDto.getEndTime()) || existingStep.getEnd().isAfter(stepDto.getEndTime()))) {
+					// tänka att skriva kod för meddelande till användare
+					return Optional.empty();
+					
+				} else if (existingStep.getEnd().getDayOfYear() != stepDto.getEndTime().getDayOfYear())
+					existingStep.setStepCount(existingStep.getStepCount());
+				
+					// monthStep
+					addStepsToMonthStep(userId, stepDto.getStepCount(), stepDto.getEndTime().getMonthValue(),stepDto.getEndTime().getYear());
+				
+					//delete table after one week
+					deleteTablePerDay(stepDto.getEndTime());
+					return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime())));
 
 		} else
-			//monthStep
-			addStepsToMonthStep(userId, stepDto.getStepCount(), stepDto.getEndTime().getMonthValue(),
-					stepDto.getEndTime().getYear());
-		return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
+				//monthStep
+				addStepsToMonthStep(userId, stepDto.getStepCount(), stepDto.getEndTime().getMonthValue(),stepDto.getEndTime().getYear());
+			
+				//delete table after one week
+				deleteTablePerDay(stepDto.getEndTime());
+		
+				return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
 				stepDto.getEndTime(), stepDto.getUploadedTime())));
 
+	}
+	
+	public void deleteTablePerDay(LocalDateTime stepTime ) {	
+		//delete data from table step when one week is over
+		// the time is from Monday 00:00:01 to Sunday 00:00:00 
+		//1= Monday
+		if(stepTime.getDayOfWeek().getValue()==1 &&
+				stepTime.getHour()==0 &&
+				stepTime.getMinute()==0 &&
+				// getSecond: set to 0 if want to have time from Monday 00:00:00 to Sunday 23:59:59
+				stepTime.getSecond()==1)
+				stepRepository.deleteAll();	
 	}
 
 //	Get latest step entity by user
