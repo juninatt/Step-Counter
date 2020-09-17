@@ -4,11 +4,9 @@ import org.springframework.stereotype.Service;
 import se.sigma.boostapp.boost_app_java.dto.*;
 import se.sigma.boostapp.boost_app_java.model.MonthStep;
 import se.sigma.boostapp.boost_app_java.model.Step;
-
 import se.sigma.boostapp.boost_app_java.repository.MonthStepRepository;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 import se.sigma.boostapp.boost_app_java.repository.WeekStepRepository;
-
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -66,7 +64,7 @@ public class StepService {
 				existingStep.setEnd(stepDto.getEndTime());
 				existingStep.setUploadedTime(stepDto.getUploadedTime());
 				//monthStep
-				registerStepsMonth(userId, existingStep.getStepCount(), existingStep.getEnd().getMonthValue(), existingStep.getEnd().getYear());
+				addStepsToMonthStep(userId, stepDto.getStepCount(), stepDto.getEndTime().getMonthValue(), stepDto.getEndTime().getYear());
 				return Optional.of(stepRepository.save(existingStep));
 			}
 			// take care only of time
@@ -79,13 +77,13 @@ public class StepService {
 				existingStep.setStepCount(existingStep.getStepCount() /* + stepDto.getStepCount() */);
 			
 			//monthStep
-			registerStepsMonth(userId, existingStep.getStepCount(), existingStep.getEnd().getMonthValue(), existingStep.getEnd().getYear());
+			addStepsToMonthStep(userId, stepDto.getStepCount(), stepDto.getEndTime().getMonthValue(), stepDto.getEndTime().getYear());
 			
 			return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
 					stepDto.getEndTime(), stepDto.getUploadedTime())));
 
 		} else
-			
+			addStepsToMonthStep(userId, stepDto.getStepCount(), stepDto.getEndTime().getMonthValue(), stepDto.getEndTime().getYear());
 			return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
 					stepDto.getEndTime(), stepDto.getUploadedTime())));
 
