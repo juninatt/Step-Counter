@@ -1,5 +1,6 @@
 package se.sigma.boostapp.boost_app_java.repository;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -32,7 +33,7 @@ public interface StepRepository extends CrudRepository<Step, Long>{
 
 	Optional<Step> findFirstByUserIdOrderByEndTimeDesc(String userId);
 
-
+	void deleteAll();
 
 
 	//28.08.2020.
