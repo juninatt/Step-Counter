@@ -89,46 +89,6 @@ public class StepService {
 
 	}
 		
-		
-	/*	if (stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).isPresent()) {
-			Step existingStep = stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).get();
-
-				if (existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()
-					&& existingStep.getEnd().isBefore(stepDto.getEndTime())) {
-					
-					existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
-					existingStep.setEnd(stepDto.getEndTime());
-					existingStep.setUploadedTime(stepDto.getUploadedTime());
-					
-					// monthStep
-					addStepsToMonthStep(userId, stepDto.getStepCount(), stepDto.getEndTime().getMonthValue(),
-							stepDto.getEndTime().getYear());
-					
-					return Optional.of(stepRepository.save(existingStep));
-				}
-				// take care only of time
-				else if (existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()
-						&& (existingStep.getEnd().equals(stepDto.getEndTime()) || existingStep.getEnd().isAfter(stepDto.getEndTime()))) {
-					// tänka att skriva kod för meddelande till användare
-					return Optional.empty();
-					
-				} else if (existingStep.getEnd().getDayOfYear() != stepDto.getEndTime().getDayOfYear())
-					existingStep.setStepCount(existingStep.getStepCount());
-				
-					// monthStep
-					addStepsToMonthStep(userId, stepDto.getStepCount(), stepDto.getEndTime().getMonthValue(),stepDto.getEndTime().getYear());
-					
-					return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime())));
-
-		} else
-					//monthStep
-					addStepsToMonthStep(userId, stepDto.getStepCount(), stepDto.getEndTime().getMonthValue(),stepDto.getEndTime().getYear());
-				
-					return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
-					stepDto.getEndTime(), stepDto.getUploadedTime())));
-
-	
-	}  */
 
 //	Get latest step entity by user
 	// //2020-09-03 denna metoden skickar en summa av steg per dag per användare
