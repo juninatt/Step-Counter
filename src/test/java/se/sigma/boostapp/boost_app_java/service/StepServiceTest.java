@@ -38,19 +38,23 @@ public class StepServiceTest {
 
     @InjectMocks
     private StepService stepService;
-    private Step step;
-    private MonthStep monthStep;
+   // @InjectMocks
+   // private Step step_1;
+   // private MonthStep monthStep;
 
     @Before
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
-        stepService = new StepService(mockedStepRepository, mockedMonthStepRepository, mockedWeekStepRepository);
-        step = new Step();
-        monthStep= new MonthStep();
+       stepService = new StepService(mockedStepRepository, mockedMonthStepRepository, mockedWeekStepRepository);
+        //step_1 = new Step();
+        //monthStep= new MonthStep();
     }
 
-  /*  @Test
-    public void registerStepsTest() {
+  /* @Test
+    public void registerStepsTest () {
+	   
+	   Step step_1 = new Step();
+	   
        final StepDTO stepDTO = new StepDTO(100,
                 LocalDateTime.parse("2020-01-01T00:00:00"),
                 LocalDateTime.parse("2020-01-01T01:00:00"),
@@ -59,7 +63,7 @@ public class StepServiceTest {
        MonthStep mockMonthTest = new MonthStep("userId", 2020);
 
        //användare finns inte i databas
-       assertNull(step.getUserId());
+       assertNull(step_1.getUserId());
 
        //sätter userId och steg
        
@@ -82,14 +86,15 @@ public class StepServiceTest {
 
        });
        
-       step=stepService.registerSteps(step.getUserId(), stepDTO).get();
+     //Step stepTest=stepService.registerSteps(step_1.getUserId(), stepDTO).get();
+       Step stepTest=stepService.registerSteps(step_1.getUserId(), stepDTO).get();
        //användare finns i databas nu
-       assertNotNull(step.getUserId());
-       assertEquals("userId",step.getUserId() );
+       assertNotNull(stepTest.getUserId());
+       assertEquals("userId",stepTest.getUserId() );
        //användare har steg
-       assertNotNull(step.getStepCount());
+       assertNotNull(stepTest.getStepCount());
        //användare har 300 steg (100+200)
-       assertEquals(300, stepService.registerSteps(step.getUserId(), stepDTO).get().getStepCount());
+       assertEquals(300, stepService.registerSteps(stepTest.getUserId(), stepDTO).get().getStepCount());
        
    /*    when(mockedMonthStepRepository.save(any(MonthStep.class))).thenAnswer(new Answer<MonthStep>()
     		   
@@ -111,7 +116,7 @@ public class StepServiceTest {
 
        });
        
-    		   
+  		   
     		   
      
       
