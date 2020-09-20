@@ -49,21 +49,21 @@ public class StepServiceTest {
         monthStep= new MonthStep();
     }
 
-  /*  @Test
+    @Test
     public void registerStepsTest() {
        final StepDTO stepDTO = new StepDTO(100,
                 LocalDateTime.parse("2020-01-01T00:00:00"),
                 LocalDateTime.parse("2020-01-01T01:00:00"),
                 LocalDateTime.parse("2020-01-01T02:00:00"));
        
-       MonthStep mockMonthTest = new MonthStep("userId", 2020);
+       //MonthStep mockMonthTest = new MonthStep("userId", 2020);
 
        //användare finns inte i databas
        assertNull(step.getUserId());
 
        //sätter userId och steg
        
-       when(mockedStepRepository.save(any(Step.class))).thenAnswer(new Answer<Step>()
+   /*    when(mockedStepRepository.save(any(Step.class))).thenAnswer(new Answer<Step>()
        {
     	   
            @Override
@@ -80,7 +80,7 @@ public class StepServiceTest {
                return step1;
            }
 
-       });
+       }); */
        
        step=stepService.registerSteps(step.getUserId(), stepDTO).get();
        //användare finns i databas nu
@@ -109,14 +109,14 @@ public class StepServiceTest {
                return monthStep1;
            }
 
-       });
+       });*/
        
     		   
     		   
      
       
     }
-*/
+
 
     @Test
     public void getLatestStepTest() {
