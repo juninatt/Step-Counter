@@ -2,12 +2,6 @@ databaseChangeLog:
   - include:
       file: db/changelog/changelog-dev.yaml
   - include:
-      file: db/changelog/changelog-dev2.yaml
+      file: db/changelog/changelog-create-table-weekstep.yaml
   - include:
-      file: db/changelog/changelog-rename-stepmonth-table.yaml
-  - include:
-      file: db/changelog/changelog-rename-stepmonth-columns.yaml
-  - include:
-      file: db/changelog/changelog-rename-year-column-in-stepmonth.yaml
-  - include:
-      file: db/changelog/changelog-create-sequence-stepmonth.yaml
+      file: db/changelog/changelog-create-table-monthstep.yaml

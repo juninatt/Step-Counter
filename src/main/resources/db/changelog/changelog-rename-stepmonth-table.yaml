@@ -1,8 +1,0 @@
-databaseChangeLog:
-  - changeSet:
-      id: rename-stepmonth-table
-      author: svallingson
-      changes:
-        - renameTable:
-            newTableName: stepmonth
-            oldTableName: stepMonth
