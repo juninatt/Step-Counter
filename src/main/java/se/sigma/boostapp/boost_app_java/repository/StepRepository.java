@@ -1,5 +1,6 @@
 package se.sigma.boostapp.boost_app_java.repository;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -18,6 +19,8 @@ public interface StepRepository extends CrudRepository<Step, Long>{
 
 	List<Step> findByUserIdAndStartTimeGreaterThanEqualAndEndTimeLessThanEqual(
 			String userId, LocalDateTime startTime, LocalDateTime endTime);
+	
+	List<Step> findByEndTime(LocalDateTime endTime);
 
 
 	@Query("SELECT new se.sigma.boostapp.boost_app_java.dto.StepDateDTO(cast(s.startTime as date), sum(s.stepCount)) FROM Step s WHERE s.userId = :userId AND cast(s.startTime as date) >= :startDate AND cast(s.startTime as date) <= :endDate GROUP BY s.userId, cast(s.startTime as date) ORDER BY cast(s.startTime as date) ASC")
@@ -32,8 +35,8 @@ public interface StepRepository extends CrudRepository<Step, Long>{
 
 	Optional<Step> findFirstByUserIdOrderByEndTimeDesc(String userId);
 
-
-
+	//void deleteAll();
+	
 
 	//28.08.2020.
 	//get earlier step, before last POST

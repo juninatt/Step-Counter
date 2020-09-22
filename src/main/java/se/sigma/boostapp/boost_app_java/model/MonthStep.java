@@ -20,7 +20,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @Data
 @Entity
 @DynamicUpdate
-@Table(name="stepmonth")
+@Table(name="monthstep")
 public class MonthStep {
 
 	@Id

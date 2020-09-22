@@ -19,66 +19,71 @@ import java.util.stream.Collectors;
 @Service
 public class StepService {
 
-    // Temporary star point factor used during development
-    private static final double starPointFactor = 1;
-
+	// Temporary star point factor used during development
+	private static final double starPointFactor = 1;
 
 	private final StepRepository stepRepository;
-    private final MonthStepRepository monthStepRepository;
-    private final WeekStepRepository weekStepRepository;
-
+	private final MonthStepRepository monthStepRepository;
+	private final WeekStepRepository weekStepRepository;
 
 //	private static final double starPointFactor = 0.01;
 
-    public StepService(final StepRepository stepRepository, final MonthStepRepository monthStepRepository, final WeekStepRepository weekStepRepository) {
-        this.stepRepository = stepRepository;
-        this.monthStepRepository = monthStepRepository;
-        this.weekStepRepository = weekStepRepository;
-    }
+	public StepService(final StepRepository stepRepository, final MonthStepRepository monthStepRepository,
+						final WeekStepRepository weekStepRepository) {
+		this.stepRepository = stepRepository;
+		this.monthStepRepository = monthStepRepository;
+		this.weekStepRepository = weekStepRepository;
+	}
 
-//  28.08.2020.
 // Persist a single Step (for 1 or more step count)
 	public Optional<Step> registerSteps(String userId, StepDTO stepDto) {
-
-		// code -write first all rows( for different days) for one user and then all
-		// rows for second user
-		// "stepDTO": "Start time must before end time, which in turn must be before
-		// uploaded time"
+		// "stepDTO": "Start time must before end time, which in turn must be before uploaded time"
+		
+		//user that already exist
 		if (stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).isPresent()) {
 			Step existingStep = stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).get();
 
-			if (existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()
+				if (existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()
 					&& existingStep.getEnd().isBefore(stepDto.getEndTime())) {
-				existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
-				existingStep.setEnd(stepDto.getEndTime());
-				existingStep.setUploadedTime(stepDto.getUploadedTime());
-				return Optional.of(stepRepository.save(existingStep));
-			}
-			// take care only of time
-			else if (existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()
-					&& (existingStep.getEnd().equals(stepDto.getEndTime())
-							|| existingStep.getEnd().isAfter(stepDto.getEndTime()))) {
-				// tänka att skriva kod för meddelande till användare
-				return Optional.empty();
-			} else if (existingStep.getEnd().getDayOfYear() != stepDto.getEndTime().getDayOfYear())
-				existingStep.setStepCount(existingStep.getStepCount() /* + stepDto.getStepCount() */);
+					
+					existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
+					existingStep.setEnd(stepDto.getEndTime());
+					existingStep.setUploadedTime(stepDto.getUploadedTime());
+					
+					// monthStep
+					addStepsToMonthTable(userId, stepDto.getStepCount(), stepDto.getEndTime().getMonthValue(),
+							stepDto.getEndTime().getYear());
+					addStepsToWeekTable(stepDto.getEndTime().getYear(), getWeekNumber(stepDto.getEndTime()), stepDto.getStepCount(), userId);
+					
+					return Optional.of(stepRepository.save(existingStep));
+				}
+				else if (existingStep.getEnd().isBefore(stepDto.getEndTime())){
+					// monthStep
+					addStepsToMonthTable(userId, stepDto.getStepCount(), stepDto.getEndTime().getMonthValue(),stepDto.getEndTime().getYear());
+                    addStepsToWeekTable(stepDto.getEndTime().getYear(), getWeekNumber(stepDto.getEndTime()), stepDto.getStepCount(), userId);
+					return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime())));
+				} 
+				else {// tänka att skriva kod för meddelande till användare
+					return Optional.empty();
+					}
+					
+		}  
+		//new user
+		else{
+			//monthStep
+			addStepsToMonthTable(userId, stepDto.getStepCount(), stepDto.getEndTime().getMonthValue(),stepDto.getEndTime().getYear());
+				
 			return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
-					stepDto.getEndTime(), stepDto.getUploadedTime())));
-
-		} else
-			return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
-					stepDto.getEndTime(), stepDto.getUploadedTime())));
+					stepDto.getEndTime(), stepDto.getUploadedTime())));}
 
 	}
+		
 
-
-//	Get latest step entity by user
-	// //2020-09-03 denna metoden skickar en summa av steg per dag per användare
-	// summan ändrar varje 10-minuter (om man gör nya steg) pga metoden
-	// registerSteps som fyller databasen varje 10 minuter
+	//	Get latest steps per day entity by user
 	public Optional<Step> getLatestStep(String userId) {
 		return stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId);
 	}
+
 
     //	Persist multiple Step //StepDTO-objects that has the same date will be merged to one where stepCount is summed and startDate is set to earliest in list
     public List<Step> registerMultipleSteps(String userId, List<StepDTO> stepDtoList) {
@@ -103,8 +108,10 @@ public class StepService {
             if (!stepDtoList.isEmpty()) {
                 stepDtoList = mergeStepDtoObjectsWithSameDate(groupedByDayOfYearMap);
                 stepList = addOrUpdateStepDtoObjectsToDB(userId, stepDtoList, latest);
-                for(StepDTO s : stepDtoList)
-                addStepsToMonthTable(userId, s.getStepCount(),s.getEndTime().getMonthValue(),s.getEndTime().getYear());
+                for(StepDTO s : stepDtoList) {
+                    addStepsToMonthTable(userId, s.getStepCount(), s.getEndTime().getMonthValue(), s.getEndTime().getYear());
+                    addStepsToWeekTable(s.getEndTime().getYear(), getWeekNumber(s.getEndTime()), s.getStepCount(), userId);
+                }
             }
         }
 
@@ -181,19 +188,11 @@ public class StepService {
     //Helper method to get number of week from date
     private int getWeekNumber(LocalDateTime inputDate){
 
-        LocalDate date = LocalDate.of(inputDate.getYear(), inputDate.getMonth(), inputDate.getDayOfYear());
+        LocalDate date = LocalDate.of(inputDate.getYear(), inputDate.getMonth(), inputDate.getDayOfMonth());
        return date.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
 
     }
 
-    //	Helper method. Get total step count from a list of Steps
-    private int getStepCount(List<Step> steps) {
-        int total = 0;
-        for (Step step : steps) {
-            total += step.getStepCount();
-        }
-        return total;
-    }
 
     //	Get sum of step count by userId, start date and end Date.
     public int getStepSumByUser(String userId, String startDate, String endDate) {
@@ -205,7 +204,7 @@ public class StepService {
         }
         List<Step> allSteps = stepRepository.findByUserIdAndStartTimeGreaterThanEqualAndEndTimeLessThanEqual(userId,
                 LocalDate.parse(startDate).atStartOfDay(), end);
-        return getStepCount(allSteps);
+        return 0;
     }
 
     // Get step count per day by user ID
@@ -261,7 +260,6 @@ public class StepService {
                                         * starPointFactor)
                 ))).collect(Collectors.toList());
     }
-
 
     public void addStepsToWeekTable(int year, int week, int steps, String userId){
 	    weekStepRepository.findByUserIdAndYearAndWeek(userId, year, week).ifPresentOrElse(

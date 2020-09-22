@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @Entity
-@Table(name="stepweek")
+@Table(name="weekstep")
 public class WeekStep {
 
 		@Id
