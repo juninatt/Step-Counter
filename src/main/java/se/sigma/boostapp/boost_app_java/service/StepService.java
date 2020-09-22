@@ -72,7 +72,8 @@ public class StepService {
 		else{
 			//monthStep
 			addStepsToMonthTable(userId, stepDto.getStepCount(), stepDto.getEndTime().getMonthValue(),stepDto.getEndTime().getYear());
-				
+			addStepsToWeekTable(stepDto.getEndTime().getYear(), getWeekNumber(stepDto.getEndTime()), stepDto.getStepCount(), userId);
+					
 			return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
 					stepDto.getEndTime(), stepDto.getUploadedTime())));}
 
@@ -185,7 +186,7 @@ public class StepService {
 
     }
 
-    //Helper method to get number of week from date
+    //Helper method to get number of week from date- titta på den metoden!!!!!!!!!!
     private int getWeekNumber(LocalDateTime inputDate){
 
         LocalDate date = LocalDate.of(inputDate.getYear(), inputDate.getMonth(), inputDate.getDayOfMonth());
@@ -195,6 +196,7 @@ public class StepService {
 
 
     //	Get sum of step count by userId, start date and end Date.
+    //vilken data ska hämta denna metod, alla steg, steg per dag,vecka eller månad???????
     public int getStepSumByUser(String userId, String startDate, String endDate) {
         LocalDateTime end;
         if (endDate == null || endDate.equals("")) {
