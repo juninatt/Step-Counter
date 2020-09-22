@@ -43,4 +43,17 @@ public class WeekStep {
 		this.year = year;
 		this.steps = steps;
 	}
+
+
+	public int getSteps() {
+		return steps;
+	}
+
+
+	public void setSteps(int steps) {
+		this.steps = steps;
+	}
+
+
+
 }
