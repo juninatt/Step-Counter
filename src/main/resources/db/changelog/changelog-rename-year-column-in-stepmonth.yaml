@@ -1,9 +1,0 @@
-databaseChangeLog:
-  - changeSet:
-      id: rename-year-column-in-stepmonth
-      author: svallingson
-      changes:
-        - renameColumn:
-            newColumnName: year
-            oldColumnName: Year
-            tableName: stepmonth

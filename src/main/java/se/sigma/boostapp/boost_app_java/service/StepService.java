@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import se.sigma.boostapp.boost_app_java.dto.*;
 import se.sigma.boostapp.boost_app_java.model.MonthStep;
 import se.sigma.boostapp.boost_app_java.model.Step;
+import se.sigma.boostapp.boost_app_java.model.WeekStep;
 import se.sigma.boostapp.boost_app_java.repository.MonthStepRepository;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 import se.sigma.boostapp.boost_app_java.repository.WeekStepRepository;
@@ -11,6 +12,7 @@ import se.sigma.boostapp.boost_app_java.repository.WeekStepRepository;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoField;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -33,15 +35,6 @@ public class StepService {
         this.monthStepRepository = monthStepRepository;
         this.weekStepRepository = weekStepRepository;
     }
-
-// Persist a single Step (for 1 or more step count)
-
-	/*
-	 * deras metod som funkar och jag kommer att ändra 
-	 * public Optional<Step> registerSteps(String userId, StepDTO stepDto) { return
-	 * Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(),
-	 * stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime()))); }
-	 */
 
 //  28.08.2020.
 // Persist a single Step (for 1 or more step count)
@@ -87,7 +80,6 @@ public class StepService {
 		return stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId);
 	}
 
-
     //	Persist multiple Step //StepDTO-objects that has the same date will be merged to one where stepCount is summed and startDate is set to earliest in list
     public List<Step> registerMultipleSteps(String userId, List<StepDTO> stepDtoList) {
         List<Step> stepList = new ArrayList<>();
@@ -97,7 +89,8 @@ public class StepService {
             stepDtoList = mergeStepDtoObjectsWithSameDate(groupedByDayOfYearMap);
         	for (StepDTO s : stepDtoList) {
                 stepList.add(addStepToDB(userId, s));
-                addStepsToMonthStep(userId, s.getStepCount(), s.getEndTime().getMonthValue(), s.getEndTime().getYear());
+                addStepsToMonthTable(userId, s.getStepCount(), s.getEndTime().getMonthValue(), s.getEndTime().getYear());
+                addStepsToWeekTable(s.getEndTime().getYear(), getWeekNumber(s.getEndTime()), s.getStepCount(), userId);
 
             }
         } else {
@@ -111,26 +104,20 @@ public class StepService {
                 stepDtoList = mergeStepDtoObjectsWithSameDate(groupedByDayOfYearMap);
                 stepList = addOrUpdateStepDtoObjectsToDB(userId, stepDtoList, latest);
                 for(StepDTO s : stepDtoList)
-                addStepsToMonthStep(userId, s.getStepCount(),s.getEndTime().getMonthValue(),s.getEndTime().getYear());
+                addStepsToMonthTable(userId, s.getStepCount(),s.getEndTime().getMonthValue(),s.getEndTime().getYear());
             }
         }
 
         return stepList;
     }
 
-    private void addStepsToMonthStep(String userId, int stepCount, int monthValue, int year) {
-        //uppdate stepCount to month column
-        if(!monthStepRepository.findFirstByUserIdAndYear(userId, year).isPresent()) {
-            monthStepRepository.save(new MonthStep(userId, year));
-            var m = monthStepRepository.findFirstByUserIdAndYear(userId, year).get();
-            m.setOneMonth(monthValue, stepCount);
-            monthStepRepository.save(m);
-        }
-        else{
-            var m = monthStepRepository.findFirstByUserIdAndYear(userId, year).get();
-            m.setOneMonth(monthValue, stepCount);
-            monthStepRepository.save(m);
-        }
+    private void addStepsToMonthTable(String userId, int steps, int month, int year) {
+        monthStepRepository.findByUserIdAndYearAndMonth(userId, year, month).ifPresentOrElse(
+                m->{int stepSum = steps + m.getSteps();
+                    m.setSteps(stepSum);
+                    monthStepRepository.save(m);
+                },
+                ()-> monthStepRepository.save(new MonthStep(userId, month, year, steps)));
 	}
 
     //Helper method. Insert StepDTO-list to stepsPerDay-table
@@ -190,7 +177,15 @@ public class StepService {
         }
 
     }
-    
+
+    //Helper method to get number of week from date
+    private int getWeekNumber(LocalDateTime inputDate){
+
+        LocalDate date = LocalDate.of(inputDate.getYear(), inputDate.getMonth(), inputDate.getDayOfYear());
+       return date.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+
+    }
+
     //	Helper method. Get total step count from a list of Steps
     private int getStepCount(List<Step> steps) {
         int total = 0;
@@ -267,4 +262,13 @@ public class StepService {
                 ))).collect(Collectors.toList());
     }
 
+
+    public void addStepsToWeekTable(int year, int week, int steps, String userId){
+	    weekStepRepository.findByUserIdAndYearAndWeek(userId, year, week).ifPresentOrElse(
+	            w->{int stepSum = steps + w.getSteps();
+                    w.setSteps(stepSum);
+                    weekStepRepository.save(w);},
+                ()->weekStepRepository.save(new WeekStep(userId, week, year, steps))
+        );
+    }
 }
