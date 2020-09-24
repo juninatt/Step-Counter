@@ -1,6 +1,8 @@
 package se.sigma.boostapp.boost_app_java.repository;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import se.sigma.boostapp.boost_app_java.model.MonthStep;
@@ -12,6 +14,9 @@ public interface MonthStepRepository extends CrudRepository<MonthStep,Long>{
     Optional<MonthStep> findByUserIdAndYearAndMonth(String userId, int year, int month);
 
     Optional<MonthStep> findFirstByUserIdAndYear(String userId, int year);
+
+    @Query("SELECT m.steps FROM MonthStep m WHERE m.userId = :userId AND m.year = :year AND m.month = :month")
+    Optional<Integer> getStepCountMonth(@Param("userId")String userId,@Param("year") int year,@Param("month") int month);
 
 
 }

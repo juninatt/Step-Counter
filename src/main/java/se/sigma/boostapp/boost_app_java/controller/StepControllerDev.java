@@ -8,20 +8,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import se.sigma.boostapp.boost_app_java.dto.BulkUsersStepsDTO;
 import se.sigma.boostapp.boost_app_java.exception.NotFoundException;
-import se.sigma.boostapp.boost_app_java.model.MonthStep;
 import se.sigma.boostapp.boost_app_java.model.Step;
-import se.sigma.boostapp.boost_app_java.model.WeekStep;
 import se.sigma.boostapp.boost_app_java.dto.StepDTO;
 import se.sigma.boostapp.boost_app_java.dto.StepDateDTO;
 import se.sigma.boostapp.boost_app_java.service.StepService;
 
-import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -106,5 +101,41 @@ public class StepControllerDev {
     @GetMapping(value = "/latest/{userId}")
     public ResponseEntity<Step> getLatestStep(final @PathVariable String userId) {
         return stepService.getLatestStep(userId).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    // Get step count per month by user ID and year and month
+    @ApiOperation(value = "Get a user's step count per month by user ID and year and month)", response = Integer.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
+            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
+    @GetMapping(value = {"/stepcount/{userId}/year/{year}/month/{month}"})
+    public ResponseEntity<Integer> getUserMonthSteps(final @PathVariable String userId, final @PathVariable int year,
+                                          final @PathVariable int month) {
+        return stepService.getStepCountMonth(userId, year, month).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+
+    // Get step count per week by user ID and year and week
+    @ApiOperation(value = "Get a user's step count per week by user ID and year and week)", response = Integer.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
+            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
+    @GetMapping(value = {"/stepcount/{userId}/year/{year}/week/{week}"})
+    public ResponseEntity<Integer> getUserWeekSteps(final @PathVariable String userId, final @PathVariable int year,
+                                 final @PathVariable int week) {
+        return stepService.getStepCountWeek(userId, year, week).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    // Get list of steps per day per current week
+    @ApiOperation(value = "Get list of steps per day per current week)", response = List.class)
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
+            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
+    @GetMapping(value = {"/stepcount/{userId}/currentweek"})
+    public ResponseEntity<List<StepDateDTO>> getUserWeekSteps(final @PathVariable String userId) {
+        return stepService.getStepCountPerDay(userId).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 }
