@@ -45,7 +45,7 @@ public class StepServiceTest {
 		stepService = new StepService(mockedStepRepository, mockedMonthStepRepository, mockedWeekStepRepository);
 	}
 
-	/*@Test
+	@Test
 	public void registerStepsTest() {
 		Step testStep = new Step();
 		MonthStep mockMonth = new MonthStep("userId", 3 ,2020, 800);
@@ -74,7 +74,7 @@ public class StepServiceTest {
 
 		assertEquals("userTestId", stepService.registerSteps(testStep.getUserId(), stepDto).get().getUserId());
 					
-	}*/
+	}
 
 	@Test
 	public void getLatestStepTest() {
