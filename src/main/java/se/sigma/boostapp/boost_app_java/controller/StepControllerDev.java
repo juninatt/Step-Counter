@@ -3,10 +3,15 @@ package se.sigma.boostapp.boost_app_java.controller;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import se.sigma.boostapp.boost_app_java.dto.BulkUsersStepsDTO;
@@ -32,6 +37,17 @@ public class StepControllerDev {
         this.stepService = stepService;
     }
 
+    //Delete step table
+    @ConditionalOnProperty(name="deleting.enabled", matchIfMissing=true)
+    @SuppressWarnings("null")
+	//1=secund , 0=minut, 0= hours, *-dayOfTheMonth *-month MON-Monday
+	@Scheduled (cron="1 0 0 * * MON")
+    public void deleteStepTable() throws InterruptedException {
+    	stepService.deleteStepTabel();
+    }
+    
+    
+    
     // Post step
     @ApiOperation(value = "Register step entity", response = List.class)
     @ApiResponses(value = {

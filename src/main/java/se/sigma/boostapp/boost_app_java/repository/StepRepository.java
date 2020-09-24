@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 import se.sigma.boostapp.boost_app_java.dto.StepDateDTO;
 import se.sigma.boostapp.boost_app_java.model.Step;
@@ -13,10 +14,17 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 @Repository
 public interface StepRepository extends CrudRepository<Step, Long>{
-
-
+	
+	@Transactional
+	@Modifying
+	@Query("DELETE FROM Step")
+	void deleteAllFromStep();
+	
+	
 
 	Optional<List<Step>> findByUserId(@Param("userId")String userId);
 
