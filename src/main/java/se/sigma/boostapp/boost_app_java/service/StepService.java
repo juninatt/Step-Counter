@@ -10,6 +10,7 @@ import se.sigma.boostapp.boost_app_java.repository.MonthStepRepository;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 import se.sigma.boostapp.boost_app_java.repository.WeekStepRepository;
 
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -190,9 +191,14 @@ public class StepService {
 
     //Helper method to get number of week from date- titta på den metoden!!!!!!!!!!
     private int getWeekNumber(LocalDateTime inputDate){
+    	
+    	  LocalDate date = LocalDate.of(inputDate.getYear(), inputDate.getMonth(), inputDate.getDayOfMonth());
+          return date.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+          
+    	/*TimeZone.setDefault(TimeZone.getTimeZone("UTC+1"));
 
         LocalDate date = LocalDate.of(inputDate.getYear(), inputDate.getMonth(), inputDate.getDayOfMonth());
-        return date.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+*/
 
     }
 
