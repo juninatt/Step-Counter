@@ -58,7 +58,7 @@ public class StepController {
 	public List<Step> registerMultipleSteps(final @AuthenticationPrincipal Jwt jwt, final @RequestBody List<@Valid StepDTO> stepDtoList) {
 		return stepService.registerMultipleSteps((String) jwt.getClaims().get("oid"), stepDtoList);
 	}
-
+/*
 	// Get sum of step count by user ID, start date and end date
 	@ApiOperation(value = "Get sum of steps by user ID, start date and end date (optional)", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
@@ -69,9 +69,9 @@ public class StepController {
 	public int getByUserAndDays(final @AuthenticationPrincipal Jwt jwt, final @RequestParam String startDate,
 								final @RequestParam(required = false) String endDate) {
 		return stepService.getStepSumByUser((String) jwt.getClaims().get("oid"), startDate, endDate);
-	}
+	}*/
 
-	// Get step count per day by user ID and start date
+/*	// Get step count per day by user ID and start date
 	@ApiOperation(value = "Get a user's step count per day by user ID, start date and end date optional)", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
 			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
@@ -81,7 +81,7 @@ public class StepController {
 	public List<StepDateDTO> getUserSteps(final @AuthenticationPrincipal Jwt jwt, final @RequestParam String startDate,
 										  final @RequestParam(required = false) String endDate) {
 		return stepService.getStepsByUser((String) jwt.getClaims().get("oid"), startDate, endDate);
-	}
+	}*/
 
 	// Post userIds and start date to get each of users' step count
 	@ApiOperation(value = "Get step count per day for a list of users by start date and end date (optional).", response = List.class)

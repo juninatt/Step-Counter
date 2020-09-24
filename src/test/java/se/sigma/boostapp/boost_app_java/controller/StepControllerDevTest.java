@@ -1,6 +1,5 @@
 package se.sigma.boostapp.boost_app_java.controller;
 
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.Before;
@@ -41,8 +40,8 @@ import se.sigma.boostapp.boost_app_java.service.StepService;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 
-import java.io.ByteArrayOutputStream;
 import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

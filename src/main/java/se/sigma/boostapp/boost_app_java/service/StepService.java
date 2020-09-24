@@ -1,5 +1,6 @@
 package se.sigma.boostapp.boost_app_java.service;
 
+
 import org.springframework.stereotype.Service;
 import se.sigma.boostapp.boost_app_java.dto.*;
 import se.sigma.boostapp.boost_app_java.model.MonthStep;
@@ -9,9 +10,9 @@ import se.sigma.boostapp.boost_app_java.repository.MonthStepRepository;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 import se.sigma.boostapp.boost_app_java.repository.WeekStepRepository;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoField;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -186,11 +187,12 @@ public class StepService {
 
     }
 
+
     //Helper method to get number of week from date- titta på den metoden!!!!!!!!!!
     private int getWeekNumber(LocalDateTime inputDate){
 
         LocalDate date = LocalDate.of(inputDate.getYear(), inputDate.getMonth(), inputDate.getDayOfMonth());
-       return date.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+        return date.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
 
     }
 
@@ -209,29 +211,30 @@ public class StepService {
         return 0;
     }
 
-    // Get step count per day by user ID
-    // getLatestStep nu gör denna räkning
+    // Get step count per day by user ID and between two dates
     public List<StepDateDTO> getStepsByUser(String userId, String startDate, String endDate) {
-        Date firstDate = Date.valueOf(startDate);
-        Date lastDate;
+        List<StepDateDTO> list = new ArrayList<>();
+        java.sql.Date firstDate = java.sql.Date.valueOf(startDate);
+        java.sql.Date lastDate;
         if (endDate == null || endDate.equals("")) {
-            lastDate = Date.valueOf(LocalDate.now());
+            lastDate = java.sql.Date.valueOf(LocalDate.now());
         } else {
-            lastDate = Date.valueOf(endDate);
+            lastDate = java.sql.Date.valueOf(endDate);
         }
-        return stepRepository.getStepCount(userId, firstDate, lastDate);
+        stepRepository.findAllByUserIdAndEndTimeBetween(userId, firstDate, lastDate).forEach(step -> list.add(new StepDateDTO(java.sql.Date.valueOf(step.getEnd().toString()), step.getStepCount())));
+        return list;
     }
 
     // Get step count per day per multiple users
     public Optional<List<BulkUsersStepsDTO>> getStepsByMultipleUsers(List<String> users, String startDate, String endDate) {
 
         // String startDate → java.sql.Date firstDate
-        Date firstDate = Date.valueOf(startDate);
-        Date lastDate;
+        java.sql.Date firstDate = java.sql.Date.valueOf(startDate);
+        java.sql.Date lastDate;
         if (endDate == null || endDate.equals("")) {
-            lastDate = Date.valueOf(LocalDate.now());
+            lastDate = java.sql.Date.valueOf(LocalDate.now());
         } else {
-            lastDate = Date.valueOf(endDate);
+            lastDate = java.sql.Date.valueOf(endDate);
         }
         List<String> allUsers = stepRepository.getAllUsers();
 
@@ -271,4 +274,33 @@ public class StepService {
                 ()->weekStepRepository.save(new WeekStep(userId, week, year, steps))
         );
     }
+
+    //return stepcount per month
+    public Optional<Integer> getStepCountMonth(String userId, int year, int month){
+	    return monthStepRepository.getStepCountMonth(userId, year, month);
+    }
+
+    //return step count per week
+    public Optional<Integer> getStepCountWeek(String userId, int year, int week){
+        return weekStepRepository.getStepCountWeek(userId, year, week);
+    }
+
+    //Return list of steps per day per current week
+    public Optional<List<StepDateDTO>> getStepCountPerDay(String userId){
+	    List<StepDateDTO> list = new ArrayList<>();
+        if(stepRepository.findByUserId(userId).isPresent()){
+            var steps = stepRepository.findByUserId(userId).get();
+
+            steps.forEach(step->
+            {
+                Date end = Date.from(step.getEnd().toLocalDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
+                list.add(
+                    new StepDateDTO(end, step.getStepCount()));});
+            return Optional.of(list);
+        }
+        else{
+            return Optional.empty();
+        }
+    }
+
 }
