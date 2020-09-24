@@ -9,6 +9,7 @@ import se.sigma.boostapp.boost_app_java.repository.MonthStepRepository;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 import se.sigma.boostapp.boost_app_java.repository.WeekStepRepository;
 
+
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -186,11 +187,37 @@ public class StepService {
 
     }
 
+    
+   
     //Helper method to get number of week from date- titta på den metoden!!!!!!!!!!
     private int getWeekNumber(LocalDateTime inputDate){
+    	
+    	  LocalDate date = LocalDate.of(inputDate.getYear(), inputDate.getMonth(), inputDate.getDayOfMonth());
+          return date.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+          
+    	/*TimeZone.setDefault(TimeZone.getTimeZone("UTC+1"));
 
         LocalDate date = LocalDate.of(inputDate.getYear(), inputDate.getMonth(), inputDate.getDayOfMonth());
        return date.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setFirstDayOfWeek(1);
+       
+        int year=date.getYear();
+		int month=date.getMonthValue();
+		int day=date.getDayOfWeek().getValue();
+		calendar.set(year, month, day);
+         
+        int weekOfYear = calendar.get(Calendar.WEEK_OF_YEAR);
+		return weekOfYear;
+        */
+    	/*   LocalDate date = LocalDate.of(inputDate.getYear(), inputDate.getMonth(), inputDate.getDayOfMonth());
+    	   Date date2 = Date.from(localDate.atStartOfDay(defaultZoneId).toInstant());
+    	GregorianCalendar calendar = new GregorianCalendar();
+    	calendar.setFirstDayOfWeek(GregorianCalendar.MONDAY);
+    	calendar.setMinimalDaysInFirstWeek(4);
+    	calendar.setTime((Date) date);*/
+    	
+    	//return date.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
 
     }
 
