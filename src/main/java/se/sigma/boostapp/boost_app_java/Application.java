@@ -16,13 +16,17 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 
 @SpringBootApplication
+@Configuration
+@EnableScheduling
+@ConditionalOnProperty(name="deleting.enabled", matchIfMissing=true)
 public class Application {
 
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 		
 	}
-	
+}
+	/*
 	// delete data from table step on the Monday: 00:00:01
 	@SuppressWarnings("null")
 	//@Scheduled (cron="1 23 11 * * SUN")
@@ -33,7 +37,7 @@ public class Application {
 		//TESTING method:system.out is working
 		System.out.println(LocalDateTime.now());
 	
-		String url="jdbc:postgresql://localhost:5432/postgres";
+	/*	String url="jdbc:postgresql://localhost:5432/postgres";
 			String user="postgres";
 			String password="postgres";
 			try(Connection con=DriverManager.getConnection(url, user, password);
@@ -53,4 +57,4 @@ public class Application {
 @ConditionalOnProperty(name="deleting.enabled", matchIfMissing=true)
 class deleteTablePerDag{
 	
-}
+}*/

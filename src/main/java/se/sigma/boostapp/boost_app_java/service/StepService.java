@@ -1,6 +1,9 @@
 package se.sigma.boostapp.boost_app_java.service;
 
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 import se.sigma.boostapp.boost_app_java.dto.*;
 import se.sigma.boostapp.boost_app_java.model.MonthStep;
@@ -307,6 +310,10 @@ public class StepService {
         else{
             return Optional.empty();
         }
+    }
+       
+    public void deleteStepTabel() {
+    	stepRepository.deleteAllFromStep();
     }
 
 }
