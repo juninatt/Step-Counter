@@ -198,11 +198,6 @@ public class StepService {
     	  LocalDate date = LocalDate.of(inputDate.getYear(), inputDate.getMonth(), inputDate.getDayOfMonth());
           return date.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
           
-    	/*TimeZone.setDefault(TimeZone.getTimeZone("UTC+1"));
-
-        LocalDate date = LocalDate.of(inputDate.getYear(), inputDate.getMonth(), inputDate.getDayOfMonth());
-*/
-
     }
 
 
