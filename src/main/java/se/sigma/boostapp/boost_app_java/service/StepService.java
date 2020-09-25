@@ -1,9 +1,5 @@
 package se.sigma.boostapp.boost_app_java.service;
 
-
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 import se.sigma.boostapp.boost_app_java.dto.*;
 import se.sigma.boostapp.boost_app_java.model.MonthStep;
@@ -17,9 +13,9 @@ import se.sigma.boostapp.boost_app_java.repository.WeekStepRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.temporal.ChronoField;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.GregorianCalendar;
 
 @Service
 public class StepService {
@@ -192,16 +188,15 @@ public class StepService {
     }
 
 
-    //Helper method to get number of week from date- titta på den metoden!!!!!!!!!!
+    //Helper method to get number of week from date
     private int getWeekNumber(LocalDateTime inputDate){
-    	
-    	  LocalDate date = LocalDate.of(inputDate.getYear(), inputDate.getMonth(), inputDate.getDayOfMonth());
-          return date.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
-          
-    	/*TimeZone.setDefault(TimeZone.getTimeZone("UTC+1"));
 
-        LocalDate date = LocalDate.of(inputDate.getYear(), inputDate.getMonth(), inputDate.getDayOfMonth());
-*/
+	    GregorianCalendar calendar = new GregorianCalendar();
+	    calendar.setFirstDayOfWeek(GregorianCalendar.MONDAY);
+	    calendar.setMinimalDaysInFirstWeek(4);
+	    calendar.setTime(Date.from(inputDate.toLocalDate().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+
+	    return calendar.get(GregorianCalendar.WEEK_OF_YEAR);
 
     }
 
