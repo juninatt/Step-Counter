@@ -53,15 +53,6 @@ public class StepRepositoryTest {
         stepRepository.save(step5);
     }
 
-    @Test
-    public void findByIdAndWithinTimeSpan_Test() {
-        List<Step> stepList = stepRepository
-                .findByUserIdAndStartTimeGreaterThanEqualAndEndTimeLessThanEqual("userA",
-                        LocalDateTime.parse("2020-01-01T00:00:00"), LocalDateTime.parse("2020-01-03T23:00:00"));
-        assertNotNull(stepList);
-        assertThat(stepList.size()).isEqualTo(2);
-    }
-
    @Test 
     public void findLatestStepById_Test() {
         Optional<Step> step = stepRepository.findFirstByUserIdOrderByEndTimeDesc("userA");
@@ -75,17 +66,20 @@ public class StepRepositoryTest {
         assertThat(userList.size()).isEqualTo(3);
     }
 
-   @Test
-    public void getStepSum_Test() {
-        Optional<Integer> stepSum = stepRepository.getStepCountSum("userA",
-                LocalDateTime.parse("2019-12-30T23:00:00"), LocalDateTime.parse("2020-01-05T12:00:00"));
-        assertThat(stepSum.get()).isEqualTo(2000);
-    }
 
     @Test
     public void findByUserId_test(){
         List<Step> testlist = stepRepository.findByUserId("userA").get();
         assertTrue(3 == testlist.size());
+    }
+
+    @Test
+    public void deleteAllFromStep_test(){
+        stepRepository.deleteAllFromStep();
+        var test = stepRepository.getAllUsers();
+
+        assertTrue(test.size() == 0);
+
     }
 
 }
