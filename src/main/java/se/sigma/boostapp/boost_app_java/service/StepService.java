@@ -197,7 +197,6 @@ public class StepService {
 	    calendar.setTime(Date.from(inputDate.toLocalDate().atStartOfDay(ZoneId.systemDefault()).toInstant()));
 
 	    return calendar.get(GregorianCalendar.WEEK_OF_YEAR);
-
     }
 
 
