@@ -15,6 +15,30 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 
+
+/*
+ * javadoc syntaks
+ * 
+ * @author (classes and interfaces only, required)
+@version (classes and interfaces only, required. See footnote 1)
+@param (methods and constructors only)
+@return (methods only)
+@exception (@throws is a synonym added in Javadoc 1.2)
+@see
+@since
+@serial (or @serialField or @serialData)
+@deprecated (see How and When To Deprecate APIs)
+ * 
+ * 
+ */
+/**
+ * @author SigmaIT
+ * 
+ * <br> Start application and start scheduling( deleting table step on the Monday 00:00:01 )
+ */
+
+
+
 @SpringBootApplication
 @Configuration
 @EnableScheduling
@@ -26,35 +50,3 @@ public class Application {
 		
 	}
 }
-	/*
-	// delete data from table step on the Monday: 00:00:01
-	@SuppressWarnings("null")
-	//@Scheduled (cron="1 23 11 * * SUN")
-	//1=secund , 0=minut, 0= hours, *-dayOfTheMonth *-month MON-Monday
-	@Scheduled (cron="1 0 0 * * MON")
-	void deleteTablePerDagOnMonday() throws InterruptedException{
-		
-		//TESTING method:system.out is working
-		System.out.println(LocalDateTime.now());
-	
-	/*	String url="jdbc:postgresql://localhost:5432/postgres";
-			String user="postgres";
-			String password="postgres";
-			try(Connection con=DriverManager.getConnection(url, user, password);
-					Statement st=con.createStatement()){
-				st.execute("DELETE FROM step where id>0");
-				st.close();		
-			} catch (SQLException e) {
-				System.out.println("An error occurred");
-				e.printStackTrace();
-			}
-	}
-}
-
-@Configuration
-@EnableScheduling
-// to not affect test
-@ConditionalOnProperty(name="deleting.enabled", matchIfMissing=true)
-class deleteTablePerDag{
-	
-}*/
