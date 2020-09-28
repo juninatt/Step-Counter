@@ -55,7 +55,7 @@ public class StepController {
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
 	@PostMapping(value = "/multiple", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public List<Step> registerMultipleSteps(final @AuthenticationPrincipal Jwt jwt, final @RequestBody List<@Valid StepDTO> stepDtoList) {
+	public List<StepDTO> registerMultipleSteps(final @AuthenticationPrincipal Jwt jwt, final @RequestBody List<@Valid StepDTO> stepDtoList) {
 		return stepService.registerMultipleSteps((String) jwt.getClaims().get("oid"), stepDtoList);
 	}
 /*

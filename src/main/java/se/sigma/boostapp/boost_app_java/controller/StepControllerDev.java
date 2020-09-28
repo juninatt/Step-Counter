@@ -5,12 +5,10 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -68,11 +66,11 @@ public class StepControllerDev {
             @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
     @PostMapping(value = "/multiple/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public List<Step> registerMultipleSteps(final @PathVariable String userId, final @RequestBody List<@Valid StepDTO> stepDtoList) {
+    public List<StepDTO> registerMultipleSteps(final @PathVariable String userId, final @RequestBody List<@Valid StepDTO> stepDtoList) {
         return stepService.registerMultipleSteps(userId, stepDtoList);
     }
 
-    // Get sum of step count by user ID, start date and end date
+    /*// Get sum of step count by user ID, start date and end date
     @ApiOperation(value = "Get sum of steps by user ID, start date and end date (optional)", response = List.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
             @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
@@ -82,9 +80,9 @@ public class StepControllerDev {
     public int getByUserAndDays(final @PathVariable String userId, final @RequestParam String startDate,
                                 final @RequestParam(required = false) String endDate) {
         return stepService.getStepSumByUser(userId, startDate, endDate);
-    }
+    }*/
 
-    // Get step count per day by user ID and start date
+    /*// Get step count per day by user ID and start date
     @ApiOperation(value = "Get a user's step count per day by user ID, start date and end date optional)", response = List.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
             @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
@@ -94,7 +92,7 @@ public class StepControllerDev {
     public List<StepDateDTO> getUserSteps(final @PathVariable String userId, final @RequestParam String startDate,
                                           final @RequestParam(required = false) String endDate) {
         return stepService.getStepsByUser(userId, startDate, endDate);
-    }
+    }*/
 
     // Post userIds and start date to get each of users' step count
     @ApiOperation(value = "Get step count per day for a list of users by start date and end date (optional).", response = List.class)

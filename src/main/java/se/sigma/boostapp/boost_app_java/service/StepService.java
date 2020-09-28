@@ -87,7 +87,41 @@ public class StepService {
 	}
 
 
-    //	Persist multiple Step //StepDTO-objects that has the same date will be merged to one where stepCount is summed and startDate is set to earliest in list
+	public List<StepDTO> registerMultipleSteps(String userId, List<StepDTO> stepDtoList){
+	    //if new user, add all to db
+        if(!stepRepository.findByUserId(userId).isPresent()){
+           //get earliest object in list
+            var s = sortListByEndTime(stepDtoList, false).get(0);
+           stepRepository.save(new Step(userId,  s.getStepCount(), s.getStartTime(), s.getEndTime(), s.getUploadedTime()));
+           weekStepRepository.save(new WeekStep(userId, getWeekNumber(s.getEndTime()), s.getEndTime().getYear(), s.getStepCount()));
+           monthStepRepository.save(new MonthStep(userId, s.getEndTime().getMonthValue(), s.getEndTime().getYear(), s.getStepCount()));
+        }
+        var existingStep = stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).get();
+        //check if any old dates are in list, throw away
+        stepDtoList = stepDtoList.stream().filter(stepDTO -> stepDTO.getEndTime().isAfter(existingStep.getEnd())).collect(Collectors.toList());
+
+        for (int i = 0; i < stepDtoList.size(); i++) {
+            updateLastStepInStepTable(stepDtoList.get(i), userId, existingStep);
+            addStepsToWeekTable(stepDtoList.get(i).getEndTime().getYear(), getWeekNumber(stepDtoList.get(i).getEndTime()), stepDtoList.get(i).getStepCount(), userId);
+            addStepsToMonthTable(userId, stepDtoList.get(i).getStepCount(), stepDtoList.get(i).getEndTime().getMonthValue(), stepDtoList.get(i).getEndTime().getYear());
+        }
+	    return stepDtoList;
+    }
+
+    public void updateLastStepInStepTable(StepDTO s, String userId, Step latestStep){
+	    if(latestStep.getEnd().getYear() == s.getEndTime().getYear() && latestStep.getEnd().getDayOfYear() == s.getEndTime().getDayOfYear()){
+	        latestStep.setStepCount(latestStep.getStepCount()+s.getStepCount());
+	        latestStep.setEnd(s.getEndTime());
+	        latestStep.setUploadedTime(s.getUploadedTime());
+	        stepRepository.save(latestStep);
+        }
+	    else{
+            stepRepository.save(new Step(userId,  s.getStepCount(), s.getStartTime(), s.getEndTime(), s.getUploadedTime()));
+        }
+    }
+
+
+    /*//	Persist multiple Step //StepDTO-objects that has the same date will be merged to one where stepCount is summed and startDate is set to earliest in list
     public List<Step> registerMultipleSteps(String userId, List<StepDTO> stepDtoList) {
         List<Step> stepList = new ArrayList<>();
         //if new user, add all to db after grouping by date
@@ -118,7 +152,7 @@ public class StepService {
         }
 
         return stepList;
-    }
+    }*/
 
     private void addStepsToMonthTable(String userId, int steps, int month, int year) {
         monthStepRepository.findByUserIdAndYearAndMonth(userId, year, month).ifPresentOrElse(
@@ -129,7 +163,7 @@ public class StepService {
                 ()-> monthStepRepository.save(new MonthStep(userId, month, year, steps)));
 	}
 
-    //Helper method. Insert StepDTO-list to stepsPerDay-table
+    /*//Helper method. Insert StepDTO-list to stepsPerDay-table
     private List<Step> addOrUpdateStepDtoObjectsToDB(String userId, List<StepDTO> stepDtoList, Step latest) {
         List<Step> stepList = new ArrayList<>();
         //Put earliest date first in list
@@ -143,19 +177,21 @@ public class StepService {
         }
         return stepList;
     }
-
+*/
+/*
     //Helper method. Group objects to map by same endDate
     private Map<Integer, List<StepDTO>> groupObjectsInListsByEndDate(List<StepDTO> list) {
         return list.stream()
                 .collect(Collectors.groupingBy(sDto -> sDto.getEndTime().getDayOfYear()));
     }
+*/
 
-    //Helper method. Add new entry of steps per day to DB
+  /*  //Helper method. Add new entry of steps per day to DB
     private Step addStepToDB(String id, StepDTO s) {
         return stepRepository.save(new Step(id, s.getStepCount(), s.getStartTime(), s.getEndTime(), s.getUploadedTime()));
-    }
+    }*/
 
-    //Helper method. Update existing entry in DB
+ /*   //Helper method. Update existing entry in DB
     private Step updateEntryinDB(StepDTO stepDTO, Step step) {
         step.setStepCount(step.getStepCount() + stepDTO.getStepCount());
         step.setEnd(stepDTO.getEndTime());
@@ -175,7 +211,7 @@ public class StepService {
         });
 
         return list;
-    }
+    }*/
 
     //Helper method to sort list by EndTime
     private List<StepDTO> sortListByEndTime(List<StepDTO> stepDtoList, boolean reverseOrder) {
@@ -186,7 +222,6 @@ public class StepService {
         }
 
     }
-
 
     //Helper method to get number of week from date
     private int getWeekNumber(LocalDateTime inputDate){
@@ -200,7 +235,7 @@ public class StepService {
     }
 
 
-    //	Get sum of step count by userId, start date and end Date.
+   /* //	Get sum of step count by userId, start date and end Date.
     //vilken data ska hämta denna metod, alla steg, steg per dag,vecka eller månad???????
     public int getStepSumByUser(String userId, String startDate, String endDate) {
         LocalDateTime end;
@@ -213,8 +248,8 @@ public class StepService {
                 LocalDate.parse(startDate).atStartOfDay(), end);
         return 0;
     }
-
-    // Get step count per day by user ID and between two dates
+*/
+/*    // Get step count per day by user ID and between two dates
     public List<StepDateDTO> getStepsByUser(String userId, String startDate, String endDate) {
         List<StepDateDTO> list = new ArrayList<>();
         java.sql.Date firstDate = java.sql.Date.valueOf(startDate);
@@ -226,7 +261,7 @@ public class StepService {
         }
         stepRepository.findAllByUserIdAndEndTimeBetween(userId, firstDate, lastDate).forEach(step -> list.add(new StepDateDTO(java.sql.Date.valueOf(step.getEnd().toString()), step.getStepCount())));
         return list;
-    }
+    }*/
 
     // Get step count per day per multiple users
     public Optional<List<BulkUsersStepsDTO>> getStepsByMultipleUsers(List<String> users, String startDate, String endDate) {
