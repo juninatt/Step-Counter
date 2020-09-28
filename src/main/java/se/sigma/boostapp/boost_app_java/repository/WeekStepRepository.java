@@ -9,7 +9,7 @@ import java.util.Optional;
 @Repository
 public interface WeekStepRepository extends CrudRepository<WeekStep,Long>{
 
-    Optional<WeekStep> findByUserIdAndYear(String userId, int year);
+   // Optional<WeekStep> findByUserIdAndYear(String userId, int year);
 
     Optional<WeekStep> findByUserIdAndYearAndWeek(String userId, int year, int week);
 

@@ -13,7 +13,7 @@ public interface MonthStepRepository extends CrudRepository<MonthStep,Long>{
 
     Optional<MonthStep> findByUserIdAndYearAndMonth(String userId, int year, int month);
 
-    Optional<MonthStep> findFirstByUserIdAndYear(String userId, int year);
+    /*Optional<MonthStep> findFirstByUserIdAndYear(String userId, int year);*/
 
     @Query("SELECT m.steps FROM MonthStep m WHERE m.userId = :userId AND m.year = :year AND m.month = :month")
     Optional<Integer> getStepCountMonth(@Param("userId")String userId,@Param("year") int year,@Param("month") int month);
