@@ -177,7 +177,7 @@ public class StepControllerDevTest {
         stepDTOList.add(stepDTO2);
         stepDTOList.add(stepDTO3);
 
-          when(service.registerMultipleSteps2(Mockito.anyString(), Mockito.anyList())).thenReturn(stepDTOList);
+          when(service.registerMultipleSteps(Mockito.anyString(), Mockito.anyList())).thenReturn(stepDTOList);
 
           RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post("/steps/multiple/{userId}","testId")

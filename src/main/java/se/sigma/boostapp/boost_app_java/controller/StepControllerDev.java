@@ -67,7 +67,7 @@ public class StepControllerDev {
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
     @PostMapping(value = "/multiple/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public List<StepDTO> registerMultipleSteps(final @PathVariable String userId, final @RequestBody List<@Valid StepDTO> stepDtoList) {
-        return stepService.registerMultipleSteps2(userId, stepDtoList);
+        return stepService.registerMultipleSteps(userId, stepDtoList);
     }
 
     /*// Get sum of step count by user ID, start date and end date

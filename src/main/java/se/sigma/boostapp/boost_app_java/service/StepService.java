@@ -87,7 +87,7 @@ public class StepService {
 	}
 
 
-	public List<StepDTO> registerMultipleSteps2(String userId, List<StepDTO> stepDtoList){
+	public List<StepDTO> registerMultipleSteps(String userId, List<StepDTO> stepDtoList){
 	    //if new user, add all to db
         if(!stepRepository.findByUserId(userId).isPresent()){
            //get earliest object in list
