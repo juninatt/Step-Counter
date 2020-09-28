@@ -14,6 +14,13 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+
+/**
+ * 
+ * @author SigmaIT
+ *
+ */
+
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
@@ -36,6 +43,11 @@ public class SwaggerConfig {
 				.apiInfo(apiInfo());
 	}
 	
+	
+	/**
+	 * @author SigmaIT
+	 * @return API info
+	 */
 	   private ApiInfo apiInfo() {
 	        return new ApiInfoBuilder().title("REST API Documentation")
 	            .description("Sigma Boost App")
