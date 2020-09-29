@@ -2,10 +2,12 @@ package se.sigma.boostapp.boost_app_java.controller;
 
 import java.util.List;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
@@ -34,6 +36,16 @@ public class StepController {
 	public StepController(final StepService stepService) {
 		this.stepService = stepService;
 	}
+
+	//Delete step table
+	@ConditionalOnProperty(name="deleting.enabled", matchIfMissing=true)
+	@SuppressWarnings("null")
+	//1=secund , 0=minut, 0= hours, *-dayOfTheMonth *-month MON-Monday
+	@Scheduled(cron="1 0 0 * * MON")
+	public void deleteStepTable() throws InterruptedException {
+		stepService.deleteStepTabel();
+	}
+
 
 	// Post step
 	@ApiOperation(value = "Register step entity", response = List.class)
@@ -104,5 +116,40 @@ public class StepController {
 	@GetMapping(value = "/latest")
 	public ResponseEntity<Step> getLatestStep(final @AuthenticationPrincipal Jwt jwt) {
 		return stepService.getLatestStep((String) jwt.getClaims().get("oid")).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+	}
+
+	// Get step count per month by user and year and month
+	@ApiOperation(value = "Get a user's step count per month by user and year and month)", response = Integer.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
+			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
+	@GetMapping(value = {"/stepcount/year/{year}/month/{month}"})
+	public ResponseEntity<Integer> getUserMonthSteps(final @AuthenticationPrincipal Jwt jwt, final @PathVariable int year,
+													 final @PathVariable int month) {
+		return stepService.getStepCountMonth((String) jwt.getClaims().get("oid"), year, month).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+	}
+
+	// Get step count per week by user and year and week
+	@ApiOperation(value = "Get a user's step count per week by user and year and week)", response = Integer.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
+			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
+	@GetMapping(value = {"/stepcount/year/{year}/week/{week}"})
+	public ResponseEntity<Integer> getUserWeekSteps(final @AuthenticationPrincipal Jwt jwt, final @PathVariable int year,
+													final @PathVariable int week) {
+		return stepService.getStepCountWeek((String) jwt.getClaims().get("oid"), year, week).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+	}
+
+	// Get list of steps per day per current week
+	@ApiOperation(value = "Get list of steps per day per current week)", response = List.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
+			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
+	@GetMapping(value = {"/stepcount/currentweek"})
+	public ResponseEntity<List<StepDateDTO>> getUserWeekSteps(final @AuthenticationPrincipal Jwt jwt) {
+		return stepService.getStepCountPerDay((String) jwt.getClaims().get("oid")).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 	}
 }
