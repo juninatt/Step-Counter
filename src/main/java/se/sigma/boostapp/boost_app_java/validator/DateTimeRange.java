@@ -4,6 +4,11 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
 
+/**
+ * 
+ * @author SigmaIT
+ *
+ */
 @Documented
 @Constraint(validatedBy = DateTimeRangeValidator.class)
 @Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})

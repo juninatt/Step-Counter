@@ -17,6 +17,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.GregorianCalendar;
 
+/**
+ * 
+ * @author SigmaIT
+ *
+ */
 @Service
 public class StepService {
 
@@ -28,7 +33,13 @@ public class StepService {
 	private final WeekStepRepository weekStepRepository;
 
 //	private static final double starPointFactor = 0.01;
-
+	
+/**
+ * @author SigmaIT
+ * @param stepRepository 
+ * @param monthStepRepository 
+ * @param weekStepRepository 
+ */
 	public StepService(final StepRepository stepRepository, final MonthStepRepository monthStepRepository,
 						final WeekStepRepository weekStepRepository) {
 		this.stepRepository = stepRepository;
@@ -37,6 +48,12 @@ public class StepService {
 	}
 
 // Persist a single Step (for 1 or more step count)
+	/**
+	 * @author SigmaIT
+	 * @param userId
+	 * @param stepDto
+	 * @return Single step for existing and new user to step, monthstep and weekstep table
+	 */
 	public Optional<Step> registerSteps(String userId, StepDTO stepDto) {
 		// "stepDTO": "Start time must before end time, which in turn must be before uploaded time"
 		
@@ -81,12 +98,22 @@ public class StepService {
 	}
 		
 
-	//	Get latest steps per day entity by user
+	
+	/**
+	 * @author SigmaIT
+	 * @param userId
+	 * @return Latest steps per dag entity by user
+	 */
 	public Optional<Step> getLatestStep(String userId) {
 		return stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId);
 	}
 
-
+/**
+ * @author SigmaIT
+ * @param userId
+ * @param stepDtoList
+ * @return list of user to step, monthstep and weekstep table 
+ */
 	public List<StepDTO> registerMultipleSteps(String userId, List<StepDTO> stepDtoList){
 	    //if new user, add all to db
         if(!stepRepository.findByUserId(userId).isPresent()){
@@ -108,6 +135,12 @@ public class StepService {
 	    return stepDtoList;
     }
 
+	/**
+	 * @author SigmaIT
+	 * @param s
+	 * @param userId 
+	 * @param latestStep
+	 */
     public void updateLastStepInStepTable(StepDTO s, String userId, Step latestStep){
 	    if(latestStep.getEnd().getYear() == s.getEndTime().getYear() && latestStep.getEnd().getDayOfYear() == s.getEndTime().getDayOfYear()){
 	        latestStep.setStepCount(latestStep.getStepCount()+s.getStepCount());
@@ -120,40 +153,13 @@ public class StepService {
         }
     }
 
-
-    /*//	Persist multiple Step //StepDTO-objects that has the same date will be merged to one where stepCount is summed and startDate is set to earliest in list
-    public List<Step> registerMultipleSteps(String userId, List<StepDTO> stepDtoList) {
-        List<Step> stepList = new ArrayList<>();
-        //if new user, add all to db after grouping by date
-        if (!stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).isPresent()) {
-            Map<Integer, List<StepDTO>> groupedByDayOfYearMap =  groupObjectsInListsByEndDate(stepDtoList);
-            stepDtoList = mergeStepDtoObjectsWithSameDate(groupedByDayOfYearMap);
-        	for (StepDTO s : stepDtoList) {
-                stepList.add(addStepToDB(userId, s));
-                addStepsToMonthTable(userId, s.getStepCount(), s.getEndTime().getMonthValue(), s.getEndTime().getYear());
-                addStepsToWeekTable(s.getEndTime().getYear(), getWeekNumber(s.getEndTime()), s.getStepCount(), userId);
-
-            }
-        } else {
-            Step latest = stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).get();
-            // TODO: 2020-09-08 communicate conflict with response?
-			//objects that conflicts with latest entry in BD will be discarded
-            stepDtoList = stepDtoList.stream().filter(stepDTO -> stepDTO.getEndTime().isAfter(latest.getEnd())).collect(Collectors.toList());
-            Map<Integer, List<StepDTO>> groupedByDayOfYearMap =  groupObjectsInListsByEndDate(stepDtoList);
-
-            if (!stepDtoList.isEmpty()) {
-                stepDtoList = mergeStepDtoObjectsWithSameDate(groupedByDayOfYearMap);
-                stepList = addOrUpdateStepDtoObjectsToDB(userId, stepDtoList, latest);
-                for(StepDTO s : stepDtoList) {
-                    addStepsToMonthTable(userId, s.getStepCount(), s.getEndTime().getMonthValue(), s.getEndTime().getYear());
-                    addStepsToWeekTable(s.getEndTime().getYear(), getWeekNumber(s.getEndTime()), s.getStepCount(), userId);
-                }
-            }
-        }
-
-        return stepList;
-    }*/
-
+/**
+ * @author SigmaIT
+ * @param userId
+ * @param steps
+ * @param month
+ * @param year
+ */
     private void addStepsToMonthTable(String userId, int steps, int month, int year) {
         monthStepRepository.findByUserIdAndYearAndMonth(userId, year, month).ifPresentOrElse(
                 m->{int stepSum = steps + m.getSteps();
@@ -163,57 +169,13 @@ public class StepService {
                 ()-> monthStepRepository.save(new MonthStep(userId, month, year, steps)));
 	}
 
-    /*//Helper method. Insert StepDTO-list to stepsPerDay-table
-    private List<Step> addOrUpdateStepDtoObjectsToDB(String userId, List<StepDTO> stepDtoList, Step latest) {
-        List<Step> stepList = new ArrayList<>();
-        //Put earliest date first in list
-        stepDtoList = sortListByEndTime(stepDtoList, false);
-
-        if (latest.getEnd().getDayOfYear() == stepDtoList.get(0).getEndTime().getDayOfYear()) {
-            stepList.add(updateEntryinDB(stepDtoList.get(0), latest));
-            for (int i = 1; i < stepDtoList.size(); i++) {
-                stepList.add(addStepToDB(userId, stepDtoList.get(i)));
-            }
-        }
-        return stepList;
-    }
-*/
-/*
-    //Helper method. Group objects to map by same endDate
-    private Map<Integer, List<StepDTO>> groupObjectsInListsByEndDate(List<StepDTO> list) {
-        return list.stream()
-                .collect(Collectors.groupingBy(sDto -> sDto.getEndTime().getDayOfYear()));
-    }
-*/
-
-  /*  //Helper method. Add new entry of steps per day to DB
-    private Step addStepToDB(String id, StepDTO s) {
-        return stepRepository.save(new Step(id, s.getStepCount(), s.getStartTime(), s.getEndTime(), s.getUploadedTime()));
-    }*/
-
- /*   //Helper method. Update existing entry in DB
-    private Step updateEntryinDB(StepDTO stepDTO, Step step) {
-        step.setStepCount(step.getStepCount() + stepDTO.getStepCount());
-        step.setEnd(stepDTO.getEndTime());
-        step.setUploadedTime(stepDTO.getUploadedTime());
-        return stepRepository.save(step);
-    }
-
-    //Helper method to merge objects with same date to one object and return list of StepDTO objects
-    private List<StepDTO> mergeStepDtoObjectsWithSameDate(Map<Integer, List<StepDTO>> map) {
-        List<StepDTO> list = new ArrayList<>();
-
-        map.forEach((key, value) -> {
-            value = sortListByEndTime(value, true); //sort list to object with last endDate at index 0
-            value.get(0).setStepCount(value.stream().mapToInt(StepDTO::getStepCount).sum()); //sum stepCount from all objects in list
-            value.get(0).setStartTime(value.get(value.size() - 1).getStartTime()); //set startDate to earliest startDate in list, (keep end- and uploadedTime)
-            list.add(value.get(0)); //add modified object to new list
-        });
-
-        return list;
-    }*/
-
-    //Helper method to sort list by EndTime
+  
+    /**
+     * @author SigmaIT
+     * @param stepDtoList
+     * @param reverseOrder
+     * @return Sort list by EndTime
+     */
     private List<StepDTO> sortListByEndTime(List<StepDTO> stepDtoList, boolean reverseOrder) {
         if (reverseOrder) {
             return stepDtoList.stream().sorted(Comparator.comparing(StepDTO::getEndTime).reversed()).collect(Collectors.toList());
@@ -224,6 +186,11 @@ public class StepService {
     }
 
     //Helper method to get number of week from date
+    /**
+     * @author SigmaIT
+     * @param inputDate
+     * @return Number of current week
+     */
     private int getWeekNumber(LocalDateTime inputDate){
 
 	    GregorianCalendar calendar = new GregorianCalendar();
@@ -235,35 +202,13 @@ public class StepService {
     }
 
 
-   /* //	Get sum of step count by userId, start date and end Date.
-    //vilken data ska hämta denna metod, alla steg, steg per dag,vecka eller månad???????
-    public int getStepSumByUser(String userId, String startDate, String endDate) {
-        LocalDateTime end;
-        if (endDate == null || endDate.equals("")) {
-            end = LocalDateTime.now();
-        } else {
-            end = LocalDate.parse(endDate).atTime(23, 59, 59);
-        }
-        List<Step> allSteps = stepRepository.findByUserIdAndStartTimeGreaterThanEqualAndEndTimeLessThanEqual(userId,
-                LocalDate.parse(startDate).atStartOfDay(), end);
-        return 0;
-    }
-*/
-/*    // Get step count per day by user ID and between two dates
-    public List<StepDateDTO> getStepsByUser(String userId, String startDate, String endDate) {
-        List<StepDateDTO> list = new ArrayList<>();
-        java.sql.Date firstDate = java.sql.Date.valueOf(startDate);
-        java.sql.Date lastDate;
-        if (endDate == null || endDate.equals("")) {
-            lastDate = java.sql.Date.valueOf(LocalDate.now());
-        } else {
-            lastDate = java.sql.Date.valueOf(endDate);
-        }
-        stepRepository.findAllByUserIdAndEndTimeBetween(userId, firstDate, lastDate).forEach(step -> list.add(new StepDateDTO(java.sql.Date.valueOf(step.getEnd().toString()), step.getStepCount())));
-        return list;
-    }*/
-
-    // Get step count per day per multiple users
+   /**
+     * @author SigmaIT
+     * @param users
+     * @param startDate
+     * @param endDate
+     * @return  Step count per day per multiple users
+     */
     public Optional<List<BulkUsersStepsDTO>> getStepsByMultipleUsers(List<String> users, String startDate, String endDate) {
 
         // String startDate → java.sql.Date firstDate
@@ -287,7 +232,12 @@ public class StepService {
         return bulkUsersStepsDTOList.isEmpty() ? Optional.empty() : Optional.of(bulkUsersStepsDTOList);
     }
 
-    // Translate steps to star points for a list of users
+    
+    /**
+     * @author SigmaIT
+     * @param requestStarPointsDTO
+     * @return Translate steps to star points for a list of users
+     */
     public List<BulkUserStarPointsDTO> getStarPointsByMultipleUsers(RequestStarPointsDTO requestStarPointsDTO) {
 
         if (requestStarPointsDTO.getUsers() == null) requestStarPointsDTO.setUsers(stepRepository.getAllUsers());
@@ -304,6 +254,13 @@ public class StepService {
                 ))).collect(Collectors.toList());
     }
 
+    /**
+     * @author SigmaIT
+     * @param year
+     * @param week
+     * @param steps
+     * @param userId
+     */
     public void addStepsToWeekTable(int year, int week, int steps, String userId){
 	    weekStepRepository.findByUserIdAndYearAndWeek(userId, year, week).ifPresentOrElse(
 	            w->{int stepSum = steps + w.getSteps();
@@ -313,17 +270,36 @@ public class StepService {
         );
     }
 
-    //return stepcount per month
+  
+    /**
+     * @author SigmaIT
+     * @param userId
+     * @param year
+     * @param month
+     * @return Step count per month
+     */
     public Optional<Integer> getStepCountMonth(String userId, int year, int month){
 	    return monthStepRepository.getStepCountMonth(userId, year, month);
     }
 
-    //return step count per week
+ 
+    /**
+     * @author SigmaIT
+     * @param userId
+     * @param year
+     * @param week
+     * @return Step count per week
+     */
     public Optional<Integer> getStepCountWeek(String userId, int year, int week){
         return weekStepRepository.getStepCountWeek(userId, year, week);
     }
 
-    //Return list of steps per day per current week
+ 
+    /**
+     * @author SigmaIT
+     * @param userId
+     * @return List of steps per day per current week
+     */
     public Optional<List<StepDateDTO>> getStepCountPerDay(String userId){
 	    List<StepDateDTO> list = new ArrayList<>();
         if(stepRepository.findByUserId(userId).isPresent()){
@@ -341,6 +317,9 @@ public class StepService {
         }
     }
        
+    /**
+     * @author SigmaIT
+     */
     public void deleteStepTabel() {
     	stepRepository.deleteAllFromStep();
     }

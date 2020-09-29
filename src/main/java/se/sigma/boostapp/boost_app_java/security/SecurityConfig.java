@@ -6,6 +6,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
+/**
+ * 
+ * @author SigmaIT
+ *
+ */
 @EnableWebSecurity
 @Profile("prod")
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
