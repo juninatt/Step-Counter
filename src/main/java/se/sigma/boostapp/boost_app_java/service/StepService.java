@@ -25,7 +25,7 @@ import java.util.GregorianCalendar;
 @Service
 public class StepService {
 
-	// Temporary star point factor used during development
+	/** Temporary star point factor used during development */
 	private static final double starPointFactor = 1;
 
 	private final StepRepository stepRepository;
@@ -49,7 +49,7 @@ public class StepService {
 
 // Persist a single Step (for 1 or more step count)
 	/**
-	 * @author SigmaIT
+	 * 
 	 * @param userId
 	 * @param stepDto
 	 * @return Single step for existing and new user to step, monthstep and weekstep table
