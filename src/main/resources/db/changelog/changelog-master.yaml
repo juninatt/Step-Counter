@@ -1,71 +1,7 @@
 databaseChangeLog:
-
-  - changeSet:
-      id: boost-app-step-1.0
-      author: Sigma
-      changes:
-        - createTable:
-            tableName: step
-            columns:
-              - column:
-                  name: id
-                  type: int
-                  autoIncrement: true
-                  constraints:
-                    primaryKey: true
-                    nullable: false
-              - column:
-                  name: step_count
-                  type: int
-                  constraints:
-                     nullable: false
-              - column:
-                  name: start_time
-                  type: datetime
-              - column:
-                  name: end_time
-                  type: datetime
-              - column:
-                  name: user_id
-                  type: varchar(255)
-                  constraints:
-                     nullable: false
-              - column:
-                  name: uploaded
-                  type: datetime
-  - changeSet:
-      id: boost-app-step-index
-      author: Sigma
-      changes:
-        - createIndex:
-            clustered: false
-            columns:
-              - column:
-                  name: user_id
-            indexName: idx_user_id
-            tableName: step
-  - changeSet:
-      id: boost-app-step-index-date
-      author: Sigma
-      changes:
-        - createIndex:
-            clustered: false
-            columns:
-              - column:
-                  name: start_time
-            indexName: idx_start_date
-            tableName: step
-        - createIndex:
-            clustered: false
-            columns:
-              - column:
-                  name: end_time
-            indexName: idx_end_date
-            tableName: step
-        - createIndex:
-            clustered: false
-            columns:
-              - column:
-                  name: uploaded
-            indexName: idx_uploaded
-            tableName: step
+  - include:
+     file: db/changelog/changelog-master-old.yaml
+  - include:
+      file: db/changelog/changelog-create-table-weekstep.yaml
+  - include:
+      file: db/changelog/changelog-create-table-monthstep.yaml
