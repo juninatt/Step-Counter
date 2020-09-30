@@ -35,7 +35,7 @@ public class StepService {
 //	private static final double starPointFactor = 0.01;
 	
 /**
- * @author SigmaIT
+ * 
  * @param stepRepository 
  * @param monthStepRepository 
  * @param weekStepRepository 
@@ -272,11 +272,11 @@ public class StepService {
 
   
     /**
-     * @author SigmaIT
+     *Step count per month
      * @param userId
      * @param year
      * @param month
-     * @return Step count per month
+     * @return 
      */
     public Optional<Integer> getStepCountMonth(String userId, int year, int month){
 	    return monthStepRepository.getStepCountMonth(userId, year, month);
