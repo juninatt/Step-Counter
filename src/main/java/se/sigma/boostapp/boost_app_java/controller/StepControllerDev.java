@@ -45,7 +45,12 @@ public class StepControllerDev {
     }
     
     
-    
+    /**
+     * Register steps for a single user
+     * @param userId A user ID
+     * @param stepDTO Data for the steps
+     * @return
+     */
     // Post step
     @ApiOperation(value = "Register step entity", response = List.class)
     @ApiResponses(value = {
