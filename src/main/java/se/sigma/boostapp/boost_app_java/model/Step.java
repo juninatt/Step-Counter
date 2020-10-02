@@ -17,7 +17,9 @@ import io.swagger.annotations.ApiModelProperty;
 @Table(name = "step")
 @ApiModel(description = "All details about the step entity. ")
 public class Step {
-
+/**
+ * Entity step table
+ */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@ApiModelProperty(notes = "The database generated step ID")

@@ -16,7 +16,9 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name="weekstep")
 public class WeekStep {
-
+/**
+ * Entity weekstep table
+ */
 		@Id
 		@GeneratedValue(strategy = GenerationType.IDENTITY)
 		@ApiModelProperty(notes = "The database generated weekStep ID")
