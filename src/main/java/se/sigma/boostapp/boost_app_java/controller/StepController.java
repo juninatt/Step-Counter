@@ -37,7 +37,11 @@ public class StepController {
 		this.stepService = stepService;
 	}
 
-	//Delete step table
+	
+	/**
+	 * Delete step table
+	 * @throws InterruptedException
+	 */
 	@ConditionalOnProperty(name="deleting.enabled", matchIfMissing=true)
 	@SuppressWarnings("null")
 	//1=secund , 0=minut, 0= hours, *-dayOfTheMonth *-month MON-Monday
@@ -47,7 +51,12 @@ public class StepController {
 	}
 
 
-	// Post step
+	/**
+	 * Post request for step<br>
+	 * Register step entity
+	 * @param jwt A user
+	 * @param stepDTO Data for the steps
+	 */
 	@ApiOperation(value = "Register step entity", response = List.class)
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "Successfully post request"),
@@ -59,7 +68,14 @@ public class StepController {
 		return stepService.registerSteps((String) jwt.getClaims().get("oid"), stepDTO).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
 	}
 
-	// Post multiple step
+	// 
+	/**
+	 * Post request for multiple step <br>
+	 * Register multiple step entities
+	 * @param jwt A user
+	 * @param stepDtoList Data for the list of step
+	 * @return
+	 */
 	@ApiOperation(value = "Register multiple step entities", response = List.class)
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "Successfully post steps"),
@@ -96,6 +112,13 @@ public class StepController {
 	}*/
 
 	// Post userIds and start date to get each of users' step count
+	/**
+	 * Post request <br>
+	 * Get step count per day for a list of users by start date and end date
+	 * @param users List of users
+	 * @param startDate Start date as String
+	 * @param endDate End date as String
+	 */
 	@ApiOperation(value = "Get step count per day for a list of users by start date and end date (optional).", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully post request"),
 			@ApiResponse(code = 401, message = "Request is not authorized"),
@@ -107,7 +130,11 @@ public class StepController {
 		return stepService.getStepsByMultipleUsers(users, startDate, endDate).orElseThrow(() -> new NotFoundException());
 	}
 
-	// Get latest step by user
+	/**
+	 * Get request <br>
+	 * Get user's latest step
+	 * @param jwt A user
+	 */
 	@ApiOperation(value= "Get user's latest step", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step"),
 			@ApiResponse(code = 401, message = "Request is not authorized"),
@@ -118,7 +145,14 @@ public class StepController {
 		return stepService.getLatestStep((String) jwt.getClaims().get("oid")).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 	}
 
-	// Get step count per month by user and year and month
+
+	/**
+	 * Get request <br>
+	 * Get a user's step count per month by user and year and month
+	 * @param jwt A user
+	 * @param year Actual year
+	 * @param month Actual month
+	 */
 	@ApiOperation(value = "Get a user's step count per month by user and year and month)", response = Integer.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
 			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
@@ -130,7 +164,14 @@ public class StepController {
 		return stepService.getStepCountMonth((String) jwt.getClaims().get("oid"), year, month).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 	}
 
-	// Get step count per week by user and year and week
+
+	/**
+	 * Get request <br>
+	 * Get a user's step count per week by user and year and week
+	 * @param jwt A user
+	 * @param year Actual year
+	 * @param week Actual week
+	 */
 	@ApiOperation(value = "Get a user's step count per week by user and year and week)", response = Integer.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
 			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
@@ -143,6 +184,11 @@ public class StepController {
 	}
 
 	// Get list of steps per day per current week
+	/**
+	 * Get request <br>
+	 * Get list of steps per day per current week
+	 * @param jwt A user
+	 */
 	@ApiOperation(value = "Get list of steps per day per current week)", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
 			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),

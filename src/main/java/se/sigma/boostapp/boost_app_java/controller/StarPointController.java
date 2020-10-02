@@ -20,7 +20,12 @@ public class StarPointController {
     public StarPointController(StepService stepService) {
         this.stepService = stepService;
     }
-
+/**
+ * Post request <br>
+ * Get sum of star points by a start date and end date for a list of users
+ * @param requestStarPointsDTO Data for star points for multiple users with start time and end time
+ * 
+ */
     @ApiOperation(value = "Get sum of star points by a start date and end date for a list of users.", response = List.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully post request"),
             @ApiResponse(code = 401, message = "Request is not authorized"),
