@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.DynamicUpdate;
 
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,7 +23,9 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicUpdate
 @Table(name="monthstep")
 public class MonthStep {
-
+/**
+ * Entiti monthstep table
+ */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@ApiModelProperty(notes = "The database generated monthStep ID")

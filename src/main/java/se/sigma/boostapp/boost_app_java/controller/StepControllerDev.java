@@ -35,7 +35,11 @@ public class StepControllerDev {
         this.stepService = stepService;
     }
 
-    //Delete step table
+    //
+    /**
+     * Delete step table
+     * @throws InterruptedException
+     */
     @ConditionalOnProperty(name="deleting.enabled", matchIfMissing=true)
     @SuppressWarnings("null")
 	//1=secund , 0=minut, 0= hours, *-dayOfTheMonth *-month MON-Monday
@@ -46,12 +50,11 @@ public class StepControllerDev {
     
     
     /**
-     * Register steps for a single user
+     * Post request <br>
+     * Register steps entity for a single user
      * @param userId A user ID
      * @param stepDTO Data for the steps
-     * @return
-     */
-    // Post step
+     */ 
     @ApiOperation(value = "Register step entity", response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully post steps"),
@@ -63,7 +66,13 @@ public class StepControllerDev {
         return stepService.registerSteps(userId, stepDTO).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
-    // Post multiple step
+    // 
+    /**
+     * Post request for multiple step <br>
+     * Register multiple step entities
+     * @param userId A user ID
+     * @param stepDtoList Data for the list of step
+     */
     @ApiOperation(value = "Register multiple step entities", response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successfully post steps"),
@@ -76,7 +85,11 @@ public class StepControllerDev {
     }
 
 
-    // Post userIds and start date to get each of users' step count
+    /**
+     * Post request:userIds and start date to get each of users' step count <br>
+     * Get step count per day for a list of users by start date and end date
+     * @param users A user ID
+     */
     @ApiOperation(value = "Get step count per day for a list of users by start date and end date (optional).", response = List.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully post request"),
             @ApiResponse(code = 401, message = "Request is not authorized"),
@@ -88,7 +101,13 @@ public class StepControllerDev {
         return stepService.getStepsByMultipleUsers(users, startDate, endDate).orElseThrow(() -> new NotFoundException());
     }
 
-    // Get latest step by user
+ 
+    /**
+     * Get request<br>
+     * Get user's latest step
+     * @param userId A user ID
+     * @return
+     */
     @ApiOperation(value= "Get user's latest step", response = List.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step"),
             @ApiResponse(code = 401, message = "Request is not authorized"),
@@ -99,7 +118,14 @@ public class StepControllerDev {
         return stepService.getLatestStep(userId).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    // Get step count per month by user ID and year and month
+    // 
+    /**
+     * Get request <br>
+     * Get step count per month by user ID and year and month
+     * @param userId A user ID
+     * @param year Actual year
+     * @param month Actual month
+     */
     @ApiOperation(value = "Get a user's step count per month by user ID and year and month)", response = Integer.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
             @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
@@ -112,7 +138,13 @@ public class StepControllerDev {
     }
 
 
-    // Get step count per week by user ID and year and week
+    /**
+     * Get request <br>
+     * Get step count per week by user ID and year and week
+     * @param userId A user ID
+     * @param year Actual year
+     * @param week Actual week
+     */
     @ApiOperation(value = "Get a user's step count per week by user ID and year and week)", response = Integer.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
             @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
@@ -124,7 +156,12 @@ public class StepControllerDev {
         return stepService.getStepCountWeek(userId, year, week).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    // Get list of steps per day per current week
+    // 
+/**
+ * Get request <br>
+ * Get list of steps per day per current week
+ * @param userId A user ID
+ */
     @ApiOperation(value = "Get list of steps per day per current week)", response = List.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
             @ApiResponse(code = 401, message = "You are not authorized to view the resource"),

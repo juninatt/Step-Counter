@@ -15,11 +15,6 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 
-/**
- * 
- * @author SigmaIT
- *
- */
 
 @Configuration
 @EnableSwagger2
@@ -45,8 +40,7 @@ public class SwaggerConfig {
 	
 	
 	/**
-	 * @author SigmaIT
-	 * @return API info
+	 *  API info
 	 */
 	   private ApiInfo apiInfo() {
 	        return new ApiInfoBuilder().title("REST API Documentation")

@@ -19,22 +19,30 @@ import java.util.Map;
 @ControllerAdvice
 public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(NotFoundException.class)
-    public void customerHandleNotFound(HttpServletResponse response) throws IOException {
-        response.sendError(HttpStatus.NOT_FOUND.value());
-    }
+	/**
+	 * Customer handle is not found
+	 * 
+	 * @param response
+	 * @throws IOException
+	 */
+	@ExceptionHandler(NotFoundException.class)
+	public void customerHandleNotFound(HttpServletResponse response) throws IOException {
+		response.sendError(HttpStatus.NOT_FOUND.value());
+	}
 
-    //  Override handler for MethodArgumentNotValidException
-    @Override
-    public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-                                                               HttpHeaders headers,
-                                                               HttpStatus status, WebRequest request) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String name = (error instanceof org.springframework.validation.FieldError) ? ((FieldError) error).getField() : error.getObjectName();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(name, errorMessage);
-        });
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-    }
+	/**
+	 * Override handler for MethodArgumentNotValidException
+	 */
+	@Override
+	public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers,
+			HttpStatus status, WebRequest request) {
+		Map<String, String> errors = new HashMap<>();
+		ex.getBindingResult().getAllErrors().forEach((error) -> {
+			String name = (error instanceof org.springframework.validation.FieldError) ? ((FieldError) error).getField()
+					: error.getObjectName();
+			String errorMessage = error.getDefaultMessage();
+			errors.put(name, errorMessage);
+		});
+		return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+	}
 }
