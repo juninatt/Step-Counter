@@ -27,3 +27,14 @@ databaseChangeLog:
               - column:
                   name: steps
                   type: int
+
+ 
+
+  - changeSet:
+      id: change-userIdTyp2
+      author: Sigma
+      changes:
+        - modifyDataType:
+              columnName: user_id
+              newDataType: varchar(255)
+              tableName:  monthstep

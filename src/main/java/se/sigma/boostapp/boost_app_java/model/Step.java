@@ -62,12 +62,10 @@ public class Step {
 		this.stepCount = stepCount;
 	}
 
-	//29.08.2020
 	public Step(String userId){
 		this.userId=userId;
 	}
 
-	//29.08.2020
 	public Step(int stepCount){
 		this.stepCount=stepCount;
 	}
