@@ -24,7 +24,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @Table(name="monthstep")
 public class MonthStep {
 /**
- * Entiti monthstep table
+ * Entity monthstep table
  */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
