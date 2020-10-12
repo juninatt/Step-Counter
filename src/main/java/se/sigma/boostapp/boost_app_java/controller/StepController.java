@@ -162,6 +162,7 @@ public class StepController {
 	public ResponseEntity<Integer> getUserMonthSteps(final @AuthenticationPrincipal Jwt jwt, final @PathVariable int year,
 													 final @PathVariable int month) {
 		return stepService.getStepCountMonth((String) jwt.getClaims().get("oid"), year, month).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+	
 	}
 
 
