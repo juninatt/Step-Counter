@@ -46,6 +46,7 @@ public class StepController {
 	@SuppressWarnings("null")
 	//1=secund , 0=minut, 0= hours, *-dayOfTheMonth *-month MON-Monday
 	@Scheduled(cron="1 0 0 * * MON")
+	//@Scheduled(cron="* * * * * FRI")
 	public void deleteStepTable() throws InterruptedException {
 		stepService.deleteStepTabel();
 	}
@@ -142,7 +143,7 @@ public class StepController {
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
 	@GetMapping(value = "/latest")
 	public ResponseEntity<Step> getLatestStep(final @AuthenticationPrincipal Jwt jwt) {
-		return stepService.getLatestStep((String) jwt.getClaims().get("oid")).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+		return stepService.getLatestStep((String) jwt.getClaims().get("oid")).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
 	}
 
 
@@ -161,7 +162,7 @@ public class StepController {
 	@GetMapping(value = {"/stepcount/year/{year}/month/{month}"})
 	public ResponseEntity<Integer> getUserMonthSteps(final @AuthenticationPrincipal Jwt jwt, final @PathVariable int year,
 													 final @PathVariable int month) {
-		return stepService.getStepCountMonth((String) jwt.getClaims().get("oid"), year, month).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+		return stepService.getStepCountMonth((String) jwt.getClaims().get("oid"), year, month).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
 	
 	}
 
@@ -179,9 +180,11 @@ public class StepController {
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
 	@GetMapping(value = {"/stepcount/year/{year}/week/{week}"})
+
 	public ResponseEntity<Integer> getUserWeekSteps(final @AuthenticationPrincipal Jwt jwt, final @PathVariable int year,
 													final @PathVariable int week) {
-		return stepService.getStepCountWeek((String) jwt.getClaims().get("oid"), year, week).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+
+		return stepService.getStepCountWeek((String) jwt.getClaims().get("oid"), year, week).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));	
 	}
 
 	// Get list of steps per day per current week
@@ -197,6 +200,6 @@ public class StepController {
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
 	@GetMapping(value = {"/stepcount/currentweek"})
 	public ResponseEntity<List<StepDateDTO>> getUserWeekSteps(final @AuthenticationPrincipal Jwt jwt) {
-		return stepService.getStepCountPerDay((String) jwt.getClaims().get("oid")).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+		return stepService.getStepCountPerDay((String) jwt.getClaims().get("oid")).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
 	}
 }

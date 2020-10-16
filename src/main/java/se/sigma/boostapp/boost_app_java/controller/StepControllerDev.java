@@ -118,7 +118,7 @@ public class StepControllerDev {
         return stepService.getLatestStep(userId).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    // 
+    
     /**
      * Get request <br>
      * Get step count per month by user ID and year and month
@@ -135,6 +135,7 @@ public class StepControllerDev {
     public ResponseEntity<Integer> getUserMonthSteps(final @PathVariable String userId, final @PathVariable int year,
                                           final @PathVariable int month) {
         return stepService.getStepCountMonth(userId, year, month).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+  
     }
 
 
@@ -156,7 +157,7 @@ public class StepControllerDev {
         return stepService.getStepCountWeek(userId, year, week).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    // 
+   
 /**
  * Get request <br>
  * Get list of steps per day per current week
