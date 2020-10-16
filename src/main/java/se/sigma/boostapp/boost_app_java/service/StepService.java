@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.GregorianCalendar;
 
 
 @Service
@@ -80,7 +79,7 @@ public class StepService {
 					addStepsToWeekTable(stepDto.getEndTime().getYear(), getWeekNumber(stepDto.getEndTime()), stepDto.getStepCount(), userId);
 					return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime())));
 				} 
-				else {// tänka att skriva kod för meddelande till användare
+				else {
 					return Optional.empty();
 					}
 					
@@ -98,16 +97,21 @@ public class StepService {
 					stepDto.getEndTime(), stepDto.getUploadedTime())));}
 
 	}
-		
-
 	
 	/**
 	 * Latest steps per dag entity by user
 	 * @param userId A user ID
 	 * 
 	 */
-	public Optional<Step> getLatestStep(String userId) {
-		return stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId);
+	public Optional<Step> getLatestStep(String userId) throws NullPointerException {
+		Optional<Step> find= stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId);
+		
+	  if(find.isPresent()) { 	
+		     return find;}
+		  else {
+			 Step emptyStep=new Step(userId,0);
+			  return Optional.of(emptyStep); 
+		  } 
 	}
 
 /**
@@ -170,7 +174,6 @@ public class StepService {
                 },
                 ()-> monthStepRepository.save(new MonthStep(userId, month, year, steps)));
 	}
-
   
     /**
      * Sort list by EndTime
@@ -277,7 +280,12 @@ public class StepService {
      * 
      */
     public Optional<Integer> getStepCountMonth(String userId, int year, int month){
-	    return monthStepRepository.getStepCountMonth(userId, year, month);
+    	Optional<Integer> find =  monthStepRepository.getStepCountMonth(userId, year, month);
+    	  if(find.isPresent()) { 	
+ 		     return find;}
+ 		  else {
+ 			  return Optional.of(0);
+ 		  }
     }
 
  
@@ -288,8 +296,14 @@ public class StepService {
      * @param week Actual week
      * 
      */
-    public Optional<Integer> getStepCountWeek(String userId, int year, int week){
-        return weekStepRepository.getStepCountWeek(userId, year, week);
+    public Optional<Integer> getStepCountWeek(String userId, int year, int week){	
+		  Optional<Integer> find = weekStepRepository.getStepCountWeek(userId, year, week);
+			
+		  if(find.isPresent()) { 	
+		     return find;}
+		  else {
+			  return Optional.of(0);
+		  } 	
     }
 
  
@@ -311,7 +325,9 @@ public class StepService {
             return Optional.of(list);
         }
         else{
-            return Optional.empty();
+        	List<StepDateDTO> emptyList = new ArrayList<StepDateDTO>();
+        	emptyList.add(new StepDateDTO(userId,0));
+        	return Optional.of(emptyList);
         }
     }
        
