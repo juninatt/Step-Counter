@@ -26,6 +26,13 @@ public class StepDateDTO {
         this.steps = steps;
     }
     
+    
+    public StepDateDTO(String userId, Date date, long steps) {
+        this.date = date;
+        this.steps = steps;
+        this.userId=userId;
+    }
+    
     public Date getDate() {
         return date;
     }
