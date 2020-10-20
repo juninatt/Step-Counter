@@ -9,7 +9,6 @@ import se.sigma.boostapp.boost_app_java.repository.MonthStepRepository;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 import se.sigma.boostapp.boost_app_java.repository.WeekStepRepository;
 
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -304,6 +303,7 @@ public class StepService {
 		  else {
 			  return Optional.of(0);
 		  } 	
+		  
     }
 
  
@@ -321,7 +321,7 @@ public class StepService {
             {
                 Date end = Date.from(step.getEnd().toLocalDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
                 list.add(
-                    new StepDateDTO(end, step.getStepCount()));});
+                    new StepDateDTO(userId,end, step.getStepCount()));});
             return Optional.of(list);
         }
         else{

@@ -61,6 +61,7 @@ public class Step {
 		this.userId = userId;
 		this.stepCount = stepCount;
 	}
+	
 
 	public Step(String userId){
 		this.userId=userId;
