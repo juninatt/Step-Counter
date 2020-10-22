@@ -43,6 +43,7 @@ public class StepServiceTest {
 	MonthStep mockMonth;
 	WeekStep mockWeek;
 	Step mockStep, mockStep2;
+	
 
 	@Before
 	public void initMocks() throws Exception {
@@ -225,7 +226,20 @@ public class StepServiceTest {
 		int returnWeek=stepService.getWeekNumber(inputDate);
 		
 		assertEquals(43,returnWeek);
+	}
+	
+	@Test
+	public void getStepCountMonth_test() throws NoSuchElementException{
+	
+		mockMonth = new MonthStep(userId, 10, 2020, 800);
 		
+		when(mockedMonthStepRepository.findByUserIdAndYearAndMonth(userId, 2020, 10))
+				.thenReturn(Optional.of(mockMonth));
 		
+		int stepFind=mockedMonthStepRepository.findByUserIdAndYearAndMonth(userId, 2020, 10).get().getSteps();
+		// steps ar in databas
+		assertEquals(800,stepFind);
+		//no steps i databas
+		mockedMonthStepRepository.findByUserIdAndYearAndMonth(userId, 2020, 11).equals(Optional.of(0));
 	}
 }
