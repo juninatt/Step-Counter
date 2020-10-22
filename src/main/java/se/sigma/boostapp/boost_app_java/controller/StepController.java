@@ -37,88 +37,116 @@ public class StepController {
 		this.stepService = stepService;
 	}
 
-	
 	/**
 	 * Delete step table
+	 * 
 	 * @throws InterruptedException
 	 */
-	@ConditionalOnProperty(name="deleting.enabled", matchIfMissing=true)
+	@ConditionalOnProperty(name = "deleting.enabled", matchIfMissing = true)
 	@SuppressWarnings("null")
-	//1=secund , 0=minut, 0= hours, *-dayOfTheMonth *-month MON-Monday
-	@Scheduled(cron="1 0 0 * * MON")
-	//@Scheduled(cron="* * * * * FRI")
+	// 1=secund , 0=minut, 0= hours, *-dayOfTheMonth *-month MON-Monday
+	@Scheduled(cron = "1 0 0 * * MON")
 	public void deleteStepTable() throws InterruptedException {
 		stepService.deleteStepTabel();
 	}
 
-
 	/**
 	 * Post request for step<br>
 	 * Register step entity
-	 * @param jwt A user
+	 * 
+	 * @param jwt     A user
 	 * @param stepDTO Data for the steps
 	 */
 	@ApiOperation(value = "Register step entity", response = List.class)
-	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "Successfully post request"),
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully post request"),
 			@ApiResponse(code = 401, message = "Request is not authorized"),
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Step> registerSteps(final @AuthenticationPrincipal Jwt jwt, final @RequestBody @Valid StepDTO stepDTO) {
-		return stepService.registerSteps((String) jwt.getClaims().get("oid"), stepDTO).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+	public ResponseEntity<Step> registerSteps(final @AuthenticationPrincipal Jwt jwt,
+			final @RequestBody @Valid StepDTO stepDTO) {
+		return stepService.registerSteps((String) jwt.getClaims().get("oid"), stepDTO).map(ResponseEntity::ok)
+				.orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
 	}
 
-	// 
 	/**
 	 * Post request for multiple step <br>
 	 * Register multiple step entities
-	 * @param jwt A user
+	 * 
+	 * @param jwt         A user
 	 * @param stepDtoList Data for the list of step
 	 * @return
 	 */
 	@ApiOperation(value = "Register multiple step entities", response = List.class)
-	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "Successfully post steps"),
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully post steps"),
 			@ApiResponse(code = 401, message = "Request is not authorized"),
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
 	@PostMapping(value = "/multiple", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public List<StepDTO> registerMultipleSteps(final @AuthenticationPrincipal Jwt jwt, final @RequestBody List<@Valid StepDTO> stepDtoList) {
+	public List<StepDTO> registerMultipleSteps(final @AuthenticationPrincipal Jwt jwt,
+			final @RequestBody List<@Valid StepDTO> stepDtoList) {
 		return stepService.registerMultipleSteps((String) jwt.getClaims().get("oid"), stepDtoList);
 	}
-/*
-	// Get sum of step count by user ID, start date and end date
-	@ApiOperation(value = "Get sum of steps by user ID, start date and end date (optional)", response = List.class)
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
-			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
-			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
-			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
-	@GetMapping("/user/date")
-	public int getByUserAndDays(final @AuthenticationPrincipal Jwt jwt, final @RequestParam String startDate,
-								final @RequestParam(required = false) String endDate) {
-		return stepService.getStepSumByUser((String) jwt.getClaims().get("oid"), startDate, endDate);
-	}*/
+	/*
+	 * // Get sum of step count by user ID, start date and end date
+	 * 
+	 * @ApiOperation(value =
+	 * "Get sum of steps by user ID, start date and end date (optional)", response =
+	 * List.class)
+	 * 
+	 * @ApiResponses(value = { @ApiResponse(code = 200, message =
+	 * "Successfully retrieved step count"),
+	 * 
+	 * @ApiResponse(code = 401, message =
+	 * "You are not authorized to view the resource"),
+	 * 
+	 * @ApiResponse(code = 403, message =
+	 * "Accessing the resource you were trying to reach is forbidden"),
+	 * 
+	 * @ApiResponse(code = 404, message =
+	 * "The resource you were trying to reach is not found") })
+	 * 
+	 * @GetMapping("/user/date") public int
+	 * getByUserAndDays(final @AuthenticationPrincipal Jwt jwt, final @RequestParam
+	 * String startDate, final @RequestParam(required = false) String endDate) {
+	 * return stepService.getStepSumByUser((String) jwt.getClaims().get("oid"),
+	 * startDate, endDate); }
+	 */
 
-/*	// Get step count per day by user ID and start date
-	@ApiOperation(value = "Get a user's step count per day by user ID, start date and end date optional)", response = List.class)
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
-			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
-			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
-			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
-	@GetMapping("/stepcount/date")
-	public List<StepDateDTO> getUserSteps(final @AuthenticationPrincipal Jwt jwt, final @RequestParam String startDate,
-										  final @RequestParam(required = false) String endDate) {
-		return stepService.getStepsByUser((String) jwt.getClaims().get("oid"), startDate, endDate);
-	}*/
+	/*
+	 * // Get step count per day by user ID and start date
+	 * 
+	 * @ApiOperation(value =
+	 * "Get a user's step count per day by user ID, start date and end date optional)"
+	 * , response = List.class)
+	 * 
+	 * @ApiResponses(value = { @ApiResponse(code = 200, message =
+	 * "Successfully retrieved step count"),
+	 * 
+	 * @ApiResponse(code = 401, message =
+	 * "You are not authorized to view the resource"),
+	 * 
+	 * @ApiResponse(code = 403, message =
+	 * "Accessing the resource you were trying to reach is forbidden"),
+	 * 
+	 * @ApiResponse(code = 404, message =
+	 * "The resource you were trying to reach is not found") })
+	 * 
+	 * @GetMapping("/stepcount/date") public List<StepDateDTO>
+	 * getUserSteps(final @AuthenticationPrincipal Jwt jwt, final @RequestParam
+	 * String startDate, final @RequestParam(required = false) String endDate) {
+	 * return stepService.getStepsByUser((String) jwt.getClaims().get("oid"),
+	 * startDate, endDate); }
+	 */
 
-	// Post userIds and start date to get each of users' step count
+	
 	/**
 	 * Post request <br>
 	 * Get step count per day for a list of users by start date and end date
-	 * @param users List of users
+	 * 
+	 * @param users     List of users
 	 * @param startDate Start date as String
-	 * @param endDate End date as String
+	 * @param endDate   End date as String
 	 */
 	@ApiOperation(value = "Get step count per day for a list of users by start date and end date (optional).", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully post request"),
@@ -126,32 +154,35 @@ public class StepController {
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
 	@PostMapping(value = "/stepcount/bulk/date", produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<BulkUsersStepsDTO> getBulkStepsByUsers(final @RequestBody List<String> users, final @RequestParam String startDate,
-													  final @RequestParam(required = false) String endDate) {
-		return stepService.getStepsByMultipleUsers(users, startDate, endDate).orElseThrow(() -> new NotFoundException());
+	public List<BulkUsersStepsDTO> getBulkStepsByUsers(final @RequestBody List<String> users,
+			final @RequestParam String startDate, final @RequestParam(required = false) String endDate) {
+		return stepService.getStepsByMultipleUsers(users, startDate, endDate)
+				.orElseThrow(() -> new NotFoundException());
 	}
 
 	/**
 	 * Get request <br>
 	 * Get user's latest step
+	 * 
 	 * @param jwt A user
 	 */
-	@ApiOperation(value= "Get user's latest step", response = List.class)
+	@ApiOperation(value = "Get user's latest step", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step"),
 			@ApiResponse(code = 401, message = "Request is not authorized"),
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
 	@GetMapping(value = "/latest")
 	public ResponseEntity<Step> getLatestStep(final @AuthenticationPrincipal Jwt jwt) {
-		return stepService.getLatestStep((String) jwt.getClaims().get("oid")).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
+		return stepService.getLatestStep((String) jwt.getClaims().get("oid")).map(ResponseEntity::ok)
+				.orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
 	}
-
 
 	/**
 	 * Get request <br>
 	 * Get a user's step count per month by user and year and month
-	 * @param jwt A user
-	 * @param year Actual year
+	 * 
+	 * @param jwt   A user
+	 * @param year  Actual year
 	 * @param month Actual month
 	 */
 	@ApiOperation(value = "Get a user's step count per month by user and year and month)", response = Integer.class)
@@ -159,18 +190,19 @@ public class StepController {
 			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
-	@GetMapping(value = {"/stepcount/year/{year}/month/{month}"})
-	public ResponseEntity<Integer> getUserMonthSteps(final @AuthenticationPrincipal Jwt jwt, final @PathVariable int year,
-													 final @PathVariable int month) {
-		return stepService.getStepCountMonth((String) jwt.getClaims().get("oid"), year, month).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
-	
-	}
+	@GetMapping(value = { "/stepcount/year/{year}/month/{month}" })
+	public ResponseEntity<Integer> getUserMonthSteps(final @AuthenticationPrincipal Jwt jwt,
+			final @PathVariable int year, final @PathVariable int month) {
+		return stepService.getStepCountMonth((String) jwt.getClaims().get("oid"), year, month).map(ResponseEntity::ok)
+				.orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
 
+	}
 
 	/**
 	 * Get request <br>
 	 * Get a user's step count per week by user and year and week
-	 * @param jwt A user
+	 * 
+	 * @param jwt  A user
 	 * @param year Actual year
 	 * @param week Actual week
 	 */
@@ -179,18 +211,19 @@ public class StepController {
 			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
-	@GetMapping(value = {"/stepcount/year/{year}/week/{week}"})
+	@GetMapping(value = { "/stepcount/year/{year}/week/{week}" })
 
-	public ResponseEntity<Integer> getUserWeekSteps(final @AuthenticationPrincipal Jwt jwt, final @PathVariable int year,
-													final @PathVariable int week) {
+	public ResponseEntity<Integer> getUserWeekSteps(final @AuthenticationPrincipal Jwt jwt,
+			final @PathVariable int year, final @PathVariable int week) {
 
-		return stepService.getStepCountWeek((String) jwt.getClaims().get("oid"), year, week).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));	
+		return stepService.getStepCountWeek((String) jwt.getClaims().get("oid"), year, week).map(ResponseEntity::ok)
+				.orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
 	}
 
-	// Get list of steps per day per current week
 	/**
 	 * Get request <br>
 	 * Get list of steps per day per current week
+	 * 
 	 * @param jwt A user
 	 */
 	@ApiOperation(value = "Get list of steps per day per current week)", response = List.class)
@@ -198,8 +231,9 @@ public class StepController {
 			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
-	@GetMapping(value = {"/stepcount/currentweek"})
+	@GetMapping(value = { "/stepcount/currentweek" })
 	public ResponseEntity<List<StepDateDTO>> getUserWeekSteps(final @AuthenticationPrincipal Jwt jwt) {
-		return stepService.getStepCountPerDay((String) jwt.getClaims().get("oid")).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
+		return stepService.getStepCountPerDay((String) jwt.getClaims().get("oid")).map(ResponseEntity::ok)
+				.orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
 	}
 }
