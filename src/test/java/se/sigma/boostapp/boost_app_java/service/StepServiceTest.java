@@ -239,7 +239,21 @@ public class StepServiceTest {
 		int stepFind=mockedMonthStepRepository.findByUserIdAndYearAndMonth(userId, 2020, 10).get().getSteps();
 		// steps ar in databas
 		assertEquals(800,stepFind);
-		//no steps i databas
+		//no steps in databas
 		mockedMonthStepRepository.findByUserIdAndYearAndMonth(userId, 2020, 11).equals(Optional.of(0));
+	}
+	
+	@Test
+	public void getStepCountWeek_test() {
+		mockWeek= new WeekStep(userId, 43, 2020, 300);
+		when(mockedWeekStepRepository.findByUserIdAndYearAndWeek(userId, 2020, 43))
+			.thenReturn(Optional.of(mockWeek));
+		
+		int weekStepFind=mockedWeekStepRepository.findByUserIdAndYearAndWeek(userId, 2020, 43).get().getSteps();
+		//steps find in databas
+		assertEquals(300,weekStepFind);
+		//no steps i databas
+		mockedWeekStepRepository.findByUserIdAndYearAndWeek(userId, 2020, 40).equals(Optional.of(0));
+		
 	}
 }
