@@ -192,7 +192,7 @@ public class StepService {
     /**
      *Get number of current week from date
      */
-    private int getWeekNumber(LocalDateTime inputDate){
+    public int getWeekNumber(LocalDateTime inputDate){
 
 	    GregorianCalendar calendar = new GregorianCalendar();
 	    calendar.setFirstDayOfWeek(GregorianCalendar.MONDAY);

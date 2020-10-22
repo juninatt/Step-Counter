@@ -196,7 +196,7 @@ public class StepServiceTest {
 		mockStepDTOList.add(stepDTO2);
 		mockStepDTOList.add(stepDTO3);
 		
-		List<StepDTO> mockStepDTOListReturn=	stepService.sortListByEndTime(mockStepDTOList, false);
+		List<StepDTO> mockStepDTOListReturn= stepService.sortListByEndTime(mockStepDTOList, false);
 		
 		
 		List<StepDTO> mockStepDTOListTest = new ArrayList<>();
@@ -216,8 +216,16 @@ public class StepServiceTest {
 		mockStepDTOListTest.add(stepDTO3Test);
 		
 		assertEquals(mockStepDTOListTest.getClass(),mockStepDTOListReturn.getClass());
+	}
+	@Test
+	public void getWeekNumber_test() {
+		
+		LocalDateTime inputDate=LocalDateTime.of(2020, 10, 22, 14, 56); 
+		
+		int returnWeek=stepService.getWeekNumber(inputDate);
+		
+		assertEquals(43,returnWeek);
 		
 		
 	}
-	
 }
