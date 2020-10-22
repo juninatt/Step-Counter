@@ -179,7 +179,7 @@ public class StepService {
      * @param stepDtoList Data for the list of steps
      * 
      */
-    private List<StepDTO> sortListByEndTime(List<StepDTO> stepDtoList, boolean reverseOrder) {
+    public List<StepDTO> sortListByEndTime(List<StepDTO> stepDtoList, boolean reverseOrder) {
         if (reverseOrder) {
             return stepDtoList.stream().sorted(Comparator.comparing(StepDTO::getEndTime).reversed()).collect(Collectors.toList());
         } else {

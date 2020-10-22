@@ -162,7 +162,7 @@ public class StepServiceTest {
 	}
 
 	@Test
-	public void deleteAllFromStepTest() {
+	public void deleteAllFromStep_test() {
 
 		Step testStep = new Step();
 
@@ -178,4 +178,46 @@ public class StepServiceTest {
 		Mockito.verify(mockedStepRepository, Mockito.never()).deleteAllFromStep();
 		assertEquals(mockedStepRepository.findByUserId("userTestId"), Optional.empty());
 	}
+	
+	@Test
+	public void sortListByEndTime_test() {
+		
+		List<StepDTO> mockStepDTOList = new ArrayList<>();
+		StepDTO stepDTO1 = new StepDTO(10, LocalDateTime.parse("2020-08-21T02:01:10"),
+				LocalDateTime.parse("2020-08-21T02:10:10"), LocalDateTime.parse("2020-08-21T02:01:20"));
+
+		StepDTO stepDTO2 = new StepDTO(12, LocalDateTime.parse("2020-08-21T02:01:10"),
+				LocalDateTime.parse("2020-08-21T04:01:20"), LocalDateTime.parse("2020-08-21T02:01:20"));
+
+		StepDTO stepDTO3 = new StepDTO(13, LocalDateTime.parse("2020-08-21T02:01:10"),
+				LocalDateTime.parse("2020-08-21T01:01:10"), LocalDateTime.parse("2020-08-21T02:01:20"));
+
+		mockStepDTOList.add(stepDTO1);
+		mockStepDTOList.add(stepDTO2);
+		mockStepDTOList.add(stepDTO3);
+		
+		List<StepDTO> mockStepDTOListReturn=	stepService.sortListByEndTime(mockStepDTOList, false);
+		
+		
+		List<StepDTO> mockStepDTOListTest = new ArrayList<>();
+		StepDTO stepDTO1Test = new StepDTO(13, LocalDateTime.parse("2020-08-21T02:01:10"),
+				LocalDateTime.parse("2020-08-21T01:01:10"), LocalDateTime.parse("2020-08-21T02:01:20"));
+		
+		StepDTO stepDTO2Test = new StepDTO(10, LocalDateTime.parse("2020-08-21T02:01:10"),
+				LocalDateTime.parse("2020-08-21T02:10:10"), LocalDateTime.parse("2020-08-21T02:01:20"));
+
+		StepDTO stepDTO3Test = new StepDTO(12, LocalDateTime.parse("2020-08-21T02:01:10"),
+				LocalDateTime.parse("2020-08-21T04:01:20"), LocalDateTime.parse("2020-08-21T02:01:20"));
+
+		
+	
+		mockStepDTOListTest.add(stepDTO1Test);
+		mockStepDTOListTest.add(stepDTO2Test);
+		mockStepDTOListTest.add(stepDTO3Test);
+		
+		assertEquals(mockStepDTOListTest.getClass(),mockStepDTOListReturn.getClass());
+		
+		
+	}
+	
 }
