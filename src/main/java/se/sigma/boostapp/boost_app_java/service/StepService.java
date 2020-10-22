@@ -179,7 +179,7 @@ public class StepService {
      * @param stepDtoList Data for the list of steps
      * 
      */
-    private List<StepDTO> sortListByEndTime(List<StepDTO> stepDtoList, boolean reverseOrder) {
+    public List<StepDTO> sortListByEndTime(List<StepDTO> stepDtoList, boolean reverseOrder) {
         if (reverseOrder) {
             return stepDtoList.stream().sorted(Comparator.comparing(StepDTO::getEndTime).reversed()).collect(Collectors.toList());
         } else {
@@ -192,7 +192,7 @@ public class StepService {
     /**
      *Get number of current week from date
      */
-    private int getWeekNumber(LocalDateTime inputDate){
+    public int getWeekNumber(LocalDateTime inputDate){
 
 	    GregorianCalendar calendar = new GregorianCalendar();
 	    calendar.setFirstDayOfWeek(GregorianCalendar.MONDAY);
