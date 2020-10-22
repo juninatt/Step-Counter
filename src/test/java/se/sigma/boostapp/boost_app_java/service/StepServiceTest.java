@@ -1,5 +1,6 @@
 package se.sigma.boostapp.boost_app_java.service;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -180,44 +181,48 @@ public class StepServiceTest {
 		assertEquals(mockedStepRepository.findByUserId("userTestId"), Optional.empty());
 	}
 	
+
 	@Test
 	public void sortListByEndTime_test() {
-		
 		List<StepDTO> mockStepDTOList = new ArrayList<>();
-		StepDTO stepDTO1 = new StepDTO(10, LocalDateTime.parse("2020-08-21T02:01:10"),
-				LocalDateTime.parse("2020-08-21T02:10:10"), LocalDateTime.parse("2020-08-21T02:01:20"));
+		StepDTO stepDTO1 = new StepDTO(10, LocalDateTime.of(2020, 10, 01, 14, 56),
+				LocalDateTime.of(2020, 10, 01, 14, 56), LocalDateTime.of(2020, 10, 01, 14, 56));
 
-		StepDTO stepDTO2 = new StepDTO(12, LocalDateTime.parse("2020-08-21T02:01:10"),
-				LocalDateTime.parse("2020-08-21T04:01:20"), LocalDateTime.parse("2020-08-21T02:01:20"));
+		StepDTO stepDTO2 = new StepDTO(12, LocalDateTime.of(2020, 10, 01, 14, 56),
+				LocalDateTime.of(2020, 10, 02, 14, 56), LocalDateTime.of(2020, 10, 02, 14, 56));
 
-		StepDTO stepDTO3 = new StepDTO(13, LocalDateTime.parse("2020-08-21T02:01:10"),
-				LocalDateTime.parse("2020-08-21T01:01:10"), LocalDateTime.parse("2020-08-21T02:01:20"));
+		StepDTO stepDTO3 = new StepDTO(13, LocalDateTime.of(2020, 10, 01, 14, 56),
+				LocalDateTime.of(2020, 10, 03, 14, 56), LocalDateTime.of(2020, 03, 22, 14, 56));
 
 		mockStepDTOList.add(stepDTO1);
 		mockStepDTOList.add(stepDTO2);
 		mockStepDTOList.add(stepDTO3);
 		
-		List<StepDTO> mockStepDTOListReturn= stepService.sortListByEndTime(mockStepDTOList, false);
-		
 		
 		List<StepDTO> mockStepDTOListTest = new ArrayList<>();
-		StepDTO stepDTO1Test = new StepDTO(13, LocalDateTime.parse("2020-08-21T02:01:10"),
-				LocalDateTime.parse("2020-08-21T01:01:10"), LocalDateTime.parse("2020-08-21T02:01:20"));
+		StepDTO stepDTO1Test = new StepDTO(13, LocalDateTime.of(2020, 10, 01, 14, 56),
+				LocalDateTime.of(2020, 10, 03, 14, 56), LocalDateTime.of(2020, 03, 22, 14, 56));
 		
-		StepDTO stepDTO2Test = new StepDTO(10, LocalDateTime.parse("2020-08-21T02:01:10"),
-				LocalDateTime.parse("2020-08-21T02:10:10"), LocalDateTime.parse("2020-08-21T02:01:20"));
+		StepDTO stepDTO2Test = new StepDTO(12, LocalDateTime.of(2020, 10, 01, 14, 56),
+				LocalDateTime.of(2020, 10, 02, 14, 56), LocalDateTime.of(2020, 10, 02, 14, 56));
 
-		StepDTO stepDTO3Test = new StepDTO(12, LocalDateTime.parse("2020-08-21T02:01:10"),
-				LocalDateTime.parse("2020-08-21T04:01:20"), LocalDateTime.parse("2020-08-21T02:01:20"));
+		StepDTO stepDTO3Test = new StepDTO(10, LocalDateTime.of(2020, 10, 01, 14, 56),
+				LocalDateTime.of(2020, 10, 01, 14, 56), LocalDateTime.of(2020, 10, 01, 14, 56));
 
 		
-	
 		mockStepDTOListTest.add(stepDTO1Test);
 		mockStepDTOListTest.add(stepDTO2Test);
 		mockStepDTOListTest.add(stepDTO3Test);
+
+		assertNotEquals(mockStepDTOListTest, mockStepDTOList);
 		
-		assertEquals(mockStepDTOListTest.getClass(),mockStepDTOListReturn.getClass());
+		 
+		List<StepDTO> mockStepDTOListReturn= stepService.sortListByEndTime(mockStepDTOList, false);
+		
+		mockStepDTOListTest.equals(mockStepDTOListReturn);
+
 	}
+	
 	@Test
 	public void getWeekNumber_test() {
 		
