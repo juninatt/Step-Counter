@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -164,6 +166,7 @@ public class StepControllerDev {
  * Get list of steps per day per current week
  * @param userId A user ID
  */
+    
     @ApiOperation(value = "Get list of steps per day per current week)", response = List.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved step count"),
             @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
@@ -173,4 +176,5 @@ public class StepControllerDev {
     public ResponseEntity<List<StepDateDTO>> getUserWeekSteps(final @PathVariable String userId) {
         return stepService.getStepCountPerDay(userId).map(ResponseEntity::ok).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+    
 }
