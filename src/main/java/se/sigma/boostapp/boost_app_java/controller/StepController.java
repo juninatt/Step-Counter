@@ -236,4 +236,6 @@ public class StepController {
 		return stepService.getStepCountPerDay((String) jwt.getClaims().get("oid")).map(ResponseEntity::ok)
 				.orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
 	}
+	
+
 }

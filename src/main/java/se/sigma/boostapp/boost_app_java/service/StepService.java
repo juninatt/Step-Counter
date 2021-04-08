@@ -320,8 +320,12 @@ public class StepService {
             steps.forEach(step->
             {
                 Date end = Date.from(step.getEnd().toLocalDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
+            	Calendar c = Calendar.getInstance();
+                c.setTime(end);
+                int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+               
                 list.add(
-                    new StepDateDTO(userId,end, step.getStepCount()));});
+                    new StepDateDTO(userId,end,dayOfWeek, step.getStepCount()));});
             return Optional.of(list);
         }
         else{
@@ -330,7 +334,8 @@ public class StepService {
         	return Optional.of(emptyList);
         }
     }
-       
+    
+  
     /**
      * Delete data i step table
      */
