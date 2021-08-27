@@ -93,7 +93,7 @@ public class StepController {
 	 * Post request <br>
 	 * Get step count per day for a list of users by start date and end date
 	 * 
-	 * @param users     List of users
+	 * @param users     List of userIds
 	 * @param startDate Start date as String
 	 * @param endDate   End date as String
 	 */
