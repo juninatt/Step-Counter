@@ -87,64 +87,13 @@ public class StepController {
 			final @RequestBody List<@Valid StepDTO> stepDtoList) {
 		return stepService.registerMultipleSteps((String) jwt.getClaims().get("oid"), stepDtoList);
 	}
-	/*
-	 * // Get sum of step count by user ID, start date and end date
-	 * 
-	 * @ApiOperation(value =
-	 * "Get sum of steps by user ID, start date and end date (optional)", response =
-	 * List.class)
-	 * 
-	 * @ApiResponses(value = { @ApiResponse(code = 200, message =
-	 * "Successfully retrieved step count"),
-	 * 
-	 * @ApiResponse(code = 401, message =
-	 * "You are not authorized to view the resource"),
-	 * 
-	 * @ApiResponse(code = 403, message =
-	 * "Accessing the resource you were trying to reach is forbidden"),
-	 * 
-	 * @ApiResponse(code = 404, message =
-	 * "The resource you were trying to reach is not found") })
-	 * 
-	 * @GetMapping("/user/date") public int
-	 * getByUserAndDays(final @AuthenticationPrincipal Jwt jwt, final @RequestParam
-	 * String startDate, final @RequestParam(required = false) String endDate) {
-	 * return stepService.getStepSumByUser((String) jwt.getClaims().get("oid"),
-	 * startDate, endDate); }
-	 */
-
-	/*
-	 * // Get step count per day by user ID and start date
-	 * 
-	 * @ApiOperation(value =
-	 * "Get a user's step count per day by user ID, start date and end date optional)"
-	 * , response = List.class)
-	 * 
-	 * @ApiResponses(value = { @ApiResponse(code = 200, message =
-	 * "Successfully retrieved step count"),
-	 * 
-	 * @ApiResponse(code = 401, message =
-	 * "You are not authorized to view the resource"),
-	 * 
-	 * @ApiResponse(code = 403, message =
-	 * "Accessing the resource you were trying to reach is forbidden"),
-	 * 
-	 * @ApiResponse(code = 404, message =
-	 * "The resource you were trying to reach is not found") })
-	 * 
-	 * @GetMapping("/stepcount/date") public List<StepDateDTO>
-	 * getUserSteps(final @AuthenticationPrincipal Jwt jwt, final @RequestParam
-	 * String startDate, final @RequestParam(required = false) String endDate) {
-	 * return stepService.getStepsByUser((String) jwt.getClaims().get("oid"),
-	 * startDate, endDate); }
-	 */
 
 	
 	/**
 	 * Post request <br>
 	 * Get step count per day for a list of users by start date and end date
 	 * 
-	 * @param users     List of users
+	 * @param users     List of userIds
 	 * @param startDate Start date as String
 	 * @param endDate   End date as String
 	 */
