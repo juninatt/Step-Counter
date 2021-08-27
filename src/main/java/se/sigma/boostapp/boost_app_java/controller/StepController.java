@@ -94,8 +94,8 @@ public class StepController {
 	 * Get step count per day for a list of users by start date and end date
 	 * 
 	 * @param users     List of userIds
-	 * @param startDate Start date as String
-	 * @param endDate   End date as String
+	 * @param startDate Start date as String ("yyyy-[m]m-[d]d")
+	 * @param endDate   End date as String ("yyyy-[m]m-[d]d")
 	 */
 	@ApiOperation(value = "Get step count per day for a list of users by start date and end date (optional).", response = List.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully post request"),
