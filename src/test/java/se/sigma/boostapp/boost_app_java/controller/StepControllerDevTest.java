@@ -146,14 +146,14 @@ public class StepControllerDevTest {
           when(service.getLatestStep(Mockito.anyString())).thenReturn(Optional.empty());
 
           RequestBuilder requestBuilder = MockMvcRequestBuilders
-                  .get("/steps/latet/{userId}", "inValidUserID")
+                  .get("/steps/latest/{userId}", "inValidUserID")
                   .accept(MediaType.APPLICATION_JSON);
 
           MvcResult result = mvc.perform(requestBuilder).andReturn();
 
           MockHttpServletResponse response = result.getResponse();
 
-          assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
+          assertEquals(HttpStatus.NO_CONTENT.value(), response.getStatus());
     }
 
     @Test

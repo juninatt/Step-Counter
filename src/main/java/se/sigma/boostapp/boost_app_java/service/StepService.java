@@ -339,7 +339,7 @@ public class StepService {
     /**
      * Delete data i step table
      */
-    public void deleteStepTabel() {
+    public void deleteStepTable() {
     	stepRepository.deleteAllFromStep();
     }
 

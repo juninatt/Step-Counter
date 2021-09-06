@@ -1,123 +1,114 @@
 package se.sigma.boostapp.boost_app_java.model;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "step")
 @ApiModel(description = "All details about the step entity. ")
 public class Step {
-/**
- * Entity step table
- */
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@ApiModelProperty(notes = "The database generated step ID")
-	private long id;
+    /**
+     * Entity step table
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @ApiModelProperty(notes = "The database generated step ID")
+    private long id;
 
-	@Column(name = "user_id")
-	@ApiModelProperty(notes = "User Id")
-	private String userId;
-	
-	@ApiModelProperty(notes = "Step count")
-	@Column(name = "step_count")
-	private int stepCount;
-	
-	@ApiModelProperty(notes = "Start time")
-	@Column(name = "start_time", nullable=true)
-	private LocalDateTime startTime;
-	
-	@ApiModelProperty(notes = "End time")
-	@Column(name = "end_time", nullable=true)
-	private LocalDateTime endTime;
+    @Column(name = "user_id")
+    @ApiModelProperty(notes = "User Id")
+    private String userId;
 
-	@ApiModelProperty(notes = "Uploaded")
-	@Column(name = "uploaded", nullable=true)
-	private LocalDateTime uploadedTime;
+    @ApiModelProperty(notes = "Step count")
+    @Column(name = "step_count")
+    private int stepCount;
 
-	public Step() {
+    @ApiModelProperty(notes = "Start time")
+    @Column(name = "start_time", nullable = true)
+    private LocalDateTime startTime;
 
-	}
+    @ApiModelProperty(notes = "End time")
+    @Column(name = "end_time", nullable = true)
+    private LocalDateTime endTime;
 
-	public Step(String userId, int stepCount, LocalDateTime start, LocalDateTime end, LocalDateTime uploadedTime) {
-		this.userId = userId;
-		this.stepCount = stepCount;
-		this.startTime = start;
-		this.endTime = end;
-		this.uploadedTime = uploadedTime;
-	}
-	
-	public Step(String userId, int stepCount) {
-		this.userId = userId;
-		this.stepCount = stepCount;
-	}
-	
+    @ApiModelProperty(notes = "Uploaded")
+    @Column(name = "uploaded", nullable = true)
+    private LocalDateTime uploadedTime;
 
-	public Step(String userId){
-		this.userId=userId;
-	}
+    public Step() {
+    }
 
-	public Step(int stepCount){
-		this.stepCount=stepCount;
-	}
+    public Step(String userId, int stepCount, LocalDateTime start, LocalDateTime end, LocalDateTime uploadedTime) {
+        this.userId = userId;
+        this.stepCount = stepCount;
+        this.startTime = start;
+        this.endTime = end;
+        this.uploadedTime = uploadedTime;
+    }
+
+    public Step(String userId, int stepCount) {
+        this.userId = userId;
+        this.stepCount = stepCount;
+    }
 
 
-	public String getUserId() {
-		return userId;
-	}
+    public Step(String userId) {
+        this.userId = userId;
+    }
 
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
+    public Step(int stepCount) {
+        this.stepCount = stepCount;
+    }
 
-	public long getId() {
-		return id;
-	}
+    public String getUserId() {
+        return userId;
+    }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
-	public int getStepCount() {
-		return stepCount;
-	}
+    public long getId() {
+        return id;
+    }
 
-	public void setStepCount(int stepCount) {
-		this.stepCount = stepCount;
-	}
+    public void setId(long id) {
+        this.id = id;
+    }
 
-	public LocalDateTime getStart() {
-		return startTime;
-	}
+    public int getStepCount() {
+        return stepCount;
+    }
 
-	public void setStart(LocalDateTime start) {
-		this.startTime = start;
-	}
+    public void setStepCount(int stepCount) {
+        this.stepCount = stepCount;
+    }
 
-	public LocalDateTime getEnd() {
-		return endTime;
-	}
+    public LocalDateTime getStart() {
+        return startTime;
+    }
 
-	public void setEnd(LocalDateTime end) {
-		this.endTime = end;
-	}
+    public void setStart(LocalDateTime start) {
+        this.startTime = start;
+    }
 
-	public LocalDateTime getUploadedTime() {
-		return uploadedTime;
-	}
+    public LocalDateTime getEnd() {
+        return endTime;
+    }
 
-	public void setUploadedTime(LocalDateTime uploadedSteps) {
-		this.uploadedTime = uploadedSteps;
-	}
+    public void setEnd(LocalDateTime end) {
+        this.endTime = end;
+    }
+
+    public LocalDateTime getUploadedTime() {
+        return uploadedTime;
+    }
+
+    public void setUploadedTime(LocalDateTime uploadedSteps) {
+        this.uploadedTime = uploadedSteps;
+    }
 
 }
