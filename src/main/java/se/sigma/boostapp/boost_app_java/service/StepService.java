@@ -131,10 +131,10 @@ public class StepService {
         //check if any old dates are in list, throw away
         stepDtoList = stepDtoList.stream().filter(stepDTO -> stepDTO.getEndTime().isAfter(existingStep.getEnd())).collect(Collectors.toList());
 
-        for (int i = 0; i < stepDtoList.size(); i++) {
-            updateLastStepInStepTable(stepDtoList.get(i), userId, existingStep);
-            addStepsToWeekTable(stepDtoList.get(i).getEndTime().getYear(), getWeekNumber(stepDtoList.get(i).getEndTime()), stepDtoList.get(i).getStepCount(), userId);
-            addStepsToMonthTable(userId, stepDtoList.get(i).getStepCount(), stepDtoList.get(i).getEndTime().getMonthValue(), stepDtoList.get(i).getEndTime().getYear());
+        for (StepDTO stepDTO : stepDtoList) {
+            updateLastStepInStepTable(stepDTO, userId, existingStep);
+            addStepsToWeekTable(stepDTO.getEndTime().getYear(), getWeekNumber(stepDTO.getEndTime()), stepDTO.getStepCount(), userId);
+            addStepsToMonthTable(userId, stepDTO.getStepCount(), stepDTO.getEndTime().getMonthValue(), stepDTO.getEndTime().getYear());
         }
         return stepDtoList;
     }
@@ -324,7 +324,7 @@ public class StepService {
             });
             return Optional.of(list);
         } else {
-            List<StepDateDTO> emptyList = new ArrayList<StepDateDTO>();
+            List<StepDateDTO> emptyList = new ArrayList<>();
             emptyList.add(new StepDateDTO(userId, 0));
             return Optional.of(emptyList);
         }
