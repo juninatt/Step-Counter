@@ -51,50 +51,51 @@ public class StepService {
      */
     public Optional<Step> registerSteps(String userId, StepDTO stepDto) {
         // "stepDTO": "Start time must before end time, which in turn must be before uploaded time"
-
-        /**
-         * User already exist
-         */
         if (stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).isPresent()) {
             Step existingStep = stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).get();
-
-            if (existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()
-                    && existingStep.getEnd().isBefore(stepDto.getEndTime())) {
-
-                existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
-                existingStep.setEnd(stepDto.getEndTime());
-                existingStep.setUploadedTime(stepDto.getUploadedTime());
-
-                /** add steps to monthstep table */
-                addStepsToMonthTable(userId, stepDto.getStepCount(), stepDto.getEndTime().getMonthValue(),
-                        stepDto.getEndTime().getYear());
-                /** add steps to weekstep table */
-                addStepsToWeekTable(stepDto.getEndTime().getYear(), getWeekNumber(stepDto.getEndTime()), stepDto.getStepCount(), userId);
-
-                return Optional.of(stepRepository.save(existingStep));
-            } else if (existingStep.getEnd().isBefore(stepDto.getEndTime())) {
-                /** add steps to monthstep table */
-                addStepsToMonthTable(userId, stepDto.getStepCount(), stepDto.getEndTime().getMonthValue(), stepDto.getEndTime().getYear());
-                /** add steps to weekstep table */
-                addStepsToWeekTable(stepDto.getEndTime().getYear(), getWeekNumber(stepDto.getEndTime()), stepDto.getStepCount(), userId);
-                return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(), stepDto.getEndTime(), stepDto.getUploadedTime())));
-            } else {
-                return Optional.empty();
-            }
-        }
-        /**
-         * new user
-         */
-        else {
-            /** add steps to monthstep table */
-            addStepsToMonthTable(userId, stepDto.getStepCount(), stepDto.getEndTime().getMonthValue(), stepDto.getEndTime().getYear());
-            /** add steps to weekstep table */
-            addStepsToWeekTable(stepDto.getEndTime().getYear(), getWeekNumber(stepDto.getEndTime()), stepDto.getStepCount(), userId);
-
-            return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
-                    stepDto.getEndTime(), stepDto.getUploadedTime())));
+            return registerStepExistingUser(userId, stepDto, existingStep);
+        } else {
+            return registerStepNewUser(userId, stepDto);
         }
     }
+
+    private Optional<Step> registerStepExistingUser(String userId, StepDTO stepDto, Step existingStep) {
+        // existing last step day is the same as new step day && existing step endtime is before new step endtime
+        if (existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()
+                && existingStep.getEnd().isBefore(stepDto.getEndTime())) {
+
+            updateExistingStep(stepDto, existingStep);
+            addStepToWeekAndMonthTable(userId, stepDto);
+
+            return Optional.of(stepRepository.save(existingStep));
+            
+        } else if (existingStep.getEnd().isBefore(stepDto.getEndTime())) {
+            return registerStepNewUser(userId, stepDto);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    private void addStepToWeekAndMonthTable(String userId, StepDTO stepDto) {
+        addStepsToMonthTable(userId, stepDto.getStepCount(), stepDto.getEndTime().getMonthValue(), stepDto.getEndTime().getYear());
+        addStepsToWeekTable(stepDto.getEndTime().getYear(), getWeekNumber(stepDto.getEndTime()), stepDto.getStepCount(), userId);
+    }
+
+    private void updateExistingStep(StepDTO stepDto, Step existingStep) {
+        existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
+        existingStep.setEnd(stepDto.getEndTime());
+        existingStep.setUploadedTime(stepDto.getUploadedTime());
+    }
+
+    private Optional<Step> registerStepNewUser(String userId, StepDTO stepDto) {
+        //add steps to monthstep table
+        addStepToWeekAndMonthTable(userId, stepDto);
+
+        return Optional.of(stepRepository.save(new Step(userId, stepDto.getStepCount(), stepDto.getStartTime(),
+                stepDto.getEndTime(), stepDto.getUploadedTime())));
+    }
+
+   
 
     /**
      * Latest steps per dag entity by user
@@ -147,9 +148,7 @@ public class StepService {
      */
     public void updateLastStepInStepTable(StepDTO s, String userId, Step latestStep) {
         if (latestStep.getEnd().getYear() == s.getEndTime().getYear() && latestStep.getEnd().getDayOfYear() == s.getEndTime().getDayOfYear()) {
-            latestStep.setStepCount(latestStep.getStepCount() + s.getStepCount());
-            latestStep.setEnd(s.getEndTime());
-            latestStep.setUploadedTime(s.getUploadedTime());
+            updateExistingStep(s, latestStep);
             stepRepository.save(latestStep);
         } else {
             stepRepository.save(new Step(userId, s.getStepCount(), s.getStartTime(), s.getEndTime(), s.getUploadedTime()));
