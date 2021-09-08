@@ -55,7 +55,7 @@ public class StepService {
             Step existingStep = stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).get();
             return registerStepExistingUser(userId, stepDto, existingStep);
         } else {
-            return registerStepNewUser(userId, stepDto);
+            return registerNewStep(userId, stepDto);
         }
     }
 
@@ -68,9 +68,9 @@ public class StepService {
             addStepToWeekAndMonthTable(userId, stepDto);
 
             return Optional.of(stepRepository.save(existingStep));
-            
+
         } else if (existingStep.getEnd().isBefore(stepDto.getEndTime())) {
-            return registerStepNewUser(userId, stepDto);
+            return registerNewStep(userId, stepDto);
         } else {
             return Optional.empty();
         }
@@ -87,7 +87,7 @@ public class StepService {
         existingStep.setUploadedTime(stepDto.getUploadedTime());
     }
 
-    private Optional<Step> registerStepNewUser(String userId, StepDTO stepDto) {
+    private Optional<Step> registerNewStep(String userId, StepDTO stepDto) {
         //add steps to monthstep table
         addStepToWeekAndMonthTable(userId, stepDto);
 
@@ -95,14 +95,12 @@ public class StepService {
                 stepDto.getEndTime(), stepDto.getUploadedTime())));
     }
 
-   
-
     /**
      * Latest steps per dag entity by user
      *
      * @param userId A user ID
      */
-    public Optional<Step> getLatestStep(String userId) throws NullPointerException {
+    public Optional<Step> getLatestStep(String userId) {
         Optional<Step> find = stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId);
 
         if (find.isPresent()) {
@@ -209,23 +207,32 @@ public class StepService {
     public Optional<List<BulkUsersStepsDTO>> getStepsByMultipleUsers(List<String> users, String startDate, String endDate) {
 
         java.sql.Date firstDate = java.sql.Date.valueOf(startDate);
-        java.sql.Date lastDate;
-        if (endDate == null || endDate.equals("")) {
-            lastDate = java.sql.Date.valueOf(LocalDate.now());
-        } else {
-            lastDate = java.sql.Date.valueOf(endDate);
-        }
+        java.sql.Date lastDate = getEndDate(endDate);
         List<String> allUsers = stepRepository.getAllUsers();
 
+        List<BulkUsersStepsDTO> bulkUsersStepsDTOList = getBulkUsersStepsDTOS(users, firstDate, lastDate, allUsers);
+        return bulkUsersStepsDTOList.isEmpty() ? Optional.empty() : Optional.of(bulkUsersStepsDTOList);
+    }
+
+    private java.sql.Date getEndDate(String endDate) {
+        if (endDate == null || endDate.equals("")) {
+            return java.sql.Date.valueOf(LocalDate.now());
+        } else {
+            return java.sql.Date.valueOf(endDate);
+        }
+    }
+
+    private List<BulkUsersStepsDTO> getBulkUsersStepsDTOS(List<String> users, java.sql.Date firstDate, java.sql.Date lastDate, List<String> allUsers) {
         BulkUsersStepsDTO bulkUsersStepsDTO;
         List<BulkUsersStepsDTO> bulkUsersStepsDTOList = new ArrayList<>();
 
         for (String s : users) {
-            if (!allUsers.contains(s)) continue;
-            bulkUsersStepsDTO = new BulkUsersStepsDTO(s, stepRepository.getStepCount(s, firstDate, lastDate));
-            bulkUsersStepsDTOList.add(bulkUsersStepsDTO);
+            if (allUsers.contains(s)) {
+                bulkUsersStepsDTO = new BulkUsersStepsDTO(s, stepRepository.getStepCount(s, firstDate, lastDate));
+                bulkUsersStepsDTOList.add(bulkUsersStepsDTO);
+            }
         }
-        return bulkUsersStepsDTOList.isEmpty() ? Optional.empty() : Optional.of(bulkUsersStepsDTOList);
+        return bulkUsersStepsDTOList;
     }
 
     /**
@@ -235,8 +242,12 @@ public class StepService {
      */
     public List<BulkUserStarPointsDTO> getStarPointsByMultipleUsers(RequestStarPointsDTO requestStarPointsDTO) {
 
-        if (requestStarPointsDTO.getUsers() == null) requestStarPointsDTO.setUsers(stepRepository.getAllUsers());
-        return requestStarPointsDTO.getUsers().stream()
+        if (requestStarPointsDTO.getUsers() == null) {
+            requestStarPointsDTO.setUsers(stepRepository.getAllUsers());
+        }
+        return requestStarPointsDTO
+                .getUsers()
+                .stream()
                 .filter(user -> (stepRepository.getStepCountSum(user, requestStarPointsDTO.getStartTime(), requestStarPointsDTO.getEndTime())).isPresent())
                 .map(user -> new BulkUserStarPointsDTO(user, new StarPointDateDTO(
                         "Steps",
@@ -245,8 +256,8 @@ public class StepService {
                         requestStarPointsDTO.getEndTime().toString(),
                         (int) Math.ceil(
                                 (stepRepository.getStepCountSum(user, requestStarPointsDTO.getStartTime(), requestStarPointsDTO.getEndTime())).get()
-                                        * starPointFactor)
-                ))).collect(Collectors.toList());
+                                        * starPointFactor))))
+                .collect(Collectors.toList());
     }
 
     /**
