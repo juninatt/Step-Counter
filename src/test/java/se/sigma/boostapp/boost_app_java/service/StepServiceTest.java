@@ -1,6 +1,5 @@
 package se.sigma.boostapp.boost_app_java.service;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +17,6 @@ import se.sigma.boostapp.boost_app_java.repository.MonthStepRepository;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 import se.sigma.boostapp.boost_app_java.repository.WeekStepRepository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -217,7 +215,7 @@ public class StepServiceTest {
 		assertNotEquals(mockStepDTOListTest, mockStepDTOList);
 		
 		 
-		List<StepDTO> mockStepDTOListReturn= stepService.sortListByEndTime(mockStepDTOList, false);
+		List<StepDTO> mockStepDTOListReturn= stepService.sortListByEndTime(mockStepDTOList);
 		
 		mockStepDTOListTest.equals(mockStepDTOListReturn);
 
