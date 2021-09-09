@@ -89,7 +89,7 @@ public class StepServiceTest {
 				.thenReturn(Optional.of(new Step("userTest3", 100, LocalDateTime.parse("2020-01-02T00:00:00"),
 						LocalDateTime.parse("2020-01-02T00:00:00"), LocalDateTime.parse("2020-01-02T00:00:00"))));
 
-		LocalDateTime userEndTime = (stepService.getLatestStep(userID).get().getEnd());
+		LocalDateTime userEndTime = (stepService.getLatestStep(userID).get().getEndTime());
 
 		assertEquals(LocalDateTime.parse("2020-01-02T00:00:00"), userEndTime);
 		assertEquals(stepService.getLatestStep(userID).get().getStepCount(), expectedSteg);

@@ -87,19 +87,19 @@ public class Step {
         this.stepCount = stepCount;
     }
 
-    public LocalDateTime getStart() {
+    public LocalDateTime getStartTime() {
         return startTime;
     }
 
-    public void setStart(LocalDateTime start) {
+    public void setStartTime(LocalDateTime start) {
         this.startTime = start;
     }
 
-    public LocalDateTime getEnd() {
+    public LocalDateTime getEndTime() {
         return endTime;
     }
 
-    public void setEnd(LocalDateTime end) {
+    public void setEndTime(LocalDateTime end) {
         this.endTime = end;
     }
 
