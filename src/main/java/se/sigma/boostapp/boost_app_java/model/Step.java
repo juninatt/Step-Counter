@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+
 @Entity
 @Table(name = "step")
 @ApiModel(description = "All details about the step entity. ")
@@ -53,7 +54,6 @@ public class Step {
         this.userId = userId;
         this.stepCount = stepCount;
     }
-
 
     public Step(String userId) {
         this.userId = userId;
