@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+
 @Entity
 @Table(name = "step")
 @ApiModel(description = "All details about the step entity. ")
@@ -54,7 +55,6 @@ public class Step {
         this.stepCount = stepCount;
     }
 
-
     public Step(String userId) {
         this.userId = userId;
     }
@@ -87,19 +87,19 @@ public class Step {
         this.stepCount = stepCount;
     }
 
-    public LocalDateTime getStart() {
+    public LocalDateTime getStartTime() {
         return startTime;
     }
 
-    public void setStart(LocalDateTime start) {
+    public void setStartTime(LocalDateTime start) {
         this.startTime = start;
     }
 
-    public LocalDateTime getEnd() {
+    public LocalDateTime getEndTime() {
         return endTime;
     }
 
-    public void setEnd(LocalDateTime end) {
+    public void setEndTime(LocalDateTime end) {
         this.endTime = end;
     }
 

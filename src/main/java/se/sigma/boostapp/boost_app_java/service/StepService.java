@@ -61,15 +61,15 @@ public class StepService {
 
     private Optional<Step> registerStepExistingUser(String userId, StepDTO stepDto, Step existingStep) {
         // existing last step day is the same as new step day && existing step endtime is before new step endtime
-        if (existingStep.getEnd().getDayOfYear() == stepDto.getEndTime().getDayOfYear()
-                && existingStep.getEnd().isBefore(stepDto.getEndTime())) {
+        if (existingStep.getEndTime().getDayOfYear() == stepDto.getEndTime().getDayOfYear()
+                && existingStep.getEndTime().isBefore(stepDto.getEndTime())) {
 
             updateExistingStep(stepDto, existingStep);
             addStepToWeekAndMonthTable(userId, stepDto);
 
             return Optional.of(stepRepository.save(existingStep));
 
-        } else if (existingStep.getEnd().isBefore(stepDto.getEndTime())) {
+        } else if (existingStep.getEndTime().isBefore(stepDto.getEndTime())) {
             return registerNewStep(userId, stepDto);
         } else {
             return Optional.empty();
@@ -83,7 +83,7 @@ public class StepService {
 
     private void updateExistingStep(StepDTO stepDto, Step existingStep) {
         existingStep.setStepCount(existingStep.getStepCount() + stepDto.getStepCount());
-        existingStep.setEnd(stepDto.getEndTime());
+        existingStep.setEndTime(stepDto.getEndTime());
         existingStep.setUploadedTime(stepDto.getUploadedTime());
     }
 
@@ -127,7 +127,7 @@ public class StepService {
         var existingStep = stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).get();
         //check if any old dates are in list, throw away
         stepDtoList = stepDtoList.stream()
-                .filter(stepDTO -> stepDTO.getEndTime().isAfter(existingStep.getEnd()))
+                .filter(stepDTO -> stepDTO.getEndTime().isAfter(existingStep.getEndTime()))
                 .collect(Collectors.toList());
         for (StepDTO stepDTO : stepDtoList) {
             updateLastStepInStepTable(stepDTO, userId, existingStep);
@@ -143,7 +143,7 @@ public class StepService {
      * @param latestStep The latest step
      */
     public void updateLastStepInStepTable(StepDTO s, String userId, Step latestStep) {
-        if (latestStep.getEnd().getYear() == s.getEndTime().getYear() && latestStep.getEnd().getDayOfYear() == s.getEndTime().getDayOfYear()) {
+        if (latestStep.getEndTime().getYear() == s.getEndTime().getYear() && latestStep.getEndTime().getDayOfYear() == s.getEndTime().getDayOfYear()) {
             updateExistingStep(s, latestStep);
             stepRepository.save(latestStep);
         } else {
@@ -327,7 +327,7 @@ public class StepService {
         steps.forEach(step ->
         {
             Date end = Date.from(step.
-                    getEnd()
+                    getEndTime()
                     .toLocalDate()
                     .atStartOfDay(ZoneId.systemDefault()).toInstant());
             Calendar c = Calendar.getInstance();
