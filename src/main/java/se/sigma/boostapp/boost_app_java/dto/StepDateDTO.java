@@ -10,19 +10,14 @@ public class StepDateDTO {
     private String userId;
     private int dayOfWeek;
 
- 
+    public StepDateDTO(String userId, Date date, int dayOfWeek, long steps) {
+        this.steps = steps;
+        this.userId = userId;
+        this.dayOfWeek = dayOfWeek;
+        this.date = date;
+    }
 
-	public StepDateDTO(String userId, Date date, int dayOfWeek, long steps) {
-		super();
-		this.steps = steps;
-		this.userId = userId;
-		this.dayOfWeek = dayOfWeek;
-		this.date=date;
-	}
-
-
-
-	public StepDateDTO(Date date, long steps) {
+    public StepDateDTO(Date date, long steps) {
         this.date = date;
         this.steps = steps;
     }
@@ -31,14 +26,13 @@ public class StepDateDTO {
         this.userId = userId;
         this.steps = steps;
     }
-    
-    
+
     public StepDateDTO(String userId, Date date, long steps) {
         this.date = date;
         this.steps = steps;
-        this.userId=userId;
+        this.userId = userId;
     }
-    
+
     public Date getDate() {
         return date;
     }
@@ -54,20 +48,20 @@ public class StepDateDTO {
     public void setSteps(long steps) {
         this.steps = steps;
     }
-    
+
     public int getDayOfWeek() {
- 		return dayOfWeek;
- 	}
+        return dayOfWeek;
+    }
 
- 	public void setDayOfWeek(int dayOfWeek) {
- 		this.dayOfWeek = dayOfWeek;
- 	}
- 	
-	public String getUserId() {
-		return userId;
-	}
+    public void setDayOfWeek(int dayOfWeek) {
+        this.dayOfWeek = dayOfWeek;
+    }
 
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 }
