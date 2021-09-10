@@ -4,11 +4,13 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import se.sigma.boostapp.boost_app_java.dto.BulkUserStarPointsDTO;
 import se.sigma.boostapp.boost_app_java.dto.RequestStarPointsDTO;
-import se.sigma.boostapp.boost_app_java.service.StepService;
+import se.sigma.boostapp.boost_app_java.service.StarPointService;
 
 import java.util.List;
 
@@ -16,10 +18,11 @@ import java.util.List;
 @RequestMapping("/starpoints")
 public class StarPointController {
 
-    private final StepService stepService;
+    private final StarPointService starPointService;
 
-    public StarPointController(StepService stepService) {
-        this.stepService = stepService;
+
+    public StarPointController(StarPointService starPointService) {
+        this.starPointService= starPointService;
     }
 /**
  * Post request <br>
@@ -34,6 +37,6 @@ public class StarPointController {
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found") })
     @PostMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<BulkUserStarPointsDTO> getStarPointsByUsers(final @RequestBody RequestStarPointsDTO requestStarPointsDTO) {
-        return stepService.getStarPointsByMultipleUsers(requestStarPointsDTO);
+        return starPointService.getStarPointsByMultipleUsers(requestStarPointsDTO);
     }
 }
