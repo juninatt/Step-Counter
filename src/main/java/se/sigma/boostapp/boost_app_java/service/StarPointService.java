@@ -17,7 +17,6 @@ public class StarPointService {
      */
     private static final double starPointFactor = 1;
 
-
     private final StepRepository stepRepository;
 
     public StarPointService(StepRepository stepRepository) {
@@ -48,5 +47,4 @@ public class StarPointService {
                                         * starPointFactor))))
                 .collect(Collectors.toList());
     }
-
 }

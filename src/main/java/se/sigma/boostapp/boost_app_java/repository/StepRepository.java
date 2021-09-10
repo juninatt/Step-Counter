@@ -1,5 +1,6 @@
 package se.sigma.boostapp.boost_app_java.repository;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -19,7 +20,7 @@ import javax.transaction.Transactional;
 
 
 @Repository
-public interface StepRepository extends CrudRepository<Step, Long>{
+public interface StepRepository extends JpaRepository<Step, Long> {
 	
 	/**
 	 * Delete step table on the Monday 00:00:01)

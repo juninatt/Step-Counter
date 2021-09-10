@@ -1,4 +1,5 @@
 package se.sigma.boostapp.boost_app_java.repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -8,7 +9,7 @@ import java.util.Optional;
 
 
 @Repository
-public interface WeekStepRepository extends CrudRepository<WeekStep,Long>{
+public interface WeekStepRepository extends JpaRepository<WeekStep,Long> {
 
   
 	/**
