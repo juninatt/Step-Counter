@@ -1,6 +1,5 @@
 package se.sigma.boostapp.boost_app_java.service;
 
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +21,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-//@ExtendWith(MockitoExtension.class) saknas dependency? slipper init mocks i
 public class StarPointServiceTest {
 
     @Mock
@@ -50,8 +48,6 @@ public class StarPointServiceTest {
     @Test(expected = DateTimeParseException.class)
     public void testEmptyStartAndEndLDT_throwsParseExc() {
         List<String> users = List.of("1", "2");
-        when(mockedStepRepository.getStepCountSum("1", STARTTIME, ENDTIME)).thenReturn(Optional.of(10));
-        when(mockedStepRepository.getStepCountSum("2", STARTTIME, ENDTIME)).thenReturn(Optional.of(20));
         starPointServiceTest.getStarPointsByMultipleUsers(new RequestStarPointsDTO(users, LocalDateTime.parse(""), LocalDateTime.parse("")));
     }
 
@@ -67,10 +63,7 @@ public class StarPointServiceTest {
     public void testNullStartAndEndLDTWithBadMock_throwsNull() {
         List<String> users = List.of("1", "2");
         when(mockedStepRepository.getStepCountSum("1", null, null)).thenReturn(Optional.of(10));
-        when(mockedStepRepository.getStepCountSum("2", null, null)).thenReturn(Optional.of(20));
-        var result = starPointServiceTest.getStarPointsByMultipleUsers(new RequestStarPointsDTO(users, null, null));
-        //assertNotNull(result);
-        //assertEquals(0, result.size());
+        starPointServiceTest.getStarPointsByMultipleUsers(new RequestStarPointsDTO(users, null, null));
     }
 
     @Test
@@ -100,17 +93,4 @@ public class StarPointServiceTest {
         assertEquals(20, secondUserPoints);
         assertNotEquals(firstUserPoints, secondUserPoints);
     }
-
-        /*
-    Våra tankar:
-
-    Setup:
-    *Fake databas - lista med några användare
-
-    Jag vill testa:
-     - Om RequestStarpointDto inte har medskickad lista att den fylls med alla - Verify att stepRepositpry.getAllUsers kallas?
-     - Om starttime och eller endtime saknas - svar tom lista
-     - om userid inte finns - svar tom lista
-     - om userid finns samt tidsintervall finns - Rätt storlek på lista tillbaka? Rätt steg (samma som starpoints)
-     */
 }
