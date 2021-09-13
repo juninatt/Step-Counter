@@ -1,5 +1,6 @@
 package se.sigma.boostapp.boost_app_java.service;
 
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,8 +14,10 @@ import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 //@ExtendWith(MockitoExtension.class) saknas dependency? slipper init mocks i
@@ -26,6 +29,9 @@ public class StarPointServiceTest {
     @InjectMocks
     private StarPointService starPointServiceTest;
 
+    private final LocalDateTime STARTTIME = LocalDateTime.parse("2021-08-21T01:00:00");
+    private final LocalDateTime ENDTIME = LocalDateTime.parse("2021-08-22T01:00:00");
+
     @Before
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
@@ -36,13 +42,26 @@ public class StarPointServiceTest {
     public void testNullUsers_CallsGetAllUsers() {
 
         List<String> emptyList = null;
-        starPointServiceTest.getStarPointsByMultipleUsers(new RequestStarPointsDTO(emptyList, LocalDateTime.parse("2021-08-21T01:00:00"), LocalDateTime.parse("2021-08-22T01:00:00")));
+        starPointServiceTest.getStarPointsByMultipleUsers(new RequestStarPointsDTO(emptyList, STARTTIME, ENDTIME));
         verify(mockedStepRepository).getAllUsers();
     }
 
     @Test
     public void testNoStartOrEndTime_ReturnsEmptyList() {
+        List<String> users = List.of("1", "2");
+        starPointServiceTest.getStarPointsByMultipleUsers(new RequestStarPointsDTO());
+    }
 
+
+    @Test
+    public void testCorrectData_ReturnsCorrectSizeList() {
+        List<String> users = new ArrayList<>(List.of("1", "2"));
+        RequestStarPointsDTO correctData = new RequestStarPointsDTO(users, STARTTIME, ENDTIME);
+        starPointServiceTest.getStarPointsByMultipleUsers(correctData);
+
+        when(mockedStepRepository.getStepCountSum("1", STARTTIME, ENDTIME)).thenReturn(Optional.of(10));
+
+        //
     }
 
         /*
