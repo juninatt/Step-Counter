@@ -40,8 +40,13 @@ public class StarPointServiceTest {
         verify(mockedStepRepository).getAllUsers();
     }
 
+    @Test
+    public void testNoStartOrEndTime_ReturnsEmptyList() {
+
+    }
+
         /*
-    Mina tankar:
+    Våra tankar:
 
     Setup:
     *Fake databas - lista med några användare
