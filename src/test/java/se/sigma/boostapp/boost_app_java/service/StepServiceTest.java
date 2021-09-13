@@ -151,7 +151,7 @@ public class StepServiceTest {
 	}
 
 	@Test
-	public void addStepsToWeekTable_test() {
+	public void addStepsToWeegitkTable_test() {
 		mockWeek = new WeekStep(userId, 5, 2020, 500);
 
 		when(mockedWeekStepRepository.findByUserIdAndYearAndWeek(userId, 2020, 5)).thenReturn(Optional.of(mockWeek));
