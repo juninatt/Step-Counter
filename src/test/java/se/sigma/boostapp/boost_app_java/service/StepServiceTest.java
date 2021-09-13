@@ -217,6 +217,7 @@ public class StepServiceTest {
 		 
 		List<StepDTO> mockStepDTOListReturn= stepService.sortListByEndTime(mockStepDTOList);
 		
+		//TODO a test
 		mockStepDTOListTest.equals(mockStepDTOListReturn);
 
 	}
