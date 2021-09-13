@@ -12,12 +12,12 @@ import se.sigma.boostapp.boost_app_java.dto.RequestStarPointsDTO;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -47,10 +47,30 @@ public class StarPointServiceTest {
         verify(mockedStepRepository).getAllUsers();
     }
 
-    @Test
-    public void testNoStartOrEndTime_ReturnsEmptyList() {
+    @Test(expected = DateTimeParseException.class)
+    public void testEmptyStartAndEndLDT_throwsParseExc() {
         List<String> users = List.of("1", "2");
-        starPointServiceTest.getStarPointsByMultipleUsers(new RequestStarPointsDTO());
+        when(mockedStepRepository.getStepCountSum("1", STARTTIME, ENDTIME)).thenReturn(Optional.of(10));
+        when(mockedStepRepository.getStepCountSum("2", STARTTIME, ENDTIME)).thenReturn(Optional.of(20));
+        starPointServiceTest.getStarPointsByMultipleUsers(new RequestStarPointsDTO(users, LocalDateTime.parse(""), LocalDateTime.parse("")));
+    }
+
+    @Test
+    public void testNullStartAndEndLDT_returnsEmptyList() {
+        List<String> users = List.of("1", "2");
+        var result = starPointServiceTest.getStarPointsByMultipleUsers(new RequestStarPointsDTO(users, null, null));
+        assertNotNull(result);
+        assertEquals(0, result.size());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testNullStartAndEndLDTWithBadMock_throwsNull() {
+        List<String> users = List.of("1", "2");
+        when(mockedStepRepository.getStepCountSum("1", null, null)).thenReturn(Optional.of(10));
+        when(mockedStepRepository.getStepCountSum("2", null, null)).thenReturn(Optional.of(20));
+        var result = starPointServiceTest.getStarPointsByMultipleUsers(new RequestStarPointsDTO(users, null, null));
+        //assertNotNull(result);
+        //assertEquals(0, result.size());
     }
 
     @Test
@@ -75,8 +95,10 @@ public class StarPointServiceTest {
 
         var bulkUsers = starPointServiceTest.getStarPointsByMultipleUsers(correctData);
         assertEquals(2, bulkUsers.size());
-        assertEquals(20, bulkUsers.get(1).getStarPoints().getStarPoints());
-        assertNotEquals(bulkUsers.get(0).getStarPoints().getStarPoints(), bulkUsers.get(1).getStarPoints().getStarPoints());
+        var firstUserPoints = bulkUsers.get(0).getStarPoints().getStarPoints();
+        var secondUserPoints = bulkUsers.get(1).getStarPoints().getStarPoints();
+        assertEquals(20, secondUserPoints);
+        assertNotEquals(firstUserPoints, secondUserPoints);
     }
 
         /*
