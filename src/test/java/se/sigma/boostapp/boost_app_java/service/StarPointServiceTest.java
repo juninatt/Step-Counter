@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -40,7 +42,6 @@ public class StarPointServiceTest {
 
     @Test
     public void testNullUsers_CallsGetAllUsers() {
-
         List<String> emptyList = null;
         starPointServiceTest.getStarPointsByMultipleUsers(new RequestStarPointsDTO(emptyList, STARTTIME, ENDTIME));
         verify(mockedStepRepository).getAllUsers();
@@ -52,16 +53,30 @@ public class StarPointServiceTest {
         starPointServiceTest.getStarPointsByMultipleUsers(new RequestStarPointsDTO());
     }
 
-
     @Test
-    public void testCorrectData_ReturnsCorrectSizeList() {
-        List<String> users = new ArrayList<>(List.of("1", "2"));
+    public void testOneUserWithCorrectData_ReturnsCorrectSizeListAndContent() {
+        List<String> users = new ArrayList<>(List.of("1"));
         RequestStarPointsDTO correctData = new RequestStarPointsDTO(users, STARTTIME, ENDTIME);
-        starPointServiceTest.getStarPointsByMultipleUsers(correctData);
 
         when(mockedStepRepository.getStepCountSum("1", STARTTIME, ENDTIME)).thenReturn(Optional.of(10));
 
-        //
+        var bulkUsers = starPointServiceTest.getStarPointsByMultipleUsers(correctData);
+        assertEquals(1, bulkUsers.size());
+        assertEquals(10, bulkUsers.get(0).getStarPoints().getStarPoints());
+    }
+
+    @Test
+    public void testTwoUsersWithCorrectData_ReturnsCorrectSizeListAndContent() {
+        List<String> users = new ArrayList<>(List.of("1", "2"));
+        RequestStarPointsDTO correctData = new RequestStarPointsDTO(users, STARTTIME, ENDTIME);
+
+        when(mockedStepRepository.getStepCountSum("1", STARTTIME, ENDTIME)).thenReturn(Optional.of(10));
+        when(mockedStepRepository.getStepCountSum("2", STARTTIME, ENDTIME)).thenReturn(Optional.of(20));
+
+        var bulkUsers = starPointServiceTest.getStarPointsByMultipleUsers(correctData);
+        assertEquals(2, bulkUsers.size());
+        assertEquals(20, bulkUsers.get(1).getStarPoints().getStarPoints());
+        assertNotEquals(bulkUsers.get(0).getStarPoints().getStarPoints(), bulkUsers.get(1).getStarPoints().getStarPoints());
     }
 
         /*
