@@ -22,6 +22,7 @@ import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -175,15 +176,8 @@ public class StepServiceTest {
 
     @Test
     public void deleteAllFromStep_test() {
-
-        Step testStep = new Step("userTestId", 100, LocalDateTime.parse("2020-01-02T01:00:00"),
-                LocalDateTime.parse("2020-01-02T02:00:00"), LocalDateTime.parse("2020-01-02T03:00:00"));
-
-        // user is now i databas
-        assertNotNull(testStep.getUserId());
-
-        Mockito.verify(mockedStepRepository, Mockito.never()).deleteAllFromStep();
-        assertEquals(mockedStepRepository.findByUserId("userTestId"), Optional.empty());
+        stepService.deleteStepTable();
+        verify(mockedStepRepository).deleteAllFromStep();
     }
 
     @Test
