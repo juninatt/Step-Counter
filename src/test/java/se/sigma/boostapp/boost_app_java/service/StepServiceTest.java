@@ -27,237 +27,245 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class StepServiceTest {
 
-	@Mock
-	private StepRepository mockedStepRepository;
+    @Mock
+    private StepRepository mockedStepRepository;
 
-	@Mock
-	private WeekStepRepository mockedWeekStepRepository;
-	@Mock
-	private MonthStepRepository mockedMonthStepRepository;
+    @Mock
+    private WeekStepRepository mockedWeekStepRepository;
+    @Mock
+    private MonthStepRepository mockedMonthStepRepository;
 
-	@InjectMocks
-	private StepService stepService;
+    @InjectMocks
+    private StepService stepService;
 
-	String userId = "StepTest";
-	MonthStep mockMonth;
-	WeekStep mockWeek;
-	Step mockStep, mockStep2;
-	
+    String userId = "StepTest";
 
-	@Before
-	public void initMocks() throws Exception {
-		MockitoAnnotations.initMocks(this);
-		stepService = new StepService(mockedStepRepository, mockedMonthStepRepository, mockedWeekStepRepository);
-	}
+    @Before
+    public void initMocks() {
+        MockitoAnnotations.initMocks(this);
+        stepService = new StepService(mockedStepRepository, mockedMonthStepRepository, mockedWeekStepRepository);
+    }
 
-	@Test
-	public void registerStepsTest() {
-		Step testStep = new Step();
-		MonthStep mockMonth = new MonthStep("userId", 3, 2020, 800);
+    @Test
+    public void registerStepsTest() {
+        Step testStep = new Step();
 
-		// user is not i databas
-		assertNull(testStep.getUserId());
-		assertEquals(0, testStep.getStepCount());
+        // user is not i databas
+        assertNull(testStep.getUserId());
+        assertEquals(0, testStep.getStepCount());
 
-		testStep = new Step("userTestId", 100, LocalDateTime.parse("2020-01-02T01:00:00"),
-				LocalDateTime.parse("2020-01-02T02:00:00"), LocalDateTime.parse("2020-01-02T03:00:00"));
+        testStep = new Step("userTestId", 100, LocalDateTime.parse("2020-01-02T01:00:00"),
+                LocalDateTime.parse("2020-01-02T02:00:00"), LocalDateTime.parse("2020-01-02T03:00:00"));
 
-		when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(any(String.class)))
-				.thenReturn(Optional.of(testStep));
-		when(mockedStepRepository.save(any(Step.class))).thenReturn(testStep);
+        when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(any(String.class)))
+                .thenReturn(Optional.of(testStep));
+        when(mockedStepRepository.save(any(Step.class))).thenReturn(testStep);
 
-		StepDTO stepDto = new StepDTO(300, LocalDateTime.parse("2020-01-02T02:00:00"),
-				LocalDateTime.parse("2020-01-02T03:00:00"), LocalDateTime.parse("2020-01-02T04:00:00"));
-		testStep.setStepCount(testStep.getStepCount() + stepDto.getStepCount());
+        StepDTO stepDto = new StepDTO(300, LocalDateTime.parse("2020-01-02T02:00:00"),
+                LocalDateTime.parse("2020-01-02T03:00:00"), LocalDateTime.parse("2020-01-02T04:00:00"));
+        testStep.setStepCount(testStep.getStepCount() + stepDto.getStepCount());
 
-		// user is now i databas
-		assertNotNull(testStep.getUserId());
-		assertEquals(400, testStep.getStepCount());
+        // user is now i databas
+        assertNotNull(testStep.getUserId());
+        assertEquals(400, testStep.getStepCount());
+        var optionalStep = stepService.registerSteps(testStep.getUserId(), stepDto);
+        if (optionalStep.isPresent()) {
+            assertEquals("userTestId", optionalStep.get().getUserId());
+        } else {
+            fail();
+        }
 
-		assertEquals("userTestId", stepService.registerSteps(testStep.getUserId(), stepDto).get().getUserId());
+    }
 
-	}
+    @Test
+    public void getLatestStepTest() {
 
-	@Test
-	public void getLatestStepTest() {
+        final String userID = "userId";
+        final int expectedSteg = 100;
 
-		final String endDate = "2020-01-02T00:00:00";
-		final String userID = "userId";
-		final int expectedSteg = 100;
+        when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(any(String.class)))
+                .thenReturn(Optional.of(new Step("userTest3", 100, LocalDateTime.parse("2020-01-02T00:00:00"),
+                        LocalDateTime.parse("2020-01-02T00:00:00"), LocalDateTime.parse("2020-01-02T00:00:00"))));
 
-		when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(any(String.class)))
-				.thenReturn(Optional.of(new Step("userTest3", 100, LocalDateTime.parse("2020-01-02T00:00:00"),
-						LocalDateTime.parse("2020-01-02T00:00:00"), LocalDateTime.parse("2020-01-02T00:00:00"))));
+        var optionalStep = stepService.getLatestStep(userID);
+        if (optionalStep.isPresent()) {
+            var step = optionalStep.get();
+            assertEquals(LocalDateTime.parse("2020-01-02T00:00:00"), step.getEndTime());
+            assertEquals(step.getStepCount(), expectedSteg);
+        } else {
+            fail();
+        }
+    }
 
-		LocalDateTime userEndTime = (stepService.getLatestStep(userID).get().getEndTime());
+    @Test
+    public void shouldReturnUpdatedStepCount() {
+        Step mockStep = new Step("userTest3", 100, LocalDateTime.parse("2020-01-02T01:00:00"),
+                LocalDateTime.parse("2020-01-02T01:10:00"), LocalDateTime.parse("2020-01-02T02:00:00"));
 
-		assertEquals(LocalDateTime.parse("2020-01-02T00:00:00"), userEndTime);
-		assertEquals(stepService.getLatestStep(userID).get().getStepCount(), expectedSteg);
-	}
+        when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(any(String.class)))
+                .thenReturn(Optional.of(mockStep));
+        when(mockedStepRepository.save(any(Step.class))).thenReturn(mockStep);
 
-	@Test
-	public void shouldReturnUpdatedStepCount() {
-		Step mockStep = new Step("userTest3", 100, LocalDateTime.parse("2020-01-02T01:00:00"),
-				LocalDateTime.parse("2020-01-02T01:10:00"), LocalDateTime.parse("2020-01-02T02:00:00"));
-		MonthStep mockMonth = new MonthStep("userId", 2, 2020, 400);
+        StepDTO stepDto = new StepDTO(50, LocalDateTime.parse("2020-01-02T00:00:00"),
+                LocalDateTime.parse("2020-01-02T01:20:00"), LocalDateTime.parse("2020-01-02T02:00:00"));
+        var optionalStep = stepService.registerSteps("userTest3", stepDto);
+        if (optionalStep.isPresent()) {
+            assertEquals(150, optionalStep.get().getStepCount());
+        } else {
+            fail();
+        }
+    }
 
-		when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(any(String.class)))
-				.thenReturn(Optional.of(mockStep));
-		when(mockedStepRepository.save(any(Step.class))).thenReturn(mockStep);
+    @Test
+    public void registerMultipleSteps_test() {
+        List<StepDTO> mockStepDTOList = new ArrayList<>();
+        StepDTO stepDTO1 = new StepDTO(10, LocalDateTime.parse("2020-08-21T02:01:10"),
+                LocalDateTime.parse("2020-08-21T02:10:10"), LocalDateTime.parse("2020-08-21T02:20:20"));
 
-		StepDTO stepDto = new StepDTO(50, LocalDateTime.parse("2020-01-02T00:00:00"),
-				LocalDateTime.parse("2020-01-02T01:20:00"), LocalDateTime.parse("2020-01-02T02:00:00"));
-		assertEquals(150, stepService.registerSteps("userTest3", stepDto).get().getStepCount());
-	}
+        StepDTO stepDTO2 = new StepDTO(12, LocalDateTime.parse("2020-08-21T04:01:20"),
+                LocalDateTime.parse("2020-08-21T04:01:20"), LocalDateTime.parse("2020-08-21T04:01:30"));
 
-	@Test
-	public void registerMultipleSteps_test() {
-		List<StepDTO> mockStepDTOList = new ArrayList<>();
-		StepDTO stepDTO1 = new StepDTO(10, LocalDateTime.parse("2020-08-21T02:01:10"),
-				LocalDateTime.parse("2020-08-21T02:10:10"), LocalDateTime.parse("2020-08-21T02:20:20"));
+        StepDTO stepDTO3 = new StepDTO(13, LocalDateTime.parse("2020-08-21T00:01:10"),
+                LocalDateTime.parse("2020-08-21T01:01:10"), LocalDateTime.parse("2020-08-21T02:01:20"));
 
-		StepDTO stepDTO2 = new StepDTO(12, LocalDateTime.parse("2020-08-21T04:01:20"),
-				LocalDateTime.parse("2020-08-21T04:01:20"), LocalDateTime.parse("2020-08-21T04:01:30"));
+        mockStepDTOList.add(stepDTO1);
+        mockStepDTOList.add(stepDTO2);
+        mockStepDTOList.add(stepDTO3);
 
-		StepDTO stepDTO3 = new StepDTO(13, LocalDateTime.parse("2020-08-21T00:01:10"),
-				LocalDateTime.parse("2020-08-21T01:01:10"), LocalDateTime.parse("2020-08-21T02:01:20"));
+        Step mockStep = new Step("idTest", 100, LocalDateTime.parse("2020-08-21T01:00:00"),
+                LocalDateTime.parse("2020-08-21T01:00:00"), LocalDateTime.parse("2020-08-21T01:00:00"));
 
-		mockStepDTOList.add(stepDTO1);
-		mockStepDTOList.add(stepDTO2);
-		mockStepDTOList.add(stepDTO3);
+        when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(Mockito.anyString()))
+                .thenReturn(Optional.of(mockStep));
+        when(mockedStepRepository.save(any())).thenReturn(mockStep);
 
-		Step mockStep = new Step("idTest", 100, LocalDateTime.parse("2020-08-21T01:00:00"),
-				LocalDateTime.parse("2020-08-21T01:00:00"), LocalDateTime.parse("2020-08-21T01:00:00"));
+        stepService.registerMultipleSteps("idTest", mockStepDTOList);
 
-		when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(Mockito.anyString()))
-				.thenReturn(Optional.of(mockStep));
-		when(mockedStepRepository.save(any())).thenReturn(mockStep);
+        assertEquals(135, (mockStep.getStepCount()));
+    }
 
-		var test = stepService.registerMultipleSteps("idTest", mockStepDTOList);
+    @Test
+    public void addStepsToMonthTable_test() {
+        var mockMonth = new MonthStep(userId, 10, 2020, 800);
 
-		assertEquals(135, (mockStep.getStepCount()));
-	}
+        when(mockedMonthStepRepository.findByUserIdAndYearAndMonth(userId, 2020, 10))
+                .thenReturn(Optional.of(mockMonth));
+        var optionalStep = mockedMonthStepRepository.findByUserIdAndYearAndMonth(userId, 2020, 10);
+        if (optionalStep.isPresent()) {
+            assertEquals(1600, mockMonth.getSteps() + optionalStep.get().getSteps());
+        } else {
+            fail();
+        }
+    }
 
-	@Test
-	public void addStepsToMonthTable_test() {
-		mockMonth = new MonthStep(userId, 10, 2020, 800);
-		
-		when(mockedMonthStepRepository.findByUserIdAndYearAndMonth(userId, 2020, 10))
-				.thenReturn(Optional.of(mockMonth));
-		int stepSum = mockMonth.getSteps()
-				+ mockedMonthStepRepository.findByUserIdAndYearAndMonth(userId, 2020, 10).get().getSteps();
+    @Test
 
-		assertEquals(1600, stepSum);
-	}
+    public void addStepsToWeekTable_test() {
+        var mockWeek = new WeekStep(userId, 5, 2020, 500);
 
-	@Test
-	public void addStepsToWeegitkTable_test() {
-		mockWeek = new WeekStep(userId, 5, 2020, 500);
+        when(mockedWeekStepRepository.findByUserIdAndYearAndWeek(userId, 2020, 5)).thenReturn(Optional.of(mockWeek));
+        var optionalStep = mockedWeekStepRepository.findByUserIdAndYearAndWeek(userId, 2020, 5);
+        if (optionalStep.isPresent()) {
+            assertEquals(1000, mockWeek.getSteps()
+                    + optionalStep.get().getSteps());
+        } else {
+            fail();
+        }
+    }
 
-		when(mockedWeekStepRepository.findByUserIdAndYearAndWeek(userId, 2020, 5)).thenReturn(Optional.of(mockWeek));
-		int stepSum = mockWeek.getSteps()
-				+ mockedWeekStepRepository.findByUserIdAndYearAndWeek(userId, 2020, 5).get().getSteps();
+    @Test
+    public void deleteAllFromStep_test() {
 
-		assertEquals(1000, stepSum);
-	}
+        Step testStep = new Step("userTestId", 100, LocalDateTime.parse("2020-01-02T01:00:00"),
+                LocalDateTime.parse("2020-01-02T02:00:00"), LocalDateTime.parse("2020-01-02T03:00:00"));
 
-	@Test
-	public void deleteAllFromStep_test() {
+        // user is now i databas
+        assertNotNull(testStep.getUserId());
 
-		Step testStep = new Step();
+        Mockito.verify(mockedStepRepository, Mockito.never()).deleteAllFromStep();
+        assertEquals(mockedStepRepository.findByUserId("userTestId"), Optional.empty());
+    }
 
-		testStep = new Step("userTestId", 100, LocalDateTime.parse("2020-01-02T01:00:00"),
-				LocalDateTime.parse("2020-01-02T02:00:00"), LocalDateTime.parse("2020-01-02T03:00:00"));
 
-		StepDTO stepDto = new StepDTO(300, LocalDateTime.parse("2020-01-02T02:00:00"),
-				LocalDateTime.parse("2020-01-02T03:00:00"), LocalDateTime.parse("2020-01-02T04:00:00"));
+    @Test
+    public void sortListByEndTime_test() {
+        List<StepDTO> mockStepDTOList = new ArrayList<>();
+        StepDTO stepDTO1 = new StepDTO(10, LocalDateTime.of(2020, 10, 1, 14, 56),
+                LocalDateTime.of(2020, 10, 1, 14, 56), LocalDateTime.of(2020, 10, 1, 14, 56));
 
-		// user is now i databas
-		assertNotNull(testStep.getUserId());
+        StepDTO stepDTO2 = new StepDTO(12, LocalDateTime.of(2020, 10, 1, 14, 56),
+                LocalDateTime.of(2020, 10, 2, 14, 56), LocalDateTime.of(2020, 10, 2, 14, 56));
 
-		Mockito.verify(mockedStepRepository, Mockito.never()).deleteAllFromStep();
-		assertEquals(mockedStepRepository.findByUserId("userTestId"), Optional.empty());
-	}
-	
+        StepDTO stepDTO3 = new StepDTO(13, LocalDateTime.of(2020, 10, 1, 14, 56),
+                LocalDateTime.of(2020, 10, 3, 14, 56), LocalDateTime.of(2020, 3, 22, 14, 56));
 
-	@Test
-	public void sortListByEndTime_test() {
-		List<StepDTO> mockStepDTOList = new ArrayList<>();
-		StepDTO stepDTO1 = new StepDTO(10, LocalDateTime.of(2020, 10, 01, 14, 56),
-				LocalDateTime.of(2020, 10, 01, 14, 56), LocalDateTime.of(2020, 10, 01, 14, 56));
+        mockStepDTOList.add(stepDTO1);
+        mockStepDTOList.add(stepDTO2);
+        mockStepDTOList.add(stepDTO3);
 
-		StepDTO stepDTO2 = new StepDTO(12, LocalDateTime.of(2020, 10, 01, 14, 56),
-				LocalDateTime.of(2020, 10, 02, 14, 56), LocalDateTime.of(2020, 10, 02, 14, 56));
 
-		StepDTO stepDTO3 = new StepDTO(13, LocalDateTime.of(2020, 10, 01, 14, 56),
-				LocalDateTime.of(2020, 10, 03, 14, 56), LocalDateTime.of(2020, 03, 22, 14, 56));
+        List<StepDTO> mockStepDTOListTest = new ArrayList<>();
+        StepDTO stepDTO1Test = new StepDTO(13, LocalDateTime.of(2020, 10, 1, 14, 56),
+                LocalDateTime.of(2020, 10, 3, 14, 56), LocalDateTime.of(2020, 3, 22, 14, 56));
 
-		mockStepDTOList.add(stepDTO1);
-		mockStepDTOList.add(stepDTO2);
-		mockStepDTOList.add(stepDTO3);
-		
-		
-		List<StepDTO> mockStepDTOListTest = new ArrayList<>();
-		StepDTO stepDTO1Test = new StepDTO(13, LocalDateTime.of(2020, 10, 01, 14, 56),
-				LocalDateTime.of(2020, 10, 03, 14, 56), LocalDateTime.of(2020, 03, 22, 14, 56));
-		
-		StepDTO stepDTO2Test = new StepDTO(12, LocalDateTime.of(2020, 10, 01, 14, 56),
-				LocalDateTime.of(2020, 10, 02, 14, 56), LocalDateTime.of(2020, 10, 02, 14, 56));
+        StepDTO stepDTO2Test = new StepDTO(12, LocalDateTime.of(2020, 10, 1, 14, 56),
+                LocalDateTime.of(2020, 10, 2, 14, 56), LocalDateTime.of(2020, 10, 2, 14, 56));
 
-		StepDTO stepDTO3Test = new StepDTO(10, LocalDateTime.of(2020, 10, 01, 14, 56),
-				LocalDateTime.of(2020, 10, 01, 14, 56), LocalDateTime.of(2020, 10, 01, 14, 56));
+        StepDTO stepDTO3Test = new StepDTO(10, LocalDateTime.of(2020, 10, 1, 14, 56),
+                LocalDateTime.of(2020, 10, 1, 14, 56), LocalDateTime.of(2020, 10, 1, 14, 56));
 
-		
-		mockStepDTOListTest.add(stepDTO1Test);
-		mockStepDTOListTest.add(stepDTO2Test);
-		mockStepDTOListTest.add(stepDTO3Test);
 
-		assertNotEquals(mockStepDTOListTest, mockStepDTOList);
-		
-		 
-		List<StepDTO> mockStepDTOListReturn= stepService.sortListByEndTime(mockStepDTOList);
-		
-		//TODO a test
-		mockStepDTOListTest.equals(mockStepDTOListReturn);
+        mockStepDTOListTest.add(stepDTO1Test);
+        mockStepDTOListTest.add(stepDTO2Test);
+        mockStepDTOListTest.add(stepDTO3Test);
 
-	}
-	
-	@Test
-	public void getWeekNumber_test() {
-		
-		LocalDateTime inputDate=LocalDateTime.of(2020, 10, 22, 14, 56); 
-		
-		int returnWeek=stepService.getWeekNumber(inputDate);
-		
-		assertEquals(43,returnWeek);
-	}
-	
-	@Test
-	public void getStepCountMonth_test() throws NoSuchElementException{
-	
-		mockMonth = new MonthStep(userId, 10, 2020, 800);
-		
-		when(mockedMonthStepRepository.findByUserIdAndYearAndMonth(userId, 2020, 10))
-				.thenReturn(Optional.of(mockMonth));
-		
-		int stepFind=mockedMonthStepRepository.findByUserIdAndYearAndMonth(userId, 2020, 10).get().getSteps();
-		// steps ar in databas
-		assertEquals(800,stepFind);
-		//no steps in databas
-		mockedMonthStepRepository.findByUserIdAndYearAndMonth(userId, 2020, 11).equals(Optional.of(0));
-	}
-	
-	@Test
-	public void getStepCountWeek_test() {
-		mockWeek= new WeekStep(userId, 43, 2020, 300);
-		when(mockedWeekStepRepository.findByUserIdAndYearAndWeek(userId, 2020, 43))
-			.thenReturn(Optional.of(mockWeek));
-		
-		int weekStepFind=mockedWeekStepRepository.findByUserIdAndYearAndWeek(userId, 2020, 43).get().getSteps();
-		//steps find in databas
-		assertEquals(300,weekStepFind);
-		//no steps i databas
-		mockedWeekStepRepository.findByUserIdAndYearAndWeek(userId, 2020, 40).equals(Optional.of(0));
-		
-	}
+        assertNotEquals(mockStepDTOListTest, mockStepDTOList);
+
+
+        //TODO
+        //List<StepDTO> mockStepDTOListReturn= stepService.sortListByEndTime(mockStepDTOList);
+        //assertEquals(mockStepDTOListTest,mockStepDTOListReturn);
+
+    }
+
+    @Test
+    public void getWeekNumber_test() {
+
+        LocalDateTime inputDate = LocalDateTime.of(2020, 10, 22, 14, 56);
+
+        int returnWeek = stepService.getWeekNumber(inputDate);
+
+        assertEquals(43, returnWeek);
+    }
+
+    @Test
+    public void getStepCountMonth_test() throws NoSuchElementException {
+
+        var mockMonth = new MonthStep(userId, 10, 2020, 800);
+
+        when(mockedMonthStepRepository.findByUserIdAndYearAndMonth(userId, 2020, 10))
+                .thenReturn(Optional.of(mockMonth));
+
+        var optionalStep = mockedMonthStepRepository.findByUserIdAndYearAndMonth(userId, 2020, 10);
+        if(optionalStep.isPresent()) {
+            var stepFind = optionalStep.get().getSteps();
+            // steps ar in databas
+            assertEquals(800,stepFind);
+        }
+    }
+
+    @Test
+    public void getStepCountWeek_test() {
+        var mockWeek = new WeekStep(userId, 43, 2020, 300);
+        when(mockedWeekStepRepository.findByUserIdAndYearAndWeek(userId, 2020, 43))
+                .thenReturn(Optional.of(mockWeek));
+
+        var optionalStep = mockedWeekStepRepository.findByUserIdAndYearAndWeek(userId, 2020, 43);
+        if (optionalStep.isPresent()) {
+            //steps find in database
+            assertEquals(300, optionalStep.get().getSteps());
+        } else {
+            fail();
+        }
+    }
 }
