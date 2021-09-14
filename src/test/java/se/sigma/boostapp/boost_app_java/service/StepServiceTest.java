@@ -186,7 +186,6 @@ public class StepServiceTest {
         assertEquals(mockedStepRepository.findByUserId("userTestId"), Optional.empty());
     }
 
-
     @Test
     public void sortListByEndTime_test() {
         List<StepDTO> mockStepDTOList = new ArrayList<>();
@@ -203,7 +202,6 @@ public class StepServiceTest {
         mockStepDTOList.add(stepDTO2);
         mockStepDTOList.add(stepDTO3);
 
-
         List<StepDTO> mockStepDTOListTest = new ArrayList<>();
         StepDTO stepDTO1Test = new StepDTO(13, LocalDateTime.of(2020, 10, 1, 14, 56),
                 LocalDateTime.of(2020, 10, 3, 14, 56), LocalDateTime.of(2020, 3, 22, 14, 56));
@@ -214,18 +212,15 @@ public class StepServiceTest {
         StepDTO stepDTO3Test = new StepDTO(10, LocalDateTime.of(2020, 10, 1, 14, 56),
                 LocalDateTime.of(2020, 10, 1, 14, 56), LocalDateTime.of(2020, 10, 1, 14, 56));
 
-
         mockStepDTOListTest.add(stepDTO1Test);
         mockStepDTOListTest.add(stepDTO2Test);
         mockStepDTOListTest.add(stepDTO3Test);
 
         assertNotEquals(mockStepDTOListTest, mockStepDTOList);
 
+        mockStepDTOListTest = stepService.sortListByEndTime(mockStepDTOList);
 
-        //TODO
-        //List<StepDTO> mockStepDTOListReturn= stepService.sortListByEndTime(mockStepDTOList);
-        //assertEquals(mockStepDTOListTest,mockStepDTOListReturn);
-
+        assertEquals(mockStepDTOList, mockStepDTOListTest);
     }
 
     @Test
@@ -247,10 +242,10 @@ public class StepServiceTest {
                 .thenReturn(Optional.of(mockMonth));
 
         var optionalStep = mockedMonthStepRepository.findByUserIdAndYearAndMonth(userId, 2020, 10);
-        if(optionalStep.isPresent()) {
+        if (optionalStep.isPresent()) {
             var stepFind = optionalStep.get().getSteps();
             // steps ar in databas
-            assertEquals(800,stepFind);
+            assertEquals(800, stepFind);
         }
     }
 
