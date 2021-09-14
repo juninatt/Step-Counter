@@ -39,9 +39,6 @@ public class StepServiceTest {
     private StepService stepService;
 
     String userId = "StepTest";
-    MonthStep mockMonth;
-    WeekStep mockWeek;
-
 
     @Before
     public void initMocks() {
@@ -149,7 +146,7 @@ public class StepServiceTest {
 
     @Test
     public void addStepsToMonthTable_test() {
-        mockMonth = new MonthStep(userId, 10, 2020, 800);
+        var mockMonth = new MonthStep(userId, 10, 2020, 800);
 
         when(mockedMonthStepRepository.findByUserIdAndYearAndMonth(userId, 2020, 10))
                 .thenReturn(Optional.of(mockMonth));
@@ -163,7 +160,7 @@ public class StepServiceTest {
 
     @Test
     public void addStepsToWeekTable_test() {
-        mockWeek = new WeekStep(userId, 5, 2020, 500);
+        var mockWeek = new WeekStep(userId, 5, 2020, 500);
 
         when(mockedWeekStepRepository.findByUserIdAndYearAndWeek(userId, 2020, 5)).thenReturn(Optional.of(mockWeek));
         var optionalStep = mockedWeekStepRepository.findByUserIdAndYearAndWeek(userId, 2020, 5);
@@ -238,26 +235,22 @@ public class StepServiceTest {
     @Test
     public void getStepCountMonth_test() throws NoSuchElementException {
 
-        mockMonth = new MonthStep(userId, 10, 2020, 800);
+        var mockMonth = new MonthStep(userId, 10, 2020, 800);
 
         when(mockedMonthStepRepository.findByUserIdAndYearAndMonth(userId, 2020, 10))
                 .thenReturn(Optional.of(mockMonth));
+
         var optionalStep = mockedMonthStepRepository.findByUserIdAndYearAndMonth(userId, 2020, 10);
-        if (optionalStep.isPresent()) {
-            var steps = optionalStep.get().getSteps();
-            assertEquals(1000, mockWeek.getSteps()
-                    + steps);
+        if(optionalStep.isPresent()) {
+            var stepFind = optionalStep.get().getSteps();
             // steps ar in databas
-            assertEquals(800, steps);
-            //no steps in databas
-        } else {
-            fail();
+            assertEquals(800,stepFind);
         }
     }
 
     @Test
     public void getStepCountWeek_test() {
-        mockWeek = new WeekStep(userId, 43, 2020, 300);
+        var mockWeek = new WeekStep(userId, 43, 2020, 300);
         when(mockedWeekStepRepository.findByUserIdAndYearAndWeek(userId, 2020, 43))
                 .thenReturn(Optional.of(mockWeek));
 
