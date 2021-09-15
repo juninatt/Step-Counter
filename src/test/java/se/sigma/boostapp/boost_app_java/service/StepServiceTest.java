@@ -253,7 +253,7 @@ public class StepServiceTest {
 
         var optionalStep = stepService.getStepCountWeek(userId, 2020, 43);
         if (optionalStep.isPresent()) {
-            assertEquals(Optional.of(200), optionalStep);
+            assertEquals(Optional.of(mockedStepsInWeek), optionalStep);
         } else {
             fail();
         }
