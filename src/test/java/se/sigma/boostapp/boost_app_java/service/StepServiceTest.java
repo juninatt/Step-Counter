@@ -1,5 +1,6 @@
 package se.sigma.boostapp.boost_app_java.service;
 
+import org.hibernate.mapping.Any;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -244,15 +245,15 @@ public class StepServiceTest {
     }
 
     @Test
-    public void getStepCountWeek_test() {
-        var mockWeek = new WeekStep(userId, 43, 2020, 300);
-        when(mockedWeekStepRepository.findByUserIdAndYearAndWeek(userId, 2020, 43))
-                .thenReturn(Optional.of(mockWeek));
+    public void getStepCountWeek_ReturnsCorrectSteps() {
+        var mockedStepsInWeek = 200;
 
-        var optionalStep = mockedWeekStepRepository.findByUserIdAndYearAndWeek(userId, 2020, 43);
+        when(mockedWeekStepRepository.getStepCountWeek(userId, 2020, 43))
+                .thenReturn(Optional.of(mockedStepsInWeek));
+
+        var optionalStep = stepService.getStepCountWeek(userId, 2020, 43);
         if (optionalStep.isPresent()) {
-            //steps find in database
-            assertEquals(300, optionalStep.get().getSteps());
+            assertEquals(Optional.of(200), optionalStep);
         } else {
             fail();
         }
