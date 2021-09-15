@@ -1,6 +1,5 @@
 package se.sigma.boostapp.boost_app_java.service;
 
-import org.hibernate.mapping.Any;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +39,7 @@ public class StepServiceTest {
     @InjectMocks
     private StepService stepService;
 
-    String userId = "StepTest";
+    private final String USERID = "StepTest";
 
     @Before
     public void initMocks() {
@@ -148,11 +147,11 @@ public class StepServiceTest {
 
     @Test
     public void addStepsToMonthTable_test() {
-        var mockMonth = new MonthStep(userId, 10, 2020, 800);
+        var mockMonth = new MonthStep(USERID, 10, 2020, 800);
 
-        when(mockedMonthStepRepository.findByUserIdAndYearAndMonth(userId, 2020, 10))
+        when(mockedMonthStepRepository.findByUserIdAndYearAndMonth(USERID, 2020, 10))
                 .thenReturn(Optional.of(mockMonth));
-        var optionalStep = mockedMonthStepRepository.findByUserIdAndYearAndMonth(userId, 2020, 10);
+        var optionalStep = mockedMonthStepRepository.findByUserIdAndYearAndMonth(USERID, 2020, 10);
         if (optionalStep.isPresent()) {
             assertEquals(1600, mockMonth.getSteps() + optionalStep.get().getSteps());
         } else {
@@ -163,10 +162,10 @@ public class StepServiceTest {
     @Test
 
     public void addStepsToWeekTable_test() {
-        var mockWeek = new WeekStep(userId, 5, 2020, 500);
+        var mockWeek = new WeekStep(USERID, 5, 2020, 500);
 
-        when(mockedWeekStepRepository.findByUserIdAndYearAndWeek(userId, 2020, 5)).thenReturn(Optional.of(mockWeek));
-        var optionalStep = mockedWeekStepRepository.findByUserIdAndYearAndWeek(userId, 2020, 5);
+        when(mockedWeekStepRepository.findByUserIdAndYearAndWeek(USERID, 2020, 5)).thenReturn(Optional.of(mockWeek));
+        var optionalStep = mockedWeekStepRepository.findByUserIdAndYearAndWeek(USERID, 2020, 5);
         if (optionalStep.isPresent()) {
             assertEquals(1000, mockWeek.getSteps()
                     + optionalStep.get().getSteps());
@@ -231,12 +230,12 @@ public class StepServiceTest {
     @Test
     public void getStepCountMonth_test() throws NoSuchElementException {
 
-        var mockMonth = new MonthStep(userId, 10, 2020, 800);
+        var mockMonth = new MonthStep(USERID, 10, 2020, 800);
 
-        when(mockedMonthStepRepository.findByUserIdAndYearAndMonth(userId, 2020, 10))
+        when(mockedMonthStepRepository.findByUserIdAndYearAndMonth(USERID, 2020, 10))
                 .thenReturn(Optional.of(mockMonth));
 
-        var optionalStep = mockedMonthStepRepository.findByUserIdAndYearAndMonth(userId, 2020, 10);
+        var optionalStep = mockedMonthStepRepository.findByUserIdAndYearAndMonth(USERID, 2020, 10);
         if (optionalStep.isPresent()) {
             var stepFind = optionalStep.get().getSteps();
             // steps ar in databas
@@ -248,10 +247,10 @@ public class StepServiceTest {
     public void getStepCountWeek_ReturnsCorrectSteps() {
         var mockedStepsInWeek = 200;
 
-        when(mockedWeekStepRepository.getStepCountWeek(userId, 2020, 43))
+        when(mockedWeekStepRepository.getStepCountWeek(USERID, 2020, 43))
                 .thenReturn(Optional.of(mockedStepsInWeek));
 
-        var optionalStep = stepService.getStepCountWeek(userId, 2020, 43);
+        var optionalStep = stepService.getStepCountWeek(USERID, 2020, 43);
         if (optionalStep.isPresent()) {
             assertEquals(Optional.of(mockedStepsInWeek), optionalStep);
         } else {
