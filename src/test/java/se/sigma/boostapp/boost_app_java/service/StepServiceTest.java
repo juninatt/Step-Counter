@@ -228,18 +228,17 @@ public class StepServiceTest {
     }
 
     @Test
-    public void getStepCountMonth_test() throws NoSuchElementException {
+    public void getStepCountMonth_ReturnsCorrectSteps(){
+        var mockStepInMonth = 800;
 
-        var mockMonth = new MonthStep(USERID, 10, 2020, 800);
+        when(mockedMonthStepRepository.getStepCountMonth(USERID, 2020, 10))
+                .thenReturn(Optional.of(mockStepInMonth));
 
-        when(mockedMonthStepRepository.findByUserIdAndYearAndMonth(USERID, 2020, 10))
-                .thenReturn(Optional.of(mockMonth));
-
-        var optionalStep = mockedMonthStepRepository.findByUserIdAndYearAndMonth(USERID, 2020, 10);
+        var optionalStep = stepService.getStepCountMonth(USERID, 2020, 10);
         if (optionalStep.isPresent()) {
-            var stepFind = optionalStep.get().getSteps();
-            // steps ar in databas
-            assertEquals(800, stepFind);
+            assertEquals(Optional.of(mockStepInMonth), optionalStep);
+        } else {
+            fail();
         }
     }
 
