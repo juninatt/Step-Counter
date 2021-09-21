@@ -3,10 +3,7 @@ package se.sigma.boostapp.boost_app_java.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import se.sigma.boostapp.boost_app_java.dto.StepDTO;
@@ -160,7 +157,6 @@ public class StepServiceTest {
     }
 
     @Test
-
     public void addStepsToWeekTable_test() {
         var mockWeek = new WeekStep(USERID, 5, 2020, 500);
 
@@ -172,6 +168,28 @@ public class StepServiceTest {
         } else {
             fail();
         }
+    }
+
+    @Test
+    public void addStepsToWeekTable_CallsRepositoryAndSavesCorrectSteps() {
+
+        int year = 2020;
+        int week = 5;
+        int initialSteps = 500;
+        int stepsToAdd = 100;
+        int expectedSteps = initialSteps + stepsToAdd;
+        var mockWeek = new WeekStep(USERID, week, year, initialSteps);
+
+        when(mockedWeekStepRepository.findByUserIdAndYearAndWeek(USERID, year, week))
+                .thenReturn(Optional.of(mockWeek));
+
+        stepService.addStepsToWeekTable(year, week, stepsToAdd, USERID);
+        verify(mockedWeekStepRepository).findByUserIdAndYearAndWeek(USERID, year, week);
+
+        ArgumentCaptor<WeekStep> argumentCaptor = ArgumentCaptor.forClass(WeekStep.class);
+        verify(mockedWeekStepRepository).save(argumentCaptor.capture());
+        WeekStep capturedWeekStep = argumentCaptor.getValue();
+        assertEquals(expectedSteps, capturedWeekStep.getSteps());
     }
 
     @Test
@@ -228,18 +246,14 @@ public class StepServiceTest {
     }
 
     @Test
-    public void getStepCountMonth_ReturnsCorrectSteps(){
+    public void getStepCountMonth_ReturnsCorrectSteps() {
         var mockStepInMonth = 800;
 
         when(mockedMonthStepRepository.getStepCountMonth(USERID, 2020, 10))
                 .thenReturn(Optional.of(mockStepInMonth));
 
         var optionalStep = stepService.getStepCountMonth(USERID, 2020, 10);
-        if (optionalStep.isPresent()) {
-            assertEquals(Optional.of(mockStepInMonth), optionalStep);
-        } else {
-            fail();
-        }
+        assertEquals(Optional.of(mockStepInMonth), optionalStep);
     }
 
     @Test
@@ -250,10 +264,6 @@ public class StepServiceTest {
                 .thenReturn(Optional.of(mockedStepsInWeek));
 
         var optionalStep = stepService.getStepCountWeek(USERID, 2020, 43);
-        if (optionalStep.isPresent()) {
-            assertEquals(Optional.of(mockedStepsInWeek), optionalStep);
-        } else {
-            fail();
-        }
+        assertEquals(Optional.of(mockedStepsInWeek), optionalStep);
     }
 }
