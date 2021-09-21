@@ -157,20 +157,6 @@ public class StepServiceTest {
     }
 
     @Test
-    public void addStepsToWeekTable_test() {
-        var mockWeek = new WeekStep(USERID, 5, 2020, 500);
-
-        when(mockedWeekStepRepository.findByUserIdAndYearAndWeek(USERID, 2020, 5)).thenReturn(Optional.of(mockWeek));
-        var optionalStep = mockedWeekStepRepository.findByUserIdAndYearAndWeek(USERID, 2020, 5);
-        if (optionalStep.isPresent()) {
-            assertEquals(1000, mockWeek.getSteps()
-                    + optionalStep.get().getSteps());
-        } else {
-            fail();
-        }
-    }
-
-    @Test
     public void addStepsToWeekTable_CallsRepositoryAndSavesCorrectSteps() {
 
         int year = 2020;
