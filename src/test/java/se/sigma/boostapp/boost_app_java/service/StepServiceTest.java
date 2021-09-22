@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import se.sigma.boostapp.boost_app_java.dto.BulkUsersStepsDTO;
 import se.sigma.boostapp.boost_app_java.dto.StepDTO;
 import se.sigma.boostapp.boost_app_java.model.MonthStep;
 import se.sigma.boostapp.boost_app_java.model.Step;
@@ -13,7 +14,6 @@ import se.sigma.boostapp.boost_app_java.model.WeekStep;
 import se.sigma.boostapp.boost_app_java.repository.MonthStepRepository;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 import se.sigma.boostapp.boost_app_java.repository.WeekStepRepository;
-
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -251,5 +251,35 @@ public class StepServiceTest {
 
         var optionalStep = stepService.getStepCountWeek(USERID, 2020, 43);
         assertEquals(Optional.of(mockedStepsInWeek), optionalStep);
+    }
+
+    @Test
+    public void getStepsByMultipleUsers_ReturnsListWithCorrectSize(){
+        List<String> allUsers = new ArrayList<>(List.of("user1", "user2", "user3"));
+        List<String> requestedUsers = new ArrayList<>(List.of("user1", "user2"));
+        String startDate = "2020-08-23";
+        String lastDate = "2020-09-23";
+
+        when(mockedStepRepository.getAllUsers()).thenReturn(allUsers);
+
+        Optional<List<BulkUsersStepsDTO>> result = stepService.getStepsByMultipleUsers(requestedUsers, startDate, lastDate);
+        if(result.isPresent()){
+            assertEquals(2, result.get().size());
+        } else {
+            fail();
+        }
+    }
+
+    @Test
+    public void getStepsByMultipleUsers_ReturnsOptionalEmpty(){
+        List<String> allUsers = new ArrayList<>();
+        List<String> requestedUsers = new ArrayList<>(List.of("user1", "user2"));
+        String startDate = "2020-08-23";
+        String lastDate = "2020-09-23";
+
+        when(mockedStepRepository.getAllUsers()).thenReturn(allUsers);
+
+        Optional<List<BulkUsersStepsDTO>> result = stepService.getStepsByMultipleUsers(requestedUsers, startDate, lastDate);
+        assertEquals(Optional.empty(), result);
     }
 }
