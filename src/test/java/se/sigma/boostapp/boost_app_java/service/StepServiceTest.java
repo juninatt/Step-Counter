@@ -282,4 +282,46 @@ public class StepServiceTest {
         Optional<List<BulkUsersStepsDTO>> result = stepService.getStepsByMultipleUsers(requestedUsers, startDate, lastDate);
         assertEquals(Optional.empty(), result);
     }
+    
+    @Test
+    public void getStepCountPerDay_ReturnsListWithCorrectSizeAndDayOfWeek(){
+
+        List<Step> stepList = new ArrayList<>();
+
+        Step step1 = new Step(USERID, 100, LocalDateTime.of(2021, 9, 21, 14, 56),
+                LocalDateTime.of(2021, 9, 21, 15, 56), LocalDateTime.of(2021, 9, 21, 15, 56));
+
+        Step step2 = new Step(USERID, 50, LocalDateTime.of(2021, 9, 22, 14, 56),
+                LocalDateTime.of(2021, 9, 22, 15, 56), LocalDateTime.of(2021, 9, 22, 15, 56));
+
+        stepList.add(step1);
+        stepList.add(step2);
+
+        when(mockedStepRepository.findByUserId(USERID)).thenReturn(Optional.of(stepList));
+
+        var result = stepService.getStepCountPerDay(USERID);
+
+        if(result.isPresent()) {
+            assertEquals(2, result.get().size());
+            assertEquals(3, result.get().get(0).getDayOfWeek());
+            assertEquals(4, result.get().get(1).getDayOfWeek());
+        } else {
+            fail();
+        }
+    }
+
+    @Test
+    public void getStepCountPerDay_ReturnsListSizeOneAndStepsZero(){
+
+        when(mockedStepRepository.findByUserId(USERID)).thenReturn(Optional.empty());
+
+        var result = stepService.getStepCountPerDay(USERID);
+
+        if(result.isPresent()) {
+            assertEquals(1, result.get().size());
+            assertEquals(0, result.get().get(0).getSteps());
+        } else {
+            fail();
+        }
+    }
 }
