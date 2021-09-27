@@ -45,6 +45,13 @@ public class StarPointServiceTest {
         verify(mockedStepRepository).getAllUsers();
     }
 
+    @Test
+    public void testEmptyUsers_CallsGetAllUsers() {
+        List<String> emptyList = new ArrayList<>();
+        starPointServiceTest.getStarPointsByMultipleUsers(new RequestStarPointsDTO(emptyList, STARTTIME, ENDTIME));
+        verify(mockedStepRepository).getAllUsers();
+    }
+
     @Test(expected = DateTimeParseException.class)
     public void testEmptyStartAndEndLDT_throwsParseExc() {
         List<String> users = List.of("1", "2");

@@ -53,7 +53,7 @@ public class StepRepositoryTest {
         stepRepository.save(step5);
     }
 
-   @Test 
+    @Test
     public void findLatestStepById_Test() {
         Optional<Step> step = stepRepository.findFirstByUserIdOrderByEndTimeDesc("userA");
         assertThat(step.isPresent()).isEqualTo(true);
@@ -84,8 +84,8 @@ public class StepRepositoryTest {
 
     @Test
     public void  getStepCount_test_ReturnsListSizeThree(){
-         var stepList = stepRepository.getStepCount("userA",  Date.valueOf("2020-01-01"), Date.valueOf("2020-01-06"));
-         assertEquals(3, stepList.size());
+        var stepList = stepRepository.getStepCount("userA",  Date.valueOf("2020-01-01"), Date.valueOf("2020-01-06"));
+        assertEquals(3, stepList.size());
     }
 
     @Test

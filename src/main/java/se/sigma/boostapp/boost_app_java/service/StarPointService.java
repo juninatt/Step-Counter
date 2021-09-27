@@ -6,6 +6,7 @@ import se.sigma.boostapp.boost_app_java.dto.RequestStarPointsDTO;
 import se.sigma.boostapp.boost_app_java.dto.StarPointDateDTO;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,22 +30,20 @@ public class StarPointService {
      * @param requestStarPointsDTO Data for star points for multiple users with start time and end time
      */
     public List<BulkUserStarPointsDTO> getStarPointsByMultipleUsers(RequestStarPointsDTO requestStarPointsDTO) {
-
-        if (requestStarPointsDTO.getUsers() == null) {
-            requestStarPointsDTO.setUsers(stepRepository.getAllUsers());
+        List<String> users = requestStarPointsDTO.getUsers();
+        if(users == null || users.isEmpty()) {
+            users = stepRepository.getAllUsers();
         }
-        return requestStarPointsDTO
-                .getUsers()
-                .stream()
-                .filter(user -> (stepRepository.getStepCountSum(user, requestStarPointsDTO.getStartTime(), requestStarPointsDTO.getEndTime())).isPresent())
-                .map(user -> new BulkUserStarPointsDTO(user, new StarPointDateDTO(
-                        "Steps",
-                        "Walking",
-                        requestStarPointsDTO.getStartTime().toString(),
-                        requestStarPointsDTO.getEndTime().toString(),
-                        (int) Math.ceil(
-                                (stepRepository.getStepCountSum(user, requestStarPointsDTO.getStartTime(), requestStarPointsDTO.getEndTime())).get()
-                                        * starPointFactor))))
-                .collect(Collectors.toList());
+        List<BulkUserStarPointsDTO> starPointsDTO = new ArrayList<>();
+        for(String user: users) {
+            var startTime = requestStarPointsDTO.getStartTime();
+            var endTime = requestStarPointsDTO.getEndTime();
+            var optionalSum = stepRepository.getStepCountSum(user, startTime, endTime);
+            if(optionalSum.isPresent()) {
+                starPointsDTO.add(new BulkUserStarPointsDTO(user, new StarPointDateDTO("Steps","Walking", startTime.toString(), endTime.toString(),
+                        (int) Math.ceil(optionalSum.get() * starPointFactor))));
+            }
+        }
+        return starPointsDTO;
     }
 }
