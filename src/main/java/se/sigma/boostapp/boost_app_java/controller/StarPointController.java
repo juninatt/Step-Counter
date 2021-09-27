@@ -26,7 +26,7 @@ public class StarPointController {
     }
 /**
  * Post request <br>
- * Get sum of star points by a start date and end date for a list of users
+ * Get sum of star points by a start date and end date for a list of users. Return sum of all users if empty or absent list.
  * @param requestStarPointsDTO Data for star points for multiple users with start time and end time
  * 
  */
