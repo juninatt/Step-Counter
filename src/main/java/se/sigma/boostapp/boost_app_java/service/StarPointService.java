@@ -31,8 +31,8 @@ public class StarPointService {
      */
     public List<BulkUserStarPointsDTO> getStarPointsByMultipleUsers(RequestStarPointsDTO requestStarPointsDTO) {
         List<String> users = requestStarPointsDTO.getUsers();
-        if(users.isEmpty()) {
-            requestStarPointsDTO.setUsers(stepRepository.getAllUsers());
+        if(users == null || users.isEmpty()) {
+            users = stepRepository.getAllUsers();
         }
         List<BulkUserStarPointsDTO> starPointsDTO = new ArrayList<>();
         for(String user: users) {

@@ -39,6 +39,13 @@ public class StarPointServiceTest {
     }
 
     @Test
+    public void testNullUsers_CallsGetAllUsers() {
+        List<String> emptyList = null;
+        starPointServiceTest.getStarPointsByMultipleUsers(new RequestStarPointsDTO(emptyList, STARTTIME, ENDTIME));
+        verify(mockedStepRepository).getAllUsers();
+    }
+
+    @Test
     public void testEmptyUsers_CallsGetAllUsers() {
         List<String> emptyList = new ArrayList<>();
         starPointServiceTest.getStarPointsByMultipleUsers(new RequestStarPointsDTO(emptyList, STARTTIME, ENDTIME));

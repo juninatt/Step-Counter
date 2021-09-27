@@ -282,7 +282,7 @@ public class StepServiceTest {
         Optional<List<BulkUsersStepsDTO>> result = stepService.getStepsByMultipleUsers(requestedUsers, startDate, lastDate);
         assertEquals(Optional.empty(), result);
     }
-    
+
     @Test
     public void getStepCountPerDay_ReturnsListWithCorrectSizeAndDayOfWeek(){
 
