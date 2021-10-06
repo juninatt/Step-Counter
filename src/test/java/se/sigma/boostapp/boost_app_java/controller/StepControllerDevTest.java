@@ -51,6 +51,9 @@ public class StepControllerDevTest {
 
     List<Step> mockedStepList = new ArrayList<>();
 
+    private final String userId = "testId";
+    private final String invalidUserId = "invalidId";
+
     @Before
     public void setUp() {
         mvc = MockMvcBuilders.standaloneSetup(new StepControllerDev(service)).build();
@@ -179,9 +182,41 @@ public class StepControllerDevTest {
     }
 
     @Test
+    public void getUserMonthSteps_WithValidInput_ReturnsStatusOKAndCorrectSteps() throws Exception {
+        String url = "/steps/stepcount/{userId}/year/{year}/month/{month}";
+        int year = 2021;
+        int month = 1;
+        int expectedSteps = 1200;
+
+        when(service.getStepCountMonth(userId, year, month)).thenReturn(Optional.of(expectedSteps));
+        MvcResult result = mvc.perform(get(url, userId, year, month))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andReturn();
+
+        String expectedJsonResponse = objectMapper.writeValueAsString(expectedSteps);
+        String actualJsonResponse = result.getResponse().getContentAsString();
+
+        assertEquals(expectedJsonResponse, actualJsonResponse);
+    }
+
+    @Test
+    public void getUserMonthSteps_withInValidInput_ReturnsStatusNoContent() throws Exception {
+        String url = "/steps/stepcount/{userId}/year/{year}/month/{month}";
+        int year = 2021;
+        int month = 1;
+
+        when(service.getStepCountMonth(invalidUserId, year, month))
+                .thenReturn(Optional.empty());
+
+        mvc.perform(get(url, invalidUserId, year, month))
+                .andExpect(status().isNoContent())
+                .andReturn();
+    }
+
+    @Test
     public void getUserWeekStepSteps_WithValidInput_ReturnsStatusOKAndCorrectSteps() throws Exception {
         String url = "/steps/stepcount/{userId}/year/{year}/week/{week}";
-        String userId = "Test";
         int year = 2021;
         int week = 30;
         int expectedSteps = 500;
@@ -203,14 +238,13 @@ public class StepControllerDevTest {
     @Test
     public void getUserWeekStepSteps_withInValidInput_ReturnsStatusNoContent() throws Exception {
         String url = "/steps/stepcount/{userId}/year/{year}/week/{week}";
-        String userId = "invalidUser";
         int year = 2021;
         int week = 30;
 
-        when(service.getStepCountWeek(userId, year, week))
+        when(service.getStepCountWeek(invalidUserId, year, week))
                 .thenReturn(Optional.empty());
 
-        mvc.perform(get(url, userId, year, week))
+        mvc.perform(get(url, invalidUserId, year, week))
                 .andExpect(status().isNoContent())
                 .andReturn();
     }
@@ -218,7 +252,6 @@ public class StepControllerDevTest {
     @Test
     public void getUserWeekStepsList_withValidInput_ReturnsStatusOKAndCorrectContent() throws Exception {
         String url = "/steps/stepcount/{userId}/currentweek";
-        String userId = "Test";
 
         List<StepDateDTO> stepDateDTOList = new ArrayList<>();
         stepDateDTOList.add(new StepDateDTO(userId, Date.valueOf("2020-06-06"), 1, 200L));
@@ -242,11 +275,10 @@ public class StepControllerDevTest {
     @Test
     public void getUserWeekStepList_withInValidInput_ReturnsStatusNoContent() throws Exception {
         String url = "/steps/stepcount/{userId}/currentweek";
-        String userId = "invalidUser";
 
-        when(service.getStepCountPerDay(any(String.class))).thenReturn(Optional.empty());
+        when(service.getStepCountPerDay(invalidUserId)).thenReturn(Optional.empty());
 
-        mvc.perform(get(url, userId))
+        mvc.perform(get(url, invalidUserId))
                 .andExpect(status().isNoContent())
                 .andReturn();
     }
