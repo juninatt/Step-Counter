@@ -9,13 +9,16 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.annotation.PathVariable;
 import se.sigma.boostapp.boost_app_java.dto.StepDTO;
 import se.sigma.boostapp.boost_app_java.dto.StepDateDTO;
 import se.sigma.boostapp.boost_app_java.model.Step;
@@ -176,7 +179,44 @@ public class StepControllerDevTest {
     }
 
     @Test
-    public void getUserWeekSteps_withValidInput_ReturnsStatusOKAndCorrectContent() throws Exception {
+    public void getUserWeekStepSteps_WithValidInput_ReturnsStatusOKAndCorrectSteps() throws Exception {
+        String url = "/steps/stepcount/{userId}/year/{year}/week/{week}";
+        String userId = "Test";
+        int year = 2021;
+        int week = 30;
+        int expectedSteps = 500;
+
+        when(service.getStepCountWeek(userId, year, week))
+                .thenReturn(Optional.of(expectedSteps));
+
+        MvcResult result = mvc.perform(get(url, userId, year, week))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andReturn();
+
+        String expectedJsonResponse = objectMapper.writeValueAsString(expectedSteps);
+        String actualJsonResponse = result.getResponse().getContentAsString();
+
+        assertEquals(expectedJsonResponse, actualJsonResponse);
+    }
+
+    @Test
+    public void getUserWeekStepSteps_withInValidInput_ReturnsStatusNoContent() throws Exception {
+        String url = "/steps/stepcount/{userId}/year/{year}/week/{week}";
+        String userId = "invalidUser";
+        int year = 2021;
+        int week = 30;
+
+        when(service.getStepCountWeek(userId, year, week))
+                .thenReturn(Optional.empty());
+
+        mvc.perform(get(url, userId, year, week))
+                .andExpect(status().isNoContent())
+                .andReturn();
+    }
+
+    @Test
+    public void getUserWeekStepsList_withValidInput_ReturnsStatusOKAndCorrectContent() throws Exception {
         String url = "/steps/stepcount/{userId}/currentweek";
         String userId = "Test";
 
@@ -200,7 +240,7 @@ public class StepControllerDevTest {
     }
 
     @Test
-    public void getUserWeekSteps_withInValidInput_ReturnsNoContent() throws Exception {
+    public void getUserWeekStepList_withInValidInput_ReturnsStatusNoContent() throws Exception {
         String url = "/steps/stepcount/{userId}/currentweek";
         String userId = "invalidUser";
 
