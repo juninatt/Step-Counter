@@ -9,16 +9,14 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.bind.annotation.PathVariable;
+import se.sigma.boostapp.boost_app_java.dto.BulkUsersStepsDTO;
 import se.sigma.boostapp.boost_app_java.dto.StepDTO;
 import se.sigma.boostapp.boost_app_java.dto.StepDateDTO;
 import se.sigma.boostapp.boost_app_java.model.Step;
@@ -179,6 +177,47 @@ public class StepControllerDevTest {
         MvcResult result = mvc.perform(requestBuilder).andDo(print()).andReturn();
         MockHttpServletResponse response = result.getResponse();
         assertEquals(HttpStatus.OK.value(), response.getStatus());
+    }
+
+    @Test
+    public void getBulkStepsByUsers_WithValidInput_ReturnsStatusOkAndCorrectContent() throws Exception {
+        String url = "/steps/stepcount/bulk/date";
+        List<String> testUsers = new ArrayList<>(List.of("Test1", "Test2"));
+        String startDate = "2021-10-01";
+        String endDate = "2021-10-05";
+
+        List<StepDateDTO> stepDateDTOList1 = new ArrayList<>();
+        stepDateDTOList1.add(new StepDateDTO("Test1", Date.valueOf("2021-10-01"), 1, 200L));
+        stepDateDTOList1.add(new StepDateDTO("Test1", Date.valueOf("2021-10-02"), 2, 100L));
+        stepDateDTOList1.add(new StepDateDTO("Test1", Date.valueOf("2021-10-03"), 3, 300L));
+
+        List<StepDateDTO> stepDateDTOList2 = new ArrayList<>();
+        stepDateDTOList1.add(new StepDateDTO("Test2", Date.valueOf("2021-10-01"), 1, 200L));
+        stepDateDTOList1.add(new StepDateDTO("Test2", Date.valueOf("2021-10-02"), 2, 100L));
+        stepDateDTOList1.add(new StepDateDTO("Test2", Date.valueOf("2021-10-03"), 3, 300L));
+
+        List<BulkUsersStepsDTO> bulkUsersStepsDTOList = new ArrayList<>();
+        bulkUsersStepsDTOList.add(new BulkUsersStepsDTO("Test1", stepDateDTOList1));
+        bulkUsersStepsDTOList.add(new BulkUsersStepsDTO("Test2", stepDateDTOList2));
+
+        when(service.getStepsByMultipleUsers(testUsers, startDate, endDate)).thenReturn(Optional.of(bulkUsersStepsDTOList));
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post(url)
+                .param("startDate", startDate)
+                .param("endDate", endDate)
+                .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(testUsers)).characterEncoding("utf-8")
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mvc.perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andReturn();
+
+        String expectedJsonResponse = objectMapper.writeValueAsString(bulkUsersStepsDTOList);
+        String actualJsonResponse = result.getResponse().getContentAsString();
+
+        assertEquals(expectedJsonResponse, actualJsonResponse);
     }
 
     @Test
