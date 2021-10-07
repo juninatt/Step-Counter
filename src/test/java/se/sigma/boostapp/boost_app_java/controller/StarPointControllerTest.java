@@ -1,38 +1,27 @@
 package se.sigma.boostapp.boost_app_java.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.bind.annotation.RequestBody;
 import se.sigma.boostapp.boost_app_java.dto.BulkUserStarPointsDTO;
 import se.sigma.boostapp.boost_app_java.dto.RequestStarPointsDTO;
 import se.sigma.boostapp.boost_app_java.dto.StarPointDateDTO;
 import se.sigma.boostapp.boost_app_java.service.StarPointService;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -66,9 +55,8 @@ public class StarPointControllerTest {
         RequestStarPointsDTO requestStarPointsDTO = new RequestStarPointsDTO(users, startTime, endTime);
 
         List<BulkUserStarPointsDTO> bulkUserStarPointsDTOList = new ArrayList<>();
-        bulkUserStarPointsDTOList.add(new BulkUserStarPointsDTO("User1", new StarPointDateDTO("Steps","Walking", startTime.toString(), endTime.toString(), 20)));
-        bulkUserStarPointsDTOList.add(new BulkUserStarPointsDTO("User2", new StarPointDateDTO("Steps","Running", startTime.toString(), endTime.toString(), 40)));
-
+        bulkUserStarPointsDTOList.add(new BulkUserStarPointsDTO("User1", new StarPointDateDTO("Steps", "Walking", startTime.toString(), endTime.toString(), 20)));
+        bulkUserStarPointsDTOList.add(new BulkUserStarPointsDTO("User2", new StarPointDateDTO("Steps", "Running", startTime.toString(), endTime.toString(), 40)));
 
         when(starPointService.getStarPointsByMultipleUsers(any(RequestStarPointsDTO.class))).thenReturn(bulkUserStarPointsDTOList);
 
@@ -82,11 +70,9 @@ public class StarPointControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .andReturn();
 
-        System.out.println(result.getResponse().getContentAsString());
         String expectedJsonResponse = objectMapper.writeValueAsString(bulkUserStarPointsDTOList);
         String actualJsonResponse = result.getResponse().getContentAsString();
 
         assertEquals(expectedJsonResponse, actualJsonResponse);
-
     }
 }
