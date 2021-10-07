@@ -45,7 +45,7 @@ public class StarPointControllerTest {
     }
 
     @Test
-    public void getStarPointsByUsers() throws Exception {
+    public void getStarPointsByUsers_WithValidInput_ReturnsStatusOKandCorrectContent() throws Exception {
         objectMapper.registerModule(new JavaTimeModule());
         String url = "/starpoints/";
         List<String> users = new ArrayList<>(List.of("User1", "User2"));
