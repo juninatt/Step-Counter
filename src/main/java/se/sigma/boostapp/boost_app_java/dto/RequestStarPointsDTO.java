@@ -1,21 +1,19 @@
 package se.sigma.boostapp.boost_app_java.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@ApiModel(description = "Used to request star points for multiple users with start time and end time")
+@Schema(description = "Used to request star points for multiple users with start time and end time")
 public class RequestStarPointsDTO {
 
-    @ApiModelProperty(notes = "List of users")
+    @Schema(description = "List of users")
     private List<String> users;
 
-    @ApiModelProperty(notes = "Start time")
+    @Schema(description = "Start time")
     private LocalDateTime startTime;
 
-    @ApiModelProperty(notes = "End time")
+    @Schema(description = "End time")
     private LocalDateTime endTime;
 
     public RequestStarPointsDTO() {}

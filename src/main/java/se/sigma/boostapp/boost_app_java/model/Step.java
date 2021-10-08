@@ -1,41 +1,39 @@
 package se.sigma.boostapp.boost_app_java.model;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
+import io.swagger.v3.oas.annotations.media.Schema;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 
 @Entity
 @Table(name = "step")
-@ApiModel(description = "All details about the step entity. ")
+@Schema(description = "All details about the step entity. ")
 public class Step {
     /**
      * Entity step table
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ApiModelProperty(notes = "The database generated step ID")
+    @Schema(description = "The database generated step ID")
     private long id;
 
     @Column(name = "user_id")
-    @ApiModelProperty(notes = "User Id")
+    @Schema(description = "User Id")
     private String userId;
 
-    @ApiModelProperty(notes = "Step count")
+    @Schema(description = "Step count")
     @Column(name = "step_count")
     private int stepCount;
 
-    @ApiModelProperty(notes = "Start time")
+    @Schema(description = "Start time")
     @Column(name = "start_time", nullable = true)
     private LocalDateTime startTime;
 
-    @ApiModelProperty(notes = "End time")
+    @Schema(description = "End time")
     @Column(name = "end_time", nullable = true)
     private LocalDateTime endTime;
 
-    @ApiModelProperty(notes = "Uploaded")
+    @Schema(description = "Uploaded")
     @Column(name = "uploaded", nullable = true)
     private LocalDateTime uploadedTime;
 
