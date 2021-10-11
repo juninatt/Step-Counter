@@ -1,8 +1,7 @@
 package se.sigma.boostapp.boost_app_java.model;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.hibernate.annotations.DynamicUpdate;
-
 import javax.persistence.*;
 
 
@@ -15,19 +14,19 @@ public class MonthStep {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ApiModelProperty(notes = "The database generated monthStep ID")
+    @Schema(description = "The database generated monthStep ID")
     private long id;
 
     @Column(name = "user_id")
-    @ApiModelProperty(notes = "userId")
+    @Schema(description = "userId")
     private String userId;
 
     @Column(name = "month")
-    @ApiModelProperty(notes = "month")
+    @Schema(description = "month")
     private int month;
 
     @Column(name = "year")
-    @ApiModelProperty(notes = "year")
+    @Schema(description = "year")
     private int year;
 
     @Column(name = "steps")

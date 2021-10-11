@@ -1,6 +1,6 @@
 package se.sigma.boostapp.boost_app_java.model;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.persistence.*;
 
@@ -13,17 +13,17 @@ public class WeekStep {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ApiModelProperty(notes = "The database generated weekStep ID")
+    @Schema(description = "The database generated weekStep ID")
     private long id;
 
     @Column(name = "user_id")
-    @ApiModelProperty(notes = "User Id")
+    @Schema(description = "User Id")
     private String userId;
 
     @Column(name = "week")
     private int week;
 
-    @ApiModelProperty(notes = "Year")
+    @Schema(description = "Year")
     @Column(name = "year")
     private int year;
 
