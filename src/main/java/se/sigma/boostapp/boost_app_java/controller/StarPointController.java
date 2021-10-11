@@ -1,7 +1,9 @@
 package se.sigma.boostapp.boost_app_java.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.MediaType;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import se.sigma.boostapp.boost_app_java.dto.BulkUserStarPointsDTO;
 import se.sigma.boostapp.boost_app_java.dto.RequestStarPointsDTO;
+import se.sigma.boostapp.boost_app_java.dto.StepDTO;
 import se.sigma.boostapp.boost_app_java.service.StarPointService;
 
 import java.util.List;
@@ -32,7 +35,7 @@ public class StarPointController {
  * 
  */
     @Operation(summary = "Get sum of star points by a start date and end date for a list of users.")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully post request"),
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully post request", content = @Content(mediaType = "application/json",array = @ArraySchema(schema = @Schema(implementation = BulkUserStarPointsDTO.class)))),
             @ApiResponse(responseCode = "401", description = "Request is not authorized", content = @Content),
             @ApiResponse(responseCode = "403", description = "Accessing the resource you were trying to reach is forbidden", content = @Content),
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found", content = @Content)})

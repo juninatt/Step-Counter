@@ -3,7 +3,9 @@ package se.sigma.boostapp.boost_app_java.controller;
 import java.util.List;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -58,7 +60,7 @@ public class StepController {
      * @param stepDTO Data for the steps
      */
     @Operation(summary = "Register step entity")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully post request"),
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully post request", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Step.class))),
             @ApiResponse(responseCode = "401", description = "Request is not authorized", content = @Content),
             @ApiResponse(responseCode = "403", description = "Accessing the resource you were trying to reach is forbidden", content = @Content),
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found", content = @Content)})
@@ -79,7 +81,7 @@ public class StepController {
      * @return
      */
     @Operation(summary = "Register multiple step entities")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully post steps"),
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully post steps", content = @Content(mediaType = "application/json",array = @ArraySchema(schema = @Schema(implementation = StepDTO.class)))),
             @ApiResponse(responseCode = "401", description = "Request is not authorized", content = @Content),
             @ApiResponse(responseCode = "403", description = "Accessing the resource you were trying to reach is forbidden", content = @Content),
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found", content = @Content)})
@@ -99,7 +101,7 @@ public class StepController {
      * @param endDate   End date as String ("yyyy-[m]m-[d]d")
      */
     @Operation(summary = "Get step count per day for a list of users by start date and end date (optional).")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully post request"),
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully post request", content = @Content(mediaType = "application/json",array = @ArraySchema(schema = @Schema(implementation = BulkUsersStepsDTO.class)))),
             @ApiResponse(responseCode = "401", description = "Request is not authorized", content = @Content),
             @ApiResponse(responseCode = "403", description = "Accessing the resource you were trying to reach is forbidden", content = @Content),
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found", content = @Content)})
@@ -118,7 +120,7 @@ public class StepController {
      * @param jwt A user
      */
     @Operation(summary = "Get user's latest step")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully retrieved step"),
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully retrieved step", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Step.class))),
             @ApiResponse(responseCode = "401", description = "Request is not authorized", content = @Content),
             @ApiResponse(responseCode = "403", description = "Accessing the resource you were trying to reach is forbidden", content = @Content),
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found", content = @Content)})
@@ -138,7 +140,7 @@ public class StepController {
      * @param month Actual month
      */
     @Operation(summary = "Get a user's step count per month by user and year and month)")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully retrieved step count"),
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully retrieved step count", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Integer.class))),
             @ApiResponse(responseCode = "401", description = "You are not authorized to view the resource", content = @Content),
             @ApiResponse(responseCode = "403", description = "Accessing the resource you were trying to reach is forbidden", content = @Content),
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found", content = @Content)})
@@ -160,7 +162,7 @@ public class StepController {
      * @param week Actual week
      */
     @Operation(summary = "Get a user's step count per week by user and year and week)")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully retrieved step count"),
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully retrieved step count", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Integer.class))),
             @ApiResponse(responseCode = "401", description = "You are not authorized to view the resource", content = @Content),
             @ApiResponse(responseCode = "403", description = "Accessing the resource you were trying to reach is forbidden", content = @Content),
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found", content = @Content)})
@@ -181,7 +183,7 @@ public class StepController {
      * @param jwt A user
      */
     @Operation(summary = "Get list of steps per day per current week)")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully retrieved step count"),
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully retrieved step count", content = @Content(mediaType = "application/json",array = @ArraySchema(schema = @Schema(implementation = StepDateDTO.class)))),
             @ApiResponse(responseCode = "401", description = "You are not authorized to view the resource", content = @Content),
             @ApiResponse(responseCode = "403", description = "Accessing the resource you were trying to reach is forbidden", content = @Content),
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found", content = @Content)})
