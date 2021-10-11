@@ -26,8 +26,8 @@ import java.util.List;
 @Profile("dev")
 @Validated
 @RequestMapping("/steps")
+/** Same as StepController but without Security Token for development purposes*/
 public class StepControllerDev {
-
 
     private final StepService stepService;
 
@@ -95,7 +95,9 @@ public class StepControllerDev {
      * Post request:userIds and start date to get each of users' step count <br>
      * Get step count per day for a list of users by start date and end date
      *
-     * @param users A user ID
+     * @param users     A user ID
+     * @param startDate Start date as String ("yyyy-[m]m-[d]d")
+     * @param endDate   End date as String ("yyyy-[m]m-[d]d")
      */
     @Operation(summary = "Get step count per day for a list of users by start date and end date (optional).")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully post request"),
@@ -116,7 +118,7 @@ public class StepControllerDev {
      * Get user's latest step
      *
      * @param userId A user ID
-     * @return
+     * @return ResponseEntity<Step>
      */
     @Operation(summary = "Get user's latest step")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully retrieved step"),
