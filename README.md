@@ -33,9 +33,9 @@ To Run:<br>
 Data will register in Azure SQL Database
 You can find connection **url** and **password** to Azure SQL database in application-prod.properties
 
-To view the API documentation in swagger when server is running, 
-go to [https://boostappstepapi.azurewebsites.net/swagger](https://boostappstepapi.azurewebsites.net/swagger) in your browser.
-
+To view the API documentation in swagger go to 
+[https://boostappstepapi.azurewebsites.net/swagger](https://boostappstepapi.azurewebsites.net/swagger) in your browser.
+and use generated Token in Authorize button without "Bearer " prefix.
 
 ### Notes:
 * This application validate JWT's from Sigma's Azure Active Directory
