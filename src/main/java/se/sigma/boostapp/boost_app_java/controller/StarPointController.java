@@ -1,6 +1,7 @@
 package se.sigma.boostapp.boost_app_java.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.MediaType;
@@ -32,9 +33,9 @@ public class StarPointController {
  */
     @Operation(summary = "Get sum of star points by a start date and end date for a list of users.")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully post request"),
-            @ApiResponse(responseCode = "401", description = "Request is not authorized"),
-            @ApiResponse(responseCode = "403", description = "Accessing the resource you were trying to reach is forbidden"),
-            @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found") })
+            @ApiResponse(responseCode = "401", description = "Request is not authorized", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Accessing the resource you were trying to reach is forbidden", content = @Content),
+            @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found", content = @Content)})
     @PostMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<BulkUserStarPointsDTO> getStarPointsByUsers(final @RequestBody RequestStarPointsDTO requestStarPointsDTO) {
         return starPointService.getStarPointsByMultipleUsers(requestStarPointsDTO);
