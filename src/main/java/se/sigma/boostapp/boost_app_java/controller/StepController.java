@@ -31,6 +31,7 @@ import javax.validation.Valid;
 @Profile("prod")
 @Validated
 @RequestMapping("/steps")
+/** Same as StepControllerDev but with a Security Token for production*/
 public class StepController {
 
     private final StepService stepService;
@@ -41,14 +42,12 @@ public class StepController {
 
     /**
      * Delete step table
-     *
-     * @throws InterruptedException
      */
     @ConditionalOnProperty(name = "deleting.enabled", matchIfMissing = true)
     @SuppressWarnings("null")
     // 1=secund , 0=minut, 0= hours, *-dayOfTheMonth *-month MON-Monday
     @Scheduled(cron = "1 0 0 * * MON")
-    public void deleteStepTable() throws InterruptedException {
+    public void deleteStepTable() {
         stepService.deleteStepTable();
     }
 
@@ -58,6 +57,7 @@ public class StepController {
      *
      * @param jwt     A user
      * @param stepDTO Data for the steps
+     * @return A ResponseEntity with a Step object
      */
     @Operation(summary = "Register step entity")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully post request", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Step.class))),
@@ -78,7 +78,7 @@ public class StepController {
      *
      * @param jwt         A user
      * @param stepDtoList Data for the list of step
-     * @return
+     * @return A list of StepDTO
      */
     @Operation(summary = "Register multiple step entities")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully post steps", content = @Content(mediaType = "application/json",array = @ArraySchema(schema = @Schema(implementation = StepDTO.class)))),
@@ -99,6 +99,7 @@ public class StepController {
      * @param users     List of userIds
      * @param startDate Start date as String ("yyyy-[m]m-[d]d")
      * @param endDate   End date as String ("yyyy-[m]m-[d]d")
+     * @return A list of BulkUserStepsDTO:s.
      */
     @Operation(summary = "Get step count per day for a list of users by start date and end date (optional).")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully post request", content = @Content(mediaType = "application/json",array = @ArraySchema(schema = @Schema(implementation = BulkUsersStepsDTO.class)))),
@@ -118,6 +119,7 @@ public class StepController {
      * Get user's latest step
      *
      * @param jwt A user
+     * @return A ResponseEntity with a Step object
      */
     @Operation(summary = "Get user's latest step")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully retrieved step", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Step.class))),
@@ -138,6 +140,7 @@ public class StepController {
      * @param jwt   A user
      * @param year  Actual year
      * @param month Actual month
+     * @return A ResponseEntity with an Integer
      */
     @Operation(summary = "Get a user's step count per month by user and year and month)")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully retrieved step count", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Integer.class))),
@@ -160,6 +163,7 @@ public class StepController {
      * @param jwt  A user
      * @param year Actual year
      * @param week Actual week
+     * @return A ResponseEntity with an Integer
      */
     @Operation(summary = "Get a user's step count per week by user and year and week)")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully retrieved step count", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Integer.class))),
@@ -167,7 +171,6 @@ public class StepController {
             @ApiResponse(responseCode = "403", description = "Accessing the resource you were trying to reach is forbidden", content = @Content),
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found", content = @Content)})
     @GetMapping(value = {"/stepcount/year/{year}/week/{week}"})
-
     public ResponseEntity<Integer> getUserWeekSteps(final @AuthenticationPrincipal Jwt jwt,
                                                     final @PathVariable int year,
                                                     final @PathVariable int week) {
@@ -181,6 +184,7 @@ public class StepController {
      * Get list of steps per day per current week
      *
      * @param jwt A user
+     * @return A ResponseEntity with a List of StepDateDTO:s.
      */
     @Operation(summary = "Get list of steps per day per current week)")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully retrieved step count", content = @Content(mediaType = "application/json",array = @ArraySchema(schema = @Schema(implementation = StepDateDTO.class)))),
@@ -193,6 +197,5 @@ public class StepController {
                 .map(ResponseEntity::ok)
                 .orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
     }
-
 
 }

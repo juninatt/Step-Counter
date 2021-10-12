@@ -32,7 +32,7 @@ public class StarPointController {
  * Post request <br>
  * Get sum of star points by a start date and end date for a list of users. Return sum of all users if empty or absent list.
  * @param requestStarPointsDTO Data for star points for multiple users with start time and end time
- * 
+ * @return A list of BulkUserStarPointsDTO:s
  */
     @Operation(summary = "Get sum of star points by a start date and end date for a list of users.")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully post request", content = @Content(mediaType = "application/json",array = @ArraySchema(schema = @Schema(implementation = BulkUserStarPointsDTO.class)))),
