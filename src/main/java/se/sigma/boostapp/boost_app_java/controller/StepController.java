@@ -3,6 +3,7 @@ package se.sigma.boostapp.boost_app_java.controller;
 import java.util.List;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -65,7 +66,7 @@ public class StepController {
             @ApiResponse(responseCode = "403", description = "Accessing the resource you were trying to reach is forbidden", content = @Content),
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found", content = @Content)})
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Step> registerSteps(final @AuthenticationPrincipal Jwt jwt,
+    public ResponseEntity<Step> registerSteps(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                               final @RequestBody @Valid StepDTO stepDTO) {
         return stepService.registerSteps((String) jwt.getClaims().get("oid"), stepDTO)
                 .map(ResponseEntity::ok)
@@ -86,7 +87,7 @@ public class StepController {
             @ApiResponse(responseCode = "403", description = "Accessing the resource you were trying to reach is forbidden", content = @Content),
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found", content = @Content)})
     @PostMapping(value = "/multiple", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public List<StepDTO> registerMultipleSteps(final @AuthenticationPrincipal Jwt jwt,
+    public List<StepDTO> registerMultipleSteps(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                                final @RequestBody List<@Valid StepDTO> stepDtoList) {
         return stepService.registerMultipleSteps((String) jwt.getClaims().get("oid"), stepDtoList);
     }
@@ -127,7 +128,7 @@ public class StepController {
             @ApiResponse(responseCode = "403", description = "Accessing the resource you were trying to reach is forbidden", content = @Content),
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found", content = @Content)})
     @GetMapping(value = "/latest")
-    public ResponseEntity<Step> getLatestStep(final @AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<Step> getLatestStep(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt) {
         return stepService.getLatestStep((String) jwt.getClaims().get("oid"))
                 .map(ResponseEntity::ok)
                 .orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
@@ -148,7 +149,7 @@ public class StepController {
             @ApiResponse(responseCode = "403", description = "Accessing the resource you were trying to reach is forbidden", content = @Content),
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found", content = @Content)})
     @GetMapping(value = {"/stepcount/year/{year}/month/{month}"})
-    public ResponseEntity<Integer> getUserMonthSteps(final @AuthenticationPrincipal Jwt jwt,
+    public ResponseEntity<Integer> getUserMonthSteps(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                                      final @PathVariable int year,
                                                      final @PathVariable int month) {
         return stepService.getStepCountMonth((String) jwt.getClaims().get("oid"), year, month)
@@ -171,7 +172,7 @@ public class StepController {
             @ApiResponse(responseCode = "403", description = "Accessing the resource you were trying to reach is forbidden", content = @Content),
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found", content = @Content)})
     @GetMapping(value = {"/stepcount/year/{year}/week/{week}"})
-    public ResponseEntity<Integer> getUserWeekSteps(final @AuthenticationPrincipal Jwt jwt,
+    public ResponseEntity<Integer> getUserWeekSteps(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                                     final @PathVariable int year,
                                                     final @PathVariable int week) {
         return stepService.getStepCountWeek((String) jwt.getClaims().get("oid"), year, week)
@@ -192,7 +193,7 @@ public class StepController {
             @ApiResponse(responseCode = "403", description = "Accessing the resource you were trying to reach is forbidden", content = @Content),
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found", content = @Content)})
     @GetMapping(value = {"/stepcount/currentweek"})
-    public ResponseEntity<List<StepDateDTO>> getUserWeekSteps(final @AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<List<StepDateDTO>> getUserWeekSteps(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt) {
         return stepService.getStepCountPerDay((String) jwt.getClaims().get("oid"))
                 .map(ResponseEntity::ok)
                 .orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
