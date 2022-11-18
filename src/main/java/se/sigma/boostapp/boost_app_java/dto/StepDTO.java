@@ -3,6 +3,7 @@ package se.sigma.boostapp.boost_app_java.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.format.annotation.DateTimeFormat;
 import se.sigma.boostapp.boost_app_java.validator.DateTimeRange;
+
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -10,10 +11,10 @@ import java.time.LocalDateTime;
 @Schema(description = "All details about the step entity. ")
 @DateTimeRange
 public class StepDTO {
+
     /**
      * Data for the steps
      */
-
     @Schema(description = "step count")
     @Min(value = 1, message = "Step count must be greater than or equal to 1")
     private int stepCount;
