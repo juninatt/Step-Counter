@@ -77,7 +77,7 @@ public class StepControllerDevTest {
                 LocalDateTime.parse("2020-01-01T01:00:00"),
                 LocalDateTime.parse("2020-01-01T02:00:00"));
 
-        when(service.getLatestStep("testId")).thenReturn(Optional.of(step));
+        when(service.getLatestStepFromUser("testId")).thenReturn(Optional.of(step));
 
         mvc.perform(get("/steps/latest/{userId}", "testId"))
                 .andDo(print())
@@ -132,7 +132,7 @@ public class StepControllerDevTest {
     @Test
     public void getLatestStep_withInvalidUsername_test() throws Exception {
 
-        when(service.getLatestStep(Mockito.anyString())).thenReturn(Optional.empty());
+        when(service.getLatestStepFromUser(Mockito.anyString())).thenReturn(Optional.empty());
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/steps/latest/{userId}", "inValidUserID")
@@ -260,7 +260,7 @@ public class StepControllerDevTest {
         int week = 30;
         int expectedSteps = 500;
 
-        when(service.getStepCountWeek(userId, year, week))
+        when(service.getUserStepCountForWeek(userId, year, week))
                 .thenReturn(Optional.of(expectedSteps));
 
         MvcResult result = mvc.perform(get(url, userId, year, week))
@@ -280,7 +280,7 @@ public class StepControllerDevTest {
         int year = 2021;
         int week = 30;
 
-        when(service.getStepCountWeek(invalidUserId, year, week))
+        when(service.getUserStepCountForWeek(invalidUserId, year, week))
                 .thenReturn(Optional.empty());
 
         mvc.perform(get(url, invalidUserId, year, week))
@@ -297,7 +297,7 @@ public class StepControllerDevTest {
         stepDateDTOList.add(new StepDateDTO(userId, Date.valueOf("2020-06-07"), 2, 100L));
         stepDateDTOList.add(new StepDateDTO(userId, Date.valueOf("2020-06-08"), 3, 300L));
 
-        when(service.getStepCountPerDay(any(String.class))).thenReturn(Optional.of(stepDateDTOList));
+        when(service.getListOfStepsForCurrentWeekFromUser(any(String.class))).thenReturn(Optional.of(stepDateDTOList));
 
         MvcResult result = mvc.perform(get(url, userId))
                 .andExpect(status().isOk())
@@ -315,7 +315,7 @@ public class StepControllerDevTest {
     public void getUserWeekStepList_withInValidInput_ReturnsStatusNoContent() throws Exception {
         String url = "/steps/stepcount/{userId}/currentweek";
 
-        when(service.getStepCountPerDay(invalidUserId)).thenReturn(Optional.empty());
+        when(service.getListOfStepsForCurrentWeekFromUser(invalidUserId)).thenReturn(Optional.empty());
 
         mvc.perform(get(url, invalidUserId))
                 .andExpect(status().isNoContent())

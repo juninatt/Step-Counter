@@ -85,7 +85,7 @@ public class StepServiceTest {
                 .thenReturn(Optional.of(new Step("userTest3", 100, LocalDateTime.parse("2020-01-02T00:00:00"),
                         LocalDateTime.parse("2020-01-02T00:00:00"), LocalDateTime.parse("2020-01-02T00:00:00"))));
 
-        var optionalStep = stepService.getLatestStep(userID);
+        var optionalStep = stepService.getLatestStepFromUser(userID);
         if (optionalStep.isPresent()) {
             var step = optionalStep.get();
             assertEquals(LocalDateTime.parse("2020-01-02T00:00:00"), step.getEndTime());
@@ -216,30 +216,35 @@ public class StepServiceTest {
 
         assertNotEquals(mockStepDTOListTest, mockStepDTOList);
 
-        mockStepDTOListTest = stepService.sortListByEndTime(mockStepDTOList);
+        mockStepDTOListTest = stepService.sortStepDTOListByEndTime(mockStepDTOList);
 
         assertEquals(mockStepDTOList, mockStepDTOListTest);
     }
 
     @Test
-    public void getWeekNumber_test() {
+    public void getWeekNumber_ReturnsCorrectWeek() {
 
         LocalDateTime inputDate = LocalDateTime.of(2020, 10, 22, 14, 56);
 
-        int returnWeek = stepService.getWeekNumber(inputDate);
+        int returnWeek = stepService.getWeekNumberFromDate(inputDate);
 
         assertEquals(43, returnWeek);
     }
-
     @Test
-    public void getStepCountMonth_ReturnsCorrectSteps() {
-        var mockStepInMonth = 800;
+    public void getWeekNumber_ReturnsOneForFirstWeek() {
+        LocalDateTime inputDate = LocalDateTime.of(2021, 1, 1, 1, 1);
 
-        when(mockedMonthStepRepository.getStepCountMonth(USERID, 2020, 10))
-                .thenReturn(Optional.of(mockStepInMonth));
+        int weekNumber = stepService.getWeekNumberFromDate(inputDate);
 
-        var optionalStep = stepService.getStepCountMonth(USERID, 2020, 10);
-        assertEquals(Optional.of(mockStepInMonth), optionalStep);
+        assertEquals(1, weekNumber);
+    }
+    @Test
+    public void getWeekNumber_Returns52ForLastWeek() {
+        LocalDateTime inputDate = LocalDateTime.of(2022, 12, 30, 23, 59);
+
+        int weekNumber = stepService.getWeekNumberFromDate(inputDate);
+
+        assertEquals(52, weekNumber);
     }
 
     @Test
@@ -249,7 +254,7 @@ public class StepServiceTest {
         when(mockedWeekStepRepository.getStepCountWeek(USERID, 2020, 43))
                 .thenReturn(Optional.of(mockedStepsInWeek));
 
-        var optionalStep = stepService.getStepCountWeek(USERID, 2020, 43);
+        var optionalStep = stepService.getUserStepCountForWeek(USERID, 2020, 43);
         assertEquals(Optional.of(mockedStepsInWeek), optionalStep);
     }
 
@@ -299,7 +304,7 @@ public class StepServiceTest {
 
         when(mockedStepRepository.findByUserId(USERID)).thenReturn(Optional.of(stepList));
 
-        var result = stepService.getStepCountPerDay(USERID);
+        var result = stepService.getListOfStepsForCurrentWeekFromUser(USERID);
 
         if(result.isPresent()) {
             assertEquals(2, result.get().size());
@@ -315,7 +320,7 @@ public class StepServiceTest {
 
         when(mockedStepRepository.findByUserId(USERID)).thenReturn(Optional.empty());
 
-        var result = stepService.getStepCountPerDay(USERID);
+        var result = stepService.getListOfStepsForCurrentWeekFromUser(USERID);
 
         if(result.isPresent()) {
             assertEquals(1, result.get().size());

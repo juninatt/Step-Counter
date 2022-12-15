@@ -131,7 +131,7 @@ public class StepControllerDev {
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found", content = @Content)})
     @GetMapping(value = "/latest/{userId}")
     public ResponseEntity<Step> getLatestStep(final @PathVariable String userId) {
-        return stepService.getLatestStep(userId)
+        return stepService.getLatestStepFromUser(userId)
                 .map(ResponseEntity::ok)
                 .orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
     }
@@ -179,7 +179,7 @@ public class StepControllerDev {
     public ResponseEntity<Integer> getUserWeekSteps(final @PathVariable String userId,
                                                     final @PathVariable int year,
                                                     final @PathVariable int week) {
-        return stepService.getStepCountWeek(userId, year, week)
+        return stepService.getUserStepCountForWeek(userId, year, week)
                 .map(ResponseEntity::ok)
                 .orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
     }
@@ -200,7 +200,7 @@ public class StepControllerDev {
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found", content = @Content)})
     @GetMapping(value = {"/stepcount/{userId}/currentweek"})
     public ResponseEntity<List<StepDateDTO>> getUserWeekSteps(final @PathVariable String userId) {
-        return stepService.getStepCountPerDay(userId)
+        return stepService.getListOfStepsForCurrentWeekFromUser(userId)
                 .map(ResponseEntity::ok)
                 .orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
     }
