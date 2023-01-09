@@ -54,13 +54,13 @@ public class StepService extends AbstractStepService {
     }
 
     @Override
-    public Optional<Integer> getStepCountMonth(String userId, int year, int month) {
-        return super.getStepCountMonth(userId, year, month);
+    public Optional<Integer> getStepCountForUserYearAndMonth(String userId, int year, int month) {
+        return super.getStepCountForUserYearAndMonth(userId, year, month);
     }
 
     @Override
-    public Optional<Integer> getUserStepCountForWeek(String userId, int year, int week) {
-        return super.getUserStepCountForWeek(userId, year, week);
+    public Optional<Integer> getStepCountForUserYearAndWeek(String userId, int year, int week) {
+        return super.getStepCountForUserYearAndWeek(userId, year, week);
     }
 
     @Override

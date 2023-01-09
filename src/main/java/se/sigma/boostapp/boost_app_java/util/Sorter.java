@@ -1,6 +1,6 @@
 package se.sigma.boostapp.boost_app_java.util;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDTO;
 
 import java.time.LocalDateTime;
@@ -9,7 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+@Component
 public class Sorter {
     private static final Comparator<StepDTO> endTimeComparator = Comparator.comparing(StepDTO::getEndTime);
 

@@ -154,12 +154,12 @@ public abstract class AbstractStepService {
                 Optional.of(usersStepDTOs);
     }
 
-    public Optional<Integer> getStepCountMonth(String userId, int year, int month) {
+    public Optional<Integer> getStepCountForUserYearAndMonth(String userId, int year, int month) {
         return Optional.of(monthStepRepository.getStepCountMonth(userId, year, month)
                 .orElse(0));
     }
 
-    public Optional<Integer> getUserStepCountForWeek(String userId, int year, int week) {
+    public Optional<Integer> getStepCountForUserYearAndWeek(String userId, int year, int week) {
         return Optional.of(weekStepRepository.getStepCountWeek(userId, year, week)
                 .orElse(0));
     }

@@ -1,7 +1,7 @@
 package se.sigma.boostapp.boost_app_java.util;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDTO;
 import se.sigma.boostapp.boost_app_java.model.Step;
 
@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
-@Service
+@Component
 public class Matcher {
     public List<String> getMatchingStrings(List<String> listA, List<String> listB) {
         if (listA == null || listB == null) {

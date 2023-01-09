@@ -227,7 +227,7 @@ public class StepControllerDevTest {
         int month = 1;
         int expectedSteps = 1200;
 
-        when(service.getStepCountMonth(userId, year, month)).thenReturn(Optional.of(expectedSteps));
+        when(service.getStepCountForUserYearAndMonth(userId, year, month)).thenReturn(Optional.of(expectedSteps));
         MvcResult result = mvc.perform(get(url, userId, year, month))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
@@ -245,7 +245,7 @@ public class StepControllerDevTest {
         int year = 2021;
         int month = 1;
 
-        when(service.getStepCountMonth(invalidUserId, year, month))
+        when(service.getStepCountForUserYearAndMonth(invalidUserId, year, month))
                 .thenReturn(Optional.empty());
 
         mvc.perform(get(url, invalidUserId, year, month))
@@ -260,7 +260,7 @@ public class StepControllerDevTest {
         int week = 30;
         int expectedSteps = 500;
 
-        when(service.getUserStepCountForWeek(userId, year, week))
+        when(service.getStepCountForUserYearAndWeek(userId, year, week))
                 .thenReturn(Optional.of(expectedSteps));
 
         MvcResult result = mvc.perform(get(url, userId, year, week))
@@ -280,7 +280,7 @@ public class StepControllerDevTest {
         int year = 2021;
         int week = 30;
 
-        when(service.getUserStepCountForWeek(invalidUserId, year, week))
+        when(service.getStepCountForUserYearAndWeek(invalidUserId, year, week))
                 .thenReturn(Optional.empty());
 
         mvc.perform(get(url, invalidUserId, year, week))

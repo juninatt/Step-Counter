@@ -275,7 +275,7 @@ public class StepServiceTest {
         when(mockedWeekStepRepository.getStepCountWeek(USERID, 2020, 43))
                 .thenReturn(Optional.of(mockedStepsInWeek));
 
-        var optionalStep = stepService.getUserStepCountForWeek(USERID, 2020, 43);
+        var optionalStep = stepService.getStepCountForUserYearAndWeek(USERID, 2020, 43);
         assertEquals(Optional.of(mockedStepsInWeek), optionalStep);
     }
 
