@@ -15,8 +15,6 @@ import java.lang.annotation.Target;
  * This is a Java annotation that can be used to group multiple {@see ApiResponse} annotations
  * together. It is intended to be used on methods in a controller class to specify the possible
  * responses that the method can return.
- * <p>
- * Annotation ApiResponse documentation: {@link  <a href="https://docs.swagger.io/swagger-core/v1.5.0/apidocs/io/swagger/annotations/ApiResponse.html">...</a>}
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
