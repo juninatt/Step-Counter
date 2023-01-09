@@ -6,14 +6,17 @@ import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import se.sigma.boostapp.boost_app_java.dto.BulkUsersStepsDTO;
-import se.sigma.boostapp.boost_app_java.dto.StepDTO;
+import se.sigma.boostapp.boost_app_java.dto.stepdto.UserStepListDTO;
+import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDTO;
 import se.sigma.boostapp.boost_app_java.model.MonthStep;
 import se.sigma.boostapp.boost_app_java.model.Step;
 import se.sigma.boostapp.boost_app_java.model.WeekStep;
 import se.sigma.boostapp.boost_app_java.repository.MonthStepRepository;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 import se.sigma.boostapp.boost_app_java.repository.WeekStepRepository;
+import se.sigma.boostapp.boost_app_java.util.Matcher;
+import se.sigma.boostapp.boost_app_java.util.Sorter;
+
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -38,25 +41,28 @@ public class StepServiceTest {
 
     private final String USERID = "StepTest";
 
+    Sorter sorter;
+
+    Matcher matcher;
+
     @Before
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
         stepService = new StepService(mockedStepRepository, mockedMonthStepRepository, mockedWeekStepRepository);
+        sorter = new Sorter();
+        matcher = new Matcher();
     }
 
     @Test
     public void registerStepsTest() {
-        Step testStep = new Step();
+        Step testStep = new Step("test", 0, LocalDateTime.now());
 
         // user is not i databas
-        assertNull(testStep.getUserId());
         assertEquals(0, testStep.getStepCount());
 
         testStep = new Step("userTestId", 100, LocalDateTime.parse("2020-01-02T01:00:00"),
                 LocalDateTime.parse("2020-01-02T02:00:00"), LocalDateTime.parse("2020-01-02T03:00:00"));
 
-        when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(any(String.class)))
-                .thenReturn(Optional.of(testStep));
         when(mockedStepRepository.save(any(Step.class))).thenReturn(testStep);
 
         StepDTO stepDto = new StepDTO(300, LocalDateTime.parse("2020-01-02T02:00:00"),
@@ -66,7 +72,7 @@ public class StepServiceTest {
         // user is now i databas
         assertNotNull(testStep.getUserId());
         assertEquals(400, testStep.getStepCount());
-        var optionalStep = stepService.registerSteps(testStep.getUserId(), stepDto);
+        var optionalStep = stepService.createOrUpdateStepForUser(testStep.getUserId(), stepDto);
         if (optionalStep.isPresent()) {
             assertEquals("userTestId", optionalStep.get().getUserId());
         } else {
@@ -97,18 +103,32 @@ public class StepServiceTest {
 
     @Test
     public void shouldReturnUpdatedStepCount() {
-        Step mockStep = new Step("userTest3", 100, LocalDateTime.parse("2020-01-02T01:00:00"),
-                LocalDateTime.parse("2020-01-02T01:10:00"), LocalDateTime.parse("2020-01-02T02:00:00"));
 
-        when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(any(String.class)))
+        var mockStep = new Step(
+                "userTest3",
+                100,
+                LocalDateTime.of(2020, 1, 1, 1, 0, 0),
+                LocalDateTime.of(2020, 1, 1, 2, 0, 0),
+                LocalDateTime.of(2020, 1, 1, 3, 0, 0));
+
+        var mockDTO = new StepDTO(
+                50,
+                LocalDateTime.of(2020, 1, 1, 2, 0, 0),
+                LocalDateTime.of(2020, 1, 1, 3, 0, 0),
+                LocalDateTime.of(2020, 1, 1, 4, 0, 0));
+
+        when(mockedStepRepository.findByUserId(any(String.class)))
+                .thenReturn(Optional.of(List.of(mockStep)));
+
+        when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(mockStep.getUserId()))
                 .thenReturn(Optional.of(mockStep));
+
         when(mockedStepRepository.save(any(Step.class))).thenReturn(mockStep);
 
-        StepDTO stepDto = new StepDTO(50, LocalDateTime.parse("2020-01-02T00:00:00"),
-                LocalDateTime.parse("2020-01-02T01:20:00"), LocalDateTime.parse("2020-01-02T02:00:00"));
-        var optionalStep = stepService.registerSteps("userTest3", stepDto);
-        if (optionalStep.isPresent()) {
-            assertEquals(150, optionalStep.get().getStepCount());
+        var expectedStep = stepService.createOrUpdateStepForUser("userTest3", mockDTO);
+
+        if (expectedStep.isPresent()) {
+            assertEquals(150, expectedStep.get().getStepCount());
         } else {
             fail();
         }
@@ -137,7 +157,7 @@ public class StepServiceTest {
                 .thenReturn(Optional.of(mockStep));
         when(mockedStepRepository.save(any())).thenReturn(mockStep);
 
-        stepService.registerMultipleSteps("idTest", mockStepDTOList);
+        stepService.registerMultipleStepsForUser("idTest", mockStepDTOList);
 
         assertEquals(135, (mockStep.getStepCount()));
     }
@@ -160,16 +180,17 @@ public class StepServiceTest {
     public void addStepsToWeekTable_CallsRepositoryAndSavesCorrectSteps() {
 
         int year = 2020;
-        int week = 5;
+        int week = 1;
         int initialSteps = 500;
         int stepsToAdd = 100;
+        var mockDTO = new StepDTO(stepsToAdd, null, LocalDateTime.of(2020, 1,1,1,0,0), null);
         int expectedSteps = initialSteps + stepsToAdd;
         var mockWeek = new WeekStep(USERID, week, year, initialSteps);
 
         when(mockedWeekStepRepository.findByUserIdAndYearAndWeek(USERID, year, week))
                 .thenReturn(Optional.of(mockWeek));
 
-        stepService.addStepsToWeekTable(year, week, stepsToAdd, USERID);
+        stepService.addStepsToWeekTable(USERID, mockDTO);
         verify(mockedWeekStepRepository).findByUserIdAndYearAndWeek(USERID, year, week);
 
         ArgumentCaptor<WeekStep> argumentCaptor = ArgumentCaptor.forClass(WeekStep.class);
@@ -216,7 +237,7 @@ public class StepServiceTest {
 
         assertNotEquals(mockStepDTOListTest, mockStepDTOList);
 
-        mockStepDTOListTest = stepService.sortStepDTOListByEndTime(mockStepDTOList);
+        mockStepDTOListTest = sorter.sortStepDTOListByEndTime(mockStepDTOList);
 
         assertEquals(mockStepDTOList, mockStepDTOListTest);
     }
@@ -226,7 +247,7 @@ public class StepServiceTest {
 
         LocalDateTime inputDate = LocalDateTime.of(2020, 10, 22, 14, 56);
 
-        int returnWeek = stepService.getWeekNumberFromDate(inputDate);
+        int returnWeek = matcher.getWeekNumberFromDate(inputDate);
 
         assertEquals(43, returnWeek);
     }
@@ -234,7 +255,7 @@ public class StepServiceTest {
     public void getWeekNumber_ReturnsOneForFirstWeek() {
         LocalDateTime inputDate = LocalDateTime.of(2021, 1, 1, 1, 1);
 
-        int weekNumber = stepService.getWeekNumberFromDate(inputDate);
+        int weekNumber = matcher.getWeekNumberFromDate(inputDate);
 
         assertEquals(1, weekNumber);
     }
@@ -242,7 +263,7 @@ public class StepServiceTest {
     public void getWeekNumber_Returns52ForLastWeek() {
         LocalDateTime inputDate = LocalDateTime.of(2022, 12, 30, 23, 59);
 
-        int weekNumber = stepService.getWeekNumberFromDate(inputDate);
+        int weekNumber = matcher.getWeekNumberFromDate(inputDate);
 
         assertEquals(52, weekNumber);
     }
@@ -267,7 +288,7 @@ public class StepServiceTest {
 
         when(mockedStepRepository.getAllUsers()).thenReturn(allUsers);
 
-        Optional<List<BulkUsersStepsDTO>> result = stepService.getStepsByMultipleUsers(requestedUsers, startDate, lastDate);
+        Optional<List<UserStepListDTO>> result = stepService.getMultipleUserStepListDTOs(requestedUsers, startDate, lastDate);
         if(result.isPresent()){
             assertEquals(2, result.get().size());
         } else {
@@ -284,7 +305,7 @@ public class StepServiceTest {
 
         when(mockedStepRepository.getAllUsers()).thenReturn(allUsers);
 
-        Optional<List<BulkUsersStepsDTO>> result = stepService.getStepsByMultipleUsers(requestedUsers, startDate, lastDate);
+        Optional<List<UserStepListDTO>> result = stepService.getMultipleUserStepListDTOs(requestedUsers, startDate, lastDate);
         assertEquals(Optional.empty(), result);
     }
 

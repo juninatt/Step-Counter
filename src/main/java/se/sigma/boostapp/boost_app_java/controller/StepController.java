@@ -17,9 +17,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import se.sigma.boostapp.boost_app_java.dto.BulkUsersStepsDTO;
-import se.sigma.boostapp.boost_app_java.dto.StepDTO;
-import se.sigma.boostapp.boost_app_java.dto.StepDateDTO;
+import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDTO;
+import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDateDTO;
+import se.sigma.boostapp.boost_app_java.dto.stepdto.UserStepListDTO;
 import se.sigma.boostapp.boost_app_java.exception.NotFoundException;
 import se.sigma.boostapp.boost_app_java.model.Step;
 import se.sigma.boostapp.boost_app_java.service.StepService;
@@ -67,7 +67,7 @@ public class StepController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Step> registerSteps(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                               final @RequestBody @Valid StepDTO stepDTO) {
-        return stepService.registerSteps(getUserId(jwt), stepDTO)
+        return stepService.createOrUpdateStepForUser(getUserId(jwt), stepDTO)
                 .map(ResponseEntity::ok)
                 .orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
@@ -88,7 +88,7 @@ public class StepController {
     @PostMapping(value = "/multiple", consumes = MediaType.APPLICATION_JSON_VALUE)
     public List<StepDTO> registerMultipleSteps(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                                final @RequestBody List<@Valid StepDTO> stepDtoList) {
-        return stepService.registerMultipleSteps(getUserId(jwt), stepDtoList);
+        return stepService.registerMultipleStepsForUser(getUserId(jwt), stepDtoList);
     }
 
 
@@ -102,16 +102,16 @@ public class StepController {
      * @return A list of BulkUserStepsDTO:s.
      */
     @Operation(summary = "Get step count per day for a list of users by start date and end date (optional).")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully post request", content = @Content(mediaType = "application/json",array = @ArraySchema(schema = @Schema(implementation = BulkUsersStepsDTO.class)))),
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successfully post request", content = @Content(mediaType = "application/json",array = @ArraySchema(schema = @Schema(implementation = UserStepListDTO.class)))),
             @ApiResponse(responseCode = "401", description = "Request is not authorized", content = @Content),
             @ApiResponse(responseCode = "403", description = "Accessing the resource you were trying to reach is forbidden", content = @Content),
             @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found", content = @Content)})
     @PostMapping(value = "/stepcount/bulk/date", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<BulkUsersStepsDTO> getBulkStepsByUsers(final @RequestBody List<String> users,
-                                                       final @RequestParam String startDate,
-                                                       final @RequestParam(required = false) String endDate) {
-        return stepService.getStepsByMultipleUsers(users, startDate, endDate)
-                .orElseThrow(() -> new NotFoundException());
+    public List<UserStepListDTO> getBulkStepsByUsers(final @RequestBody List<String> users,
+                                                     final @RequestParam String startDate,
+                                                     final @RequestParam(required = false) String endDate) {
+        return stepService.getMultipleUserStepListDTOs(users, startDate, endDate)
+                .orElseThrow(NotFoundException::new);
     }
 
     /**

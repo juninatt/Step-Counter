@@ -1,14 +1,13 @@
 package se.sigma.boostapp.boost_app_java.service;
 
 import org.springframework.stereotype.Service;
-import se.sigma.boostapp.boost_app_java.dto.BulkUserStarPointsDTO;
-import se.sigma.boostapp.boost_app_java.dto.RequestStarPointsDTO;
-import se.sigma.boostapp.boost_app_java.dto.StarPointDateDTO;
+import se.sigma.boostapp.boost_app_java.dto.starpointdto.BulkUserStarPointsDTO;
+import se.sigma.boostapp.boost_app_java.dto.starpointdto.RequestStarPointsDTO;
+import se.sigma.boostapp.boost_app_java.dto.starpointdto.StarPointDateDTO;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class StarPointService {

@@ -5,11 +5,11 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import se.sigma.boostapp.boost_app_java.dto.StepDateDTO;
+import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDateDTO;
 import se.sigma.boostapp.boost_app_java.model.Step;
 
 import javax.transaction.Transactional;
-import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -42,8 +42,8 @@ public interface StepRepository extends JpaRepository<Step, Long> {
      * @param startDate From start date
      * @param endDate   To end date
      */
-    @Query("SELECT new se.sigma.boostapp.boost_app_java.dto.StepDateDTO(cast(s.startTime as date), sum(s.stepCount)) FROM Step s WHERE s.userId = :userId AND cast(s.startTime as date) >= :startDate AND cast(s.startTime as date) <= :endDate GROUP BY s.userId, cast(s.startTime as date) ORDER BY cast(s.startTime as date) ASC")
-    List<StepDateDTO> getStepCount(@Param("userId") String userId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
+    @Query("SELECT new se.sigma.boostapp.boost_app_java.dto.stepdto.StepDateDTO(cast(s.startTime as date), sum(s.stepCount)) FROM Step s WHERE s.userId = :userId AND cast(s.startTime as date) >= :startDate AND cast(s.startTime as date) <= :endDate GROUP BY s.userId, cast(s.startTime as date) ORDER BY cast(s.startTime as date) ASC")
+    List<StepDateDTO> getStepCount(@Param("userId") String userId, @Param("startDate") Timestamp startDate, @Param("endDate") Timestamp endDate);
 
     /**
      * All users from step table

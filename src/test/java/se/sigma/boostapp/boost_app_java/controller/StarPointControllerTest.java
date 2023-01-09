@@ -12,9 +12,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import se.sigma.boostapp.boost_app_java.dto.BulkUserStarPointsDTO;
-import se.sigma.boostapp.boost_app_java.dto.RequestStarPointsDTO;
-import se.sigma.boostapp.boost_app_java.dto.StarPointDateDTO;
+import se.sigma.boostapp.boost_app_java.dto.starpointdto.BulkUserStarPointsDTO;
+import se.sigma.boostapp.boost_app_java.dto.starpointdto.RequestStarPointsDTO;
+import se.sigma.boostapp.boost_app_java.dto.starpointdto.StarPointDateDTO;
 import se.sigma.boostapp.boost_app_java.service.StarPointService;
 
 import java.time.LocalDateTime;

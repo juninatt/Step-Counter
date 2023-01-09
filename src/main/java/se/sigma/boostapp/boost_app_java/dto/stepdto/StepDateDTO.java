@@ -1,10 +1,9 @@
-package se.sigma.boostapp.boost_app_java.dto;
+package se.sigma.boostapp.boost_app_java.dto.stepdto;
 
 
 import java.util.Date;
 
 public class StepDateDTO {
-
     private Date date;
     private long steps;
     private String userId;
@@ -18,6 +17,7 @@ public class StepDateDTO {
     }
 
     public StepDateDTO(Date date, long steps) {
+        // required for repository tests to pass
         this.date = date;
         this.steps = steps;
     }
@@ -25,12 +25,6 @@ public class StepDateDTO {
     public StepDateDTO(String userId, long steps) {
         this.userId = userId;
         this.steps = steps;
-    }
-
-    public StepDateDTO(String userId, Date date, long steps) {
-        this.date = date;
-        this.steps = steps;
-        this.userId = userId;
     }
 
     public Date getDate() {
@@ -53,15 +47,21 @@ public class StepDateDTO {
         return dayOfWeek;
     }
 
-    public void setDayOfWeek(int dayOfWeek) {
-        this.dayOfWeek = dayOfWeek;
-    }
-
     public String getUserId() {
         return userId;
     }
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    @Override
+    public String toString() {
+        return "StepDateDTO{" +
+                "date=" + date +
+                ", steps=" + steps +
+                ", userId='" + userId + '\'' +
+                ", dayOfWeek=" + dayOfWeek +
+                '}';
     }
 }

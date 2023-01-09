@@ -1,6 +1,6 @@
 package se.sigma.boostapp.boost_app_java.validator;
 
-import se.sigma.boostapp.boost_app_java.dto.StepDTO;
+import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDTO;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -16,7 +16,7 @@ public class DateTimeRangeValidator implements ConstraintValidator<DateTimeRange
 
     @Override
     public boolean isValid(StepDTO value, ConstraintValidatorContext context) {
-        return !value.getEndTime().isAfter(value.getUploadedTime())
+        return !value.getEndTime().isAfter(value.getUploadTime())
                 && !value.getStartTime().isAfter(value.getEndTime());
     }
 }

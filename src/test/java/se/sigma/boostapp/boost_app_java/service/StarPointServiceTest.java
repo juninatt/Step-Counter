@@ -7,7 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
-import se.sigma.boostapp.boost_app_java.dto.RequestStarPointsDTO;
+import se.sigma.boostapp.boost_app_java.dto.starpointdto.RequestStarPointsDTO;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 
 import java.time.LocalDateTime;

@@ -1,4 +1,4 @@
-package se.sigma.boostapp.boost_app_java.dto;
+package se.sigma.boostapp.boost_app_java.dto.starpointdto;
 
 public class BulkUserStarPointsDTO {
 

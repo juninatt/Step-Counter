@@ -11,9 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import se.sigma.boostapp.boost_app_java.dto.BulkUserStarPointsDTO;
-import se.sigma.boostapp.boost_app_java.dto.RequestStarPointsDTO;
-import se.sigma.boostapp.boost_app_java.dto.StepDTO;
+import se.sigma.boostapp.boost_app_java.dto.starpointdto.BulkUserStarPointsDTO;
+import se.sigma.boostapp.boost_app_java.dto.starpointdto.RequestStarPointsDTO;
 import se.sigma.boostapp.boost_app_java.service.StarPointService;
 
 import java.util.List;

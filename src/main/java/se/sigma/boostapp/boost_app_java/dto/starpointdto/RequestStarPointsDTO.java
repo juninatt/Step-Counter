@@ -1,6 +1,7 @@
-package se.sigma.boostapp.boost_app_java.dto;
+package se.sigma.boostapp.boost_app_java.dto.starpointdto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.time.LocalDateTime;
 import java.util.List;
 

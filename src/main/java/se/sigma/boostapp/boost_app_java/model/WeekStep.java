@@ -8,9 +8,11 @@ import javax.persistence.*;
 @Entity
 @Table(name = "weekstep")
 public class WeekStep {
+
     /**
      * Entity weekstep table
      */
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(description = "The database generated weekStep ID")
@@ -29,9 +31,6 @@ public class WeekStep {
 
     @Column(name = "steps")
     private int steps;
-
-    public WeekStep() {
-    }
 
     public WeekStep(String userId, int week, int year, int steps) {
         this.userId = userId;

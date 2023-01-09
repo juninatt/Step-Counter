@@ -1,6 +1,7 @@
 package se.sigma.boostapp.boost_app_java.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -9,9 +10,11 @@ import java.time.LocalDateTime;
 @Table(name = "step")
 @Schema(description = "All details about the step entity. ")
 public class Step {
+
     /**
      * Entity step table
      */
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(description = "The database generated step ID")
@@ -26,19 +29,16 @@ public class Step {
     private int stepCount;
 
     @Schema(description = "Start time")
-    @Column(name = "start_time", nullable = true)
+    @Column(name = "start_time", nullable = false)
     private LocalDateTime startTime;
 
     @Schema(description = "End time")
-    @Column(name = "end_time", nullable = true)
+    @Column(name = "end_time", nullable = false)
     private LocalDateTime endTime;
 
     @Schema(description = "Uploaded")
-    @Column(name = "uploaded", nullable = true)
+    @Column(name = "uploaded", nullable = false)
     private LocalDateTime uploadedTime;
-
-    public Step() {
-    }
 
     public Step(String userId, int stepCount, LocalDateTime start, LocalDateTime end, LocalDateTime uploadedTime) {
         this.userId = userId;
@@ -48,17 +48,10 @@ public class Step {
         this.uploadedTime = uploadedTime;
     }
 
-    public Step(String userId, int stepCount) {
+    public Step(String userId, int stepCount, LocalDateTime endTime) {
         this.userId = userId;
         this.stepCount = stepCount;
-    }
-
-    public Step(String userId) {
-        this.userId = userId;
-    }
-
-    public Step(int stepCount) {
-        this.stepCount = stepCount;
+        this.endTime = endTime;
     }
 
     public String getUserId() {
@@ -109,4 +102,15 @@ public class Step {
         this.uploadedTime = uploadedSteps;
     }
 
+    @Override
+    public String toString() {
+        return "Step{" +
+                "id=" + id +
+                ", userId='" + userId + '\'' +
+                ", stepCount=" + stepCount +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", uploadedTime=" + uploadedTime +
+                '}';
+    }
 }

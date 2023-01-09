@@ -2,6 +2,7 @@ package se.sigma.boostapp.boost_app_java.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.hibernate.annotations.DynamicUpdate;
+
 import javax.persistence.*;
 
 
@@ -9,9 +10,11 @@ import javax.persistence.*;
 @DynamicUpdate
 @Table(name = "monthstep")
 public class MonthStep {
+
     /**
      * Entity monthstep table
      */
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(description = "The database generated monthStep ID")
@@ -31,9 +34,6 @@ public class MonthStep {
 
     @Column(name = "steps")
     private int steps;
-
-    public MonthStep() {
-    }
 
     public MonthStep(String userId, int month, int year, int steps) {
         this.userId = userId;
@@ -80,5 +80,16 @@ public class MonthStep {
 
     public void setSteps(int steps) {
         this.steps = steps;
+    }
+
+    @Override
+    public String toString() {
+        return "MonthStep{" +
+                "id=" + id +
+                ", userId='" + userId + '\'' +
+                ", month=" + month +
+                ", year=" + year +
+                ", steps=" + steps +
+                '}';
     }
 }

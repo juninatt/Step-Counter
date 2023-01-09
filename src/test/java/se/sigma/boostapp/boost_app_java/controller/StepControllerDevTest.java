@@ -16,9 +16,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import se.sigma.boostapp.boost_app_java.dto.BulkUsersStepsDTO;
-import se.sigma.boostapp.boost_app_java.dto.StepDTO;
-import se.sigma.boostapp.boost_app_java.dto.StepDateDTO;
+import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDTO;
+import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDateDTO;
+import se.sigma.boostapp.boost_app_java.dto.stepdto.UserStepListDTO;
 import se.sigma.boostapp.boost_app_java.model.Step;
 import se.sigma.boostapp.boost_app_java.service.StepService;
 
@@ -116,7 +116,7 @@ public class StepControllerDevTest {
                 LocalDateTime.parse("2020-01-01T00:00:00"),
                 LocalDateTime.parse("2020-01-01T01:00:00"),
                 LocalDateTime.parse("2020-01-01T02:00:00"));
-        when(service.registerSteps(Mockito.anyString(),
+        when(service.createOrUpdateStepForUser(Mockito.anyString(),
                 Mockito.any(StepDTO.class))).thenReturn(Optional.of(mockStep));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -166,7 +166,7 @@ public class StepControllerDevTest {
         stepDTOList.add(stepDTO2);
         stepDTOList.add(stepDTO3);
 
-        when(service.registerMultipleSteps(Mockito.anyString(), Mockito.anyList())).thenReturn(stepDTOList);
+        when(service.registerMultipleStepsForUser(Mockito.anyString(), Mockito.anyList())).thenReturn(stepDTOList);
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post("/steps/multiple/{userId}", "testId")
@@ -196,11 +196,11 @@ public class StepControllerDevTest {
         stepDateDTOList1.add(new StepDateDTO("Test2", Date.valueOf("2021-10-02"), 2, 100L));
         stepDateDTOList1.add(new StepDateDTO("Test2", Date.valueOf("2021-10-03"), 3, 300L));
 
-        List<BulkUsersStepsDTO> bulkUsersStepsDTOList = new ArrayList<>();
-        bulkUsersStepsDTOList.add(new BulkUsersStepsDTO("Test1", stepDateDTOList1));
-        bulkUsersStepsDTOList.add(new BulkUsersStepsDTO("Test2", stepDateDTOList2));
+        List<UserStepListDTO> userStepListDTOList = new ArrayList<>();
+        userStepListDTOList.add(new UserStepListDTO("Test1", stepDateDTOList1));
+        userStepListDTOList.add(new UserStepListDTO("Test2", stepDateDTOList2));
 
-        when(service.getStepsByMultipleUsers(testUsers, startDate, endDate)).thenReturn(Optional.of(bulkUsersStepsDTOList));
+        when(service.getMultipleUserStepListDTOs(testUsers, startDate, endDate)).thenReturn(Optional.of(userStepListDTOList));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post(url)
@@ -214,7 +214,7 @@ public class StepControllerDevTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .andReturn();
 
-        String expectedJsonResponse = objectMapper.writeValueAsString(bulkUsersStepsDTOList);
+        String expectedJsonResponse = objectMapper.writeValueAsString(userStepListDTOList);
         String actualJsonResponse = result.getResponse().getContentAsString();
 
         assertEquals(expectedJsonResponse, actualJsonResponse);

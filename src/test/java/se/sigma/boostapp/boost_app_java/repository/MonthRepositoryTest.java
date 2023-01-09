@@ -8,7 +8,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import se.sigma.boostapp.boost_app_java.model.MonthStep;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -26,6 +26,6 @@ public class MonthRepositoryTest {
     @Test
     public void getStepCountMonth_test() {
        var test =  monthStepRepository.getStepCountMonth("daniel", 2020, 12);
-        assertTrue(300 == test.get());
+        assertEquals(300, (int) test.get());
     }
 }

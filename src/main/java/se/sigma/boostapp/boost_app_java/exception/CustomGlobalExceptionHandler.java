@@ -1,6 +1,5 @@
 package se.sigma.boostapp.boost_app_java.exception;
 
-import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

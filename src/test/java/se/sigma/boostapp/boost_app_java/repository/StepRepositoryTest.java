@@ -8,13 +8,13 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import se.sigma.boostapp.boost_app_java.model.Step;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -70,7 +70,7 @@ public class StepRepositoryTest {
     @Test
     public void findByUserId_test(){
         List<Step> testlist = stepRepository.findByUserId("userA").get();
-        assertTrue(3 == testlist.size());
+        assertEquals(3, testlist.size());
     }
 
     @Test
@@ -78,19 +78,19 @@ public class StepRepositoryTest {
         stepRepository.deleteAllFromStep();
         var test = stepRepository.getAllUsers();
 
-        assertTrue(test.size() == 0);
+        assertEquals(0, test.size());
 
     }
 
     @Test
     public void  getStepCount_test_ReturnsListSizeThree(){
-        var stepList = stepRepository.getStepCount("userA",  Date.valueOf("2020-01-01"), Date.valueOf("2020-01-06"));
+        var stepList = stepRepository.getStepCount("userA",  Timestamp.valueOf("2020-01-01 01:01:01"), Timestamp.valueOf("2020-01-06 01:01:01"));
         assertEquals(3, stepList.size());
     }
 
     @Test
     public void  getStepCount_test_ReturnsListSizeOne(){
-        var stepList = stepRepository.getStepCount("userA",  Date.valueOf("2020-01-01"), Date.valueOf("2020-01-01"));
+        var stepList = stepRepository.getStepCount("userA",  Timestamp.valueOf("2020-01-01 01:01:01"), Timestamp.valueOf("2020-01-01 01:01:01"));
         assertEquals(1, stepList.size());
     }
 

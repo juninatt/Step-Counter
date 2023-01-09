@@ -1,6 +1,5 @@
 package se.sigma.boostapp.boost_app_java.exception;
 
-import java.util.UUID;
 /**
  * 
  * Not found exception
