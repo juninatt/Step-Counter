@@ -12,7 +12,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This is a Java annotation that can be used to group multiple {@see ApiResponse} annotations
+ * This is a Java annotation that can be used to group multiple {@link ApiResponse} annotations
  * together. It is intended to be used on methods in a controller class to specify the possible
  * responses that the method can return.
  *

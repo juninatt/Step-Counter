@@ -15,14 +15,19 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ *
+ CustomGlobalExceptionHandler is a class that extends ResponseEntityExceptionHandler and provides
+ customized exception handling for the application.
+ */
 @ControllerAdvice
 public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	/**
-	 * Customer handle is not found
-	 * 
-	 * @param response
-	 * @throws IOException
+	 * Handle the NotFoundException by returning a HTTP 404 Not Found status to the client.
+	 *
+	 * @param response HttpServletResponse - an object to represent the HTTP response sent to the client
+	 * @throws IOException if an input or output error is detected when the servlet handles the request
 	 */
 	@ExceptionHandler(NotFoundException.class)
 	public void customerHandleNotFound(HttpServletResponse response) throws IOException {
@@ -30,13 +35,20 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 	}
 
 	/**
-	 * Override handler for MethodArgumentNotValidException
+	 * Handle the MethodArgumentNotValidException by returning a HTTP 400 Bad Request status to the client
+	 * along with a map of field errors.
+	 *
+	 * @param notValidException The exception MethodArgumentNotValidException thrown when argument annotated with @Valid failed validation
+	 * @param httpHeaders HttpHeaders - a object represent HTTP headers
+	 * @param httpStatus HttpStatus - a object represent HTTP status
+	 * @param webRequest WebRequest - a object to provide request/response abstractions
+	 * @return a ResponseEntity with the given status, httpHeaders, and body
 	 */
 	@Override
-	public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers,
-			HttpStatus status, WebRequest request) {
+	public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException notValidException, HttpHeaders httpHeaders,
+			HttpStatus httpStatus, WebRequest webRequest) {
 		Map<String, String> errors = new HashMap<>();
-		ex.getBindingResult().getAllErrors().forEach((error) -> {
+		notValidException.getBindingResult().getAllErrors().forEach((error) -> {
 			String name = (error instanceof org.springframework.validation.FieldError) ? ((FieldError) error).getField()
 					: error.getObjectName();
 			String errorMessage = error.getDefaultMessage();

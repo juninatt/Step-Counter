@@ -29,7 +29,6 @@ import java.util.List;
  * This class is used for production and has a security token for authentication. It is a version of {@link StepControllerDev}
  * with the added security features.
  *
- * @see StepControllerDev
  * @see StepService
  * @see JwtToUserIdAsStringParser
  * @see GroupedApiResponse
@@ -72,8 +71,6 @@ public class StepController {
      * @param stepDTO A {@link StepDTO} object containing step data
      * @return A ResponseEntity containing a {@link Step} object representing the registered step,
      *         or a status 400 (BAD_REQUEST) status if the request was invalid
-     *
-     * @see StepService#createOrUpdateStepForUser(String, StepDTO)
      */
     @Operation(summary = "Register step entity")
     @GroupedApiResponse
@@ -91,8 +88,6 @@ public class StepController {
      * @param jwt         A JSON Web Token (JWT) representing the authenticated user
      * @param stepDtoList A list of {@link StepDTO} objects to register
      * @return A list of {@link StepDTO} objects representing the registered steps
-     *
-     * @see StepService#registerMultipleStepsForUser(String, List)
      */
     @Operation(summary = "Register multiple step entities")
     @GroupedApiResponse
@@ -111,8 +106,6 @@ public class StepController {
      * @param endDate   End date as String in the format "yyyy-[m]m-[d]d" (optional)
      * @return A list of {@link UserStepListDTO} objects
      * @throws NotFoundException if no step data is found for the specified users and date range
-     *
-     * @see StepService#getMultipleUserStepListDTOs(List, String, String)
      */
     @Operation(summary = "Get step count per day for a list of users by start date and end date (optional).")
     @GroupedApiResponse
@@ -131,8 +124,6 @@ public class StepController {
      * @return A ResponseEntity containing a {@link Step} object in the body,
      * or a status 204 (NO_CONTENT) if no step data is found for the authenticated user
      * @throws IllegalArgumentException if the provided JWT is invalid or does not contain a valid user ID
-     *
-     * @see StepService#getLatestStepFromUser(String)
      */
     @Operation(summary = "Get user's latest step")
     @GroupedApiResponse
@@ -151,8 +142,6 @@ public class StepController {
      * @param month  The month(1-12) for which the step count is being retrieved
      * @return A ResponseEntity containing the user's step count for the specified month,
      *         or a status 204 (NO_CONTENT) status if the step data is not available.
-     *
-     * @see StepService#getStepCountForUserYearAndMonth(String, int, int)
      */
     @Operation(summary = "Get a user's step count per month by user and year and month)")
     @GroupedApiResponse
@@ -173,8 +162,6 @@ public class StepController {
      * @param week The week (within the year) for which to retrieve the step count.
      * @return A ResponseEntity containing the user's step count for the specified week,
      *         or a status 204 (NO_CONTENT) status if the step count is not available.
-     *
-     * @see StepService#getStepCountForUserYearAndWeek(String, int, int)
      */
     @Operation(summary = "Get a user's step count per week by user and year and week)")
     @GroupedApiResponse
@@ -194,8 +181,6 @@ public class StepController {
      * @return A ResponseEntity containing a list of {@link StepDateDTO} objects representing
      *         the steps taken by the user on each day of the current week,
      *         or a status 204 (NO_CONTENT) status if the step data is not available.
-     *
-     * @see StepService#getListOfStepsForCurrentWeekFromUser(String)
      */
     @Operation(summary = "Get list of steps per day per current week)")
     @GroupedApiResponse
