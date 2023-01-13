@@ -14,7 +14,7 @@ import java.util.Optional;
  *
  */
 @Component
-public class JwtToUserIdAsStringParser implements BoostAppConverter<Jwt, String> {
+public class JwtToUserIdParser implements BoostAppConverter<Jwt, String> {
 
     private static final String OID_CLAIM = "oid";
     private static final String DEFAULT_VALUE = "";
@@ -55,15 +55,18 @@ public class JwtToUserIdAsStringParser implements BoostAppConverter<Jwt, String>
      * @param jwt the JWT to validate
      * @return true if the JWT is valid, false otherwise
      */
-
     private boolean jwtIsValid(Jwt jwt) {
-        if (jwt == null || jwt.getClaims() == null) {
-            return false;
+        var isValid = false;
+        try {
+            var thisMoment = Instant.now();
+            var expirationDate = jwt.getExpiresAt();
+            var issuedAt = jwt.getIssuedAt();
+            isValid = !Objects.requireNonNull(expirationDate).isBefore(thisMoment) && !Objects.requireNonNull(issuedAt).isAfter(thisMoment);
         }
-        var thisMoment = Instant.now();
-        var expirationDate = jwt.getExpiresAt();
-        var issuedAt = (Instant) jwt.getClaims().get("iat");
-
-        return !Objects.requireNonNull(expirationDate).isBefore(thisMoment) && !issuedAt.isAfter(thisMoment);
+        catch (NullPointerException exception) {
+            exception.printStackTrace();
+        }
+        return isValid;
     }
+
 }

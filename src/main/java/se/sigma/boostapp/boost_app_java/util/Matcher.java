@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDTO;
 import se.sigma.boostapp.boost_app_java.model.Step;
 
-import java.lang.reflect.Field;
+import javax.validation.constraints.NotNull;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,7 +28,7 @@ public class Matcher {
                 .collect(Collectors.toList());
     }
 
-    public int getWeekNumberFromDate(LocalDateTime localDateTime) {
+    public int getWeekNumberFromDate(LocalDateTime localDateTime)  {
         if (localDateTime == null) {
             return 0;
         }
@@ -68,7 +68,7 @@ public class Matcher {
         return isSameYear;
     }
 
-    public boolean endTimeIsSameDay(StepDTO stepDTO, Step step) {
+    public boolean endTimeIsSameDay(@NotNull StepDTO stepDTO,@NotNull Step step) {
         boolean isSameDay;
         try {
             isSameDay = checkEndTime(stepDTO, step, LocalDateTime::getDayOfYear)
@@ -82,51 +82,20 @@ public class Matcher {
     }
 
     private boolean checkEndTime(StepDTO stepDTO, Step step, ToIntFunction<LocalDateTime> getter) {
-        if (stepDTO == null || step == null || step.getEndTime() == null || stepDTO.getEndTime() == null) {
-            return false;
-        }
         try {
             return getter.applyAsInt(step.getEndTime()) == getter.applyAsInt(stepDTO.getEndTime());
-        } catch (DateTimeException exception) {
+        } catch (DateTimeException | NullPointerException exception) {
             System.out.println("Error when checking endTime: " + exception.getMessage());
             return false;
         }
     }
 
-    public boolean shouldCreateNewStep(StepDTO stepDTO, Step existingStep) {
-        return existingStep == null || existingStep.getStepCount() == 0 || !dtoEndedBeforeStep(stepDTO, existingStep);
+    public boolean shouldCreateNewStep(@NotNull StepDTO stepDTO,@NotNull Step existingStep) {
+            return existingStep.getStepCount() == 0 || !dtoEndedBeforeStep(stepDTO, existingStep);
     }
 
-    public boolean dtoEndedBeforeStep(StepDTO stepDto, Step currentStep) {
-        return containsNoNullValues(stepDto, currentStep) && currentStep.getEndTime().isBefore(stepDto.getEndTime());
-    }
-    public boolean containsNoNullValues(StepDTO stepDTO, Step step) {
-        boolean canBeUpdated = true;
-        try {
-            if (stepDTO == null || step == null) {
-                canBeUpdated = false;
-            } else if (hasNullValues(stepDTO) || hasNullValues(step)) {
-                canBeUpdated = false;
-            }
-        } catch (IllegalArgumentException exception) {
-            System.out.println("Object has null values: ");
-            canBeUpdated = false;
-        }
-        return canBeUpdated;
-    }
-    private boolean hasNullValues(Object object) {
-        for (Field field : object.getClass().getDeclaredFields()) {
-            field.setAccessible(true);
-            try {
-                if (field.get(object) == null) {
-                    return true;
-                }
-            } catch (IllegalAccessException exception) {
-                System.out.println("Error when performing null checks on object: " + exception.getMessage());
-                return true;
-            }
-        }
-        return false;
+    public boolean dtoEndedBeforeStep(@NotNull StepDTO stepDto,@NotNull Step currentStep) {
+        return currentStep.getEndTime().isBefore(stepDto.getEndTime());
     }
 }
 

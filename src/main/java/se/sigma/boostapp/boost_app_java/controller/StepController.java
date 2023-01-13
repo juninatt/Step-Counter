@@ -19,7 +19,7 @@ import se.sigma.boostapp.boost_app_java.dto.stepdto.UserStepListDTO;
 import se.sigma.boostapp.boost_app_java.exception.NotFoundException;
 import se.sigma.boostapp.boost_app_java.model.Step;
 import se.sigma.boostapp.boost_app_java.service.StepService;
-import se.sigma.boostapp.boost_app_java.util.parser.JwtToUserIdAsStringParser;
+import se.sigma.boostapp.boost_app_java.util.parser.JwtToUserIdParser;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -30,7 +30,7 @@ import java.util.List;
  * with the added security features.
  *
  * @see StepService
- * @see JwtToUserIdAsStringParser
+ * @see JwtToUserIdParser
  * @see GroupedApiResponse
  */
 @RestController
@@ -40,16 +40,16 @@ import java.util.List;
 public class StepController {
 
     private final StepService stepService;
-    private final JwtToUserIdAsStringParser parser;
+    private final JwtToUserIdParser parser;
 
     /**
-     * Constructs a new StepController with the given step service and JWT parser {@link JwtToUserIdAsStringParser}.
+     * Constructs a new StepController with the given step service and JWT parser {@link JwtToUserIdParser}.
      *
      * @param stepService the service to use for handling steps {@link StepService}
      */
     public StepController(final StepService stepService) {
         this.stepService = stepService;
-        parser = new JwtToUserIdAsStringParser();
+        parser = new JwtToUserIdParser();
     }
 
     /**

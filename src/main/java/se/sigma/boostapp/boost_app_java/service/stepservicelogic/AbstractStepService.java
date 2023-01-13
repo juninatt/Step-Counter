@@ -19,7 +19,7 @@ import se.sigma.boostapp.boost_app_java.repository.WeekStepRepository;
 import se.sigma.boostapp.boost_app_java.util.Matcher;
 import se.sigma.boostapp.boost_app_java.util.ObjectUpdater;
 import se.sigma.boostapp.boost_app_java.util.Sorter;
-import se.sigma.boostapp.boost_app_java.util.parser.StringToSqlDateParser;
+import se.sigma.boostapp.boost_app_java.util.parser.StringToTimeStampParser;
 
 import java.sql.Timestamp;
 import java.time.DateTimeException;
@@ -146,7 +146,7 @@ public abstract class AbstractStepService {
     }
 
     public Optional<List<UserStepListDTO>> getMultipleUserStepListDTOs(List<String> users, String startDate, String endDate) {
-        var parser = new StringToSqlDateParser();
+        var parser = new StringToTimeStampParser();
         var matchingUsers = matcher.getMatchingStrings(users, stepRepository.getAllUsers());
         var usersStepDTOs = createMultipleUserStepListDTOs(matchingUsers, parser.convert(startDate), parser.convert(endDate));
         return matchingUsers.isEmpty() ?
