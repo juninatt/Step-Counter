@@ -64,8 +64,8 @@ public class StepService extends AbstractStepService {
     }
 
     @Override
-    public Optional<List<StepDateDTO>> getListOfStepsForCurrentWeekFromUser(String userId) {
-        return super.getListOfStepsForCurrentWeekFromUser(userId);
+    public Optional<List<StepDateDTO>> getListOfStepDataForCurrentWeekFromUser(String userId) {
+        return super.getListOfStepDataForCurrentWeekFromUser(userId);
     }
 
     @Override

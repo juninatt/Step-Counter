@@ -297,7 +297,7 @@ public class StepControllerDevTest {
         stepDateDTOList.add(new StepDateDTO(userId, Date.valueOf("2020-06-07"), 2, 100L));
         stepDateDTOList.add(new StepDateDTO(userId, Date.valueOf("2020-06-08"), 3, 300L));
 
-        when(service.getListOfStepsForCurrentWeekFromUser(any(String.class))).thenReturn(Optional.of(stepDateDTOList));
+        when(service.getListOfStepDataForCurrentWeekFromUser(any(String.class))).thenReturn(Optional.of(stepDateDTOList));
 
         MvcResult result = mvc.perform(get(url, userId))
                 .andExpect(status().isOk())
@@ -315,7 +315,7 @@ public class StepControllerDevTest {
     public void getUserWeekStepList_withInValidInput_ReturnsStatusNoContent() throws Exception {
         String url = "/steps/stepcount/{userId}/currentweek";
 
-        when(service.getListOfStepsForCurrentWeekFromUser(invalidUserId)).thenReturn(Optional.empty());
+        when(service.getListOfStepDataForCurrentWeekFromUser(invalidUserId)).thenReturn(Optional.empty());
 
         mvc.perform(get(url, invalidUserId))
                 .andExpect(status().isNoContent())

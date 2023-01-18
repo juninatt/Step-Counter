@@ -40,13 +40,13 @@ public class StarPointService {
     public List<BulkUserStarPointsDTO> getStarPointsByMultipleUsers(RequestStarPointsDTO requestStarPointsDTO) {
         List<String> users = requestStarPointsDTO.getUsers();
         if(users == null || users.isEmpty()) {
-            users = stepRepository.getAllUsers();
+            users = stepRepository.getListOfAllDistinctUserId();
         }
         List<BulkUserStarPointsDTO> starPointsDTO = new ArrayList<>();
         for(String user: users) {
             var startTime = requestStarPointsDTO.getStartTime();
             var endTime = requestStarPointsDTO.getEndTime();
-            var optionalSum = stepRepository.getStepCountSum(user, startTime, endTime);
+            var optionalSum = stepRepository.getStepCountByUserIdAndDateRange(user, startTime, endTime);
             optionalSum.ifPresent(integer -> starPointsDTO.add(new BulkUserStarPointsDTO(user, new StarPointDateDTO("Steps", "Walking", startTime.toString(), endTime.toString(),
                     (int) Math.ceil(integer * starPointFactor)))));
         }

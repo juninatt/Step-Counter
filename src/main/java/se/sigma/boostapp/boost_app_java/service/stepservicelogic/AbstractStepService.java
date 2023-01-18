@@ -23,7 +23,9 @@ import se.sigma.boostapp.boost_app_java.util.parser.StringToTimeStampParser;
 
 import java.sql.Timestamp;
 import java.time.DateTimeException;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -51,6 +53,7 @@ public abstract class AbstractStepService {
     public Optional<Step> createOrUpdateStepForUser(String userId, StepDTO stepData) {
         try {
             Step latestStepForUser = getLatestStepFromUser(userId).orElse(null);
+            assert latestStepForUser != null;
             return matcher.shouldCreateNewStep(stepData, latestStepForUser) ?
                     createAndSaveNewStepForUser(userId, stepData) :
                     updateAndSaveExistingStep(latestStepForUser, stepData);
@@ -147,7 +150,7 @@ public abstract class AbstractStepService {
 
     public Optional<List<UserStepListDTO>> getMultipleUserStepListDTOs(List<String> users, String startDate, String endDate) {
         var parser = new StringToTimeStampParser();
-        var matchingUsers = matcher.getMatchingStrings(users, stepRepository.getAllUsers());
+        var matchingUsers = matcher.getMatchingStrings(users, stepRepository.getListOfAllDistinctUserId());
         var usersStepDTOs = createMultipleUserStepListDTOs(matchingUsers, parser.convert(startDate), parser.convert(endDate));
         return matchingUsers.isEmpty() ?
                 Optional.empty() :
@@ -155,12 +158,12 @@ public abstract class AbstractStepService {
     }
 
     public Optional<Integer> getStepCountForUserYearAndMonth(String userId, int year, int month) {
-        return Optional.of(monthStepRepository.getStepCountMonth(userId, year, month)
+        return Optional.of(monthStepRepository.getStepCountByUserIdYearAndMonth(userId, year, month)
                 .orElse(0));
     }
 
     public Optional<Integer> getStepCountForUserYearAndWeek(String userId, int year, int week) {
-        return Optional.of(weekStepRepository.getStepCountWeek(userId, year, week)
+        return Optional.of(weekStepRepository.getStepCountByUserIdYearAndWeek(userId, year, week)
                 .orElse(0));
     }
 
@@ -168,15 +171,17 @@ public abstract class AbstractStepService {
         return Optional.of(stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId)
                 .orElse(new Step(userId, 0, LocalDateTime.now())));
     }
-    public Optional<List<StepDateDTO>> getListOfStepsForCurrentWeekFromUser(String userId) {
-        var stepList = stepRepository.findByUserId(userId)
-                .orElse(List.of(new Step(userId, 0, LocalDateTime.now())));
+
+    public Optional<List<StepDateDTO>> getListOfStepDataForCurrentWeekFromUser(String userId) {
+        LocalDateTime now = LocalDateTime.now();
+        var stepList = stepRepository.getStepsByUserIdAndEndTimeBetween(userId, now.with(DayOfWeek.MONDAY).atZone(ZoneId.systemDefault()), now.with(DayOfWeek.SUNDAY).atZone(ZoneId.systemDefault()))
+                .orElse(List.of(new Step(userId, 0, now)));
         return Optional.of(createStepDateDTOsForUser(userId, stepList));
     }
 
     private List<UserStepListDTO> createMultipleUserStepListDTOs(List<String> users, Timestamp firstDate, Timestamp lastDate) {
         List<UserStepListDTO> userStepListDTOList = new ArrayList<>();
-        users.forEach(user -> userStepListDTOList.add(new UserStepListDTO(user, stepRepository.getStepCount(user, firstDate, lastDate))));
+        users.forEach(user -> userStepListDTOList.add(new UserStepListDTO(user, stepRepository.getStepDataByUserIdAndDateRange(user, firstDate, lastDate))));
         return userStepListDTOList;
     }
 

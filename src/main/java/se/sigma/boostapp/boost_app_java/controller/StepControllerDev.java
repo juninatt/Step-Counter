@@ -180,7 +180,7 @@ public class StepControllerDev {
     @GroupedApiResponse
     @GetMapping(value = {"/stepcount/{userId}/currentweek"})
     public ResponseEntity<List<StepDateDTO>> getUserWeekSteps(final @PathVariable String userId) {
-        return stepService.getListOfStepsForCurrentWeekFromUser(userId)
+        return stepService.getListOfStepDataForCurrentWeekFromUser(userId)
                 .map(ResponseEntity::ok)
                 .orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
     }

@@ -11,6 +11,7 @@ import se.sigma.boostapp.boost_app_java.model.Step;
 import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +20,8 @@ import java.util.Optional;
  * Extends {@link JpaRepository} to provide basic CRUD operations and additional
  * methods for querying the database for specific information about steps.
  * This class is annotated with {@link Repository} to mark it as a Spring Data repository.
+ *
+ * @see QueryHelper
  */
 @Repository
 public interface StepRepository extends JpaRepository<Step, Long> {
@@ -30,7 +33,7 @@ public interface StepRepository extends JpaRepository<Step, Long> {
      */
     @Transactional
     @Modifying
-    @Query("DELETE FROM Step")
+    @Query(QueryHelper.DELETE_ALL_STEP)
     void deleteAllFromStep();
 
 
@@ -39,7 +42,9 @@ public interface StepRepository extends JpaRepository<Step, Long> {
      * @param userId A user ID to search for
      * @return An Optional containing a list of steps for the given user, or an empty Optional if no steps were found
      */
-    Optional<List<Step>> findByUserId(@Param("userId") String userId);
+    Optional<List<Step>> getListOfStepsByUserId(@Param("userId") String userId);
+
+    Optional<List<Step>> getStepsByUserIdAndEndTimeBetween(@Param("userId") String userId, @Param("startTime") ZonedDateTime startTime, @Param("endTime") ZonedDateTime endOfWeek);
 
 
     /**
@@ -50,15 +55,16 @@ public interface StepRepository extends JpaRepository<Step, Long> {
      @param endDate To end date
      @return A list of {@link StepDateDTO} objects containing the date and step count for the specified user, date range
      */
-    @Query("SELECT new se.sigma.boostapp.boost_app_java.dto.stepdto.StepDateDTO(cast(s.startTime as date), sum(s.stepCount)) FROM Step s WHERE s.userId = :userId AND cast(s.startTime as date) >= :startDate AND cast(s.startTime as date) <= :endDate GROUP BY s.userId, cast(s.startTime as date) ORDER BY cast(s.startTime as date) ASC")
-    List<StepDateDTO> getStepCount(@Param("userId") String userId, @Param("startDate") Timestamp startDate, @Param("endDate") Timestamp endDate);
+    @Query(QueryHelper.SELECT_STEP_DATA_WITHIN_TIME_RANGE)
+    List<StepDateDTO> getStepDataByUserIdAndDateRange(@Param("userId") String userId, @Param("startDate") Timestamp startDate, @Param("endDate") Timestamp endDate);
+
 
     /**
      * Retrieves all distinct users from step table
      * @return A list of user id:s from the step table
      */
-    @Query("SELECT DISTINCT s.userId FROM Step s")
-    List<String> getAllUsers();
+    @Query(QueryHelper.SELECT_ALL_USER_ID)
+    List<String> getListOfAllDistinctUserId();
 
     /**
      * The sum of the steps from step table using userId, start,end and uploaded time
@@ -68,8 +74,8 @@ public interface StepRepository extends JpaRepository<Step, Long> {
      * @param endTime   To end time
      * @return An optional containing sum of the steps from step table using userId, start,end and uploaded time.
      */
-    @Query("SELECT sum(s.stepCount) FROM Step s WHERE s.userId = :userId AND s.uploadedTime >= :startTime AND s.uploadedTime <= :endTime")
-    Optional<Integer> getStepCountSum(@Param("userId") String userId, @Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
+    @Query(QueryHelper.SELECT_STEP_COUNT_WITHIN_TIME_RANGE)
+    Optional<Integer> getStepCountByUserIdAndDateRange(@Param("userId") String userId, @Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
 
     /**
      * retrieves the latest registered step entity for a user with the given user id.
@@ -78,7 +84,6 @@ public interface StepRepository extends JpaRepository<Step, Long> {
      @return An optional containing a {@link Step} from the step-table using userId.
      */
     Optional<Step> findFirstByUserIdOrderByEndTimeDesc(String userId);
-
 }
 
 

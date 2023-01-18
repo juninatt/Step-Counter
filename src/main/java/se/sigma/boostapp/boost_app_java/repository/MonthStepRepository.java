@@ -13,6 +13,8 @@ import java.util.Optional;
  * This class extends {@link JpaRepository}, and provides additional custom
  * methods for querying the month_step table in the database.
  * This class is annotated with {@link Repository} to mark it as a Spring Data repository.
+ *
+ * @see QueryHelper
  */
 @Repository
 public interface MonthStepRepository extends JpaRepository<MonthStep, Long> {
@@ -36,8 +38,8 @@ public interface MonthStepRepository extends JpaRepository<MonthStep, Long> {
      * @param month  Actual month
      * @return Optional of Integer
      */
-    @Query("SELECT m.steps FROM MonthStep m WHERE m.userId = :userId AND m.year = :year AND m.month = :month")
-    Optional<Integer> getStepCountMonth(@Param("userId") String userId, @Param("year") int year, @Param("month") int month);
+    @Query(QueryHelper.SELECT_STEP_COUNT_YEAR_MONTH)
+    Optional<Integer> getStepCountByUserIdYearAndMonth(@Param("userId") String userId, @Param("year") int year, @Param("month") int month);
 }
 
 

@@ -13,6 +13,8 @@ import java.util.Optional;
  * This class extends {@link JpaRepository}, and provides additional custom
  * methods for querying the month_step table in the database.
  * This class is annotated with {@link Repository} to mark it as a Spring Data repository.
+ *
+ * @see QueryHelper
  */
 @Repository
 public interface WeekStepRepository extends JpaRepository<WeekStep, Long> {
@@ -36,7 +38,7 @@ public interface WeekStepRepository extends JpaRepository<WeekStep, Long> {
      * @param week    The week from which to retrieve the data
      * @return        An optional containing the step count for the given user, year and week
      */
-    @Query("SELECT w.steps FROM WeekStep w WHERE w.userId = :userId AND w.year = :year AND w.week = :week")
-    Optional<Integer> getStepCountWeek(@Param("userId") String userId, @Param("year") int year, @Param("week") int week);
+    @Query(QueryHelper.SELECT_STEP_COUNT_YEAR_AND_WEEK)
+    Optional<Integer> getStepCountByUserIdYearAndWeek(@Param("userId") String userId, @Param("year") int year, @Param("week") int week);
 
 }

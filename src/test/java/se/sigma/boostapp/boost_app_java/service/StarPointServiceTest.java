@@ -42,14 +42,14 @@ public class StarPointServiceTest {
     public void testNullUsers_CallsGetAllUsers() {
         List<String> emptyList = null;
         starPointServiceTest.getStarPointsByMultipleUsers(new RequestStarPointsDTO(emptyList, STARTTIME, ENDTIME));
-        verify(mockedStepRepository).getAllUsers();
+        verify(mockedStepRepository).getListOfAllDistinctUserId();
     }
 
     @Test
     public void testEmptyUsers_CallsGetAllUsers() {
         List<String> emptyList = new ArrayList<>();
         starPointServiceTest.getStarPointsByMultipleUsers(new RequestStarPointsDTO(emptyList, STARTTIME, ENDTIME));
-        verify(mockedStepRepository).getAllUsers();
+        verify(mockedStepRepository).getListOfAllDistinctUserId();
     }
 
     @Test(expected = DateTimeParseException.class)
@@ -69,7 +69,7 @@ public class StarPointServiceTest {
     @Test(expected = NullPointerException.class)
     public void testNullStartAndEndLDTWithBadMock_throwsNull() {
         List<String> users = List.of("1", "2");
-        when(mockedStepRepository.getStepCountSum("1", null, null)).thenReturn(Optional.of(10));
+        when(mockedStepRepository.getStepCountByUserIdAndDateRange("1", null, null)).thenReturn(Optional.of(10));
         starPointServiceTest.getStarPointsByMultipleUsers(new RequestStarPointsDTO(users, null, null));
     }
 
@@ -78,7 +78,7 @@ public class StarPointServiceTest {
         List<String> users = new ArrayList<>(List.of("1"));
         RequestStarPointsDTO correctData = new RequestStarPointsDTO(users, STARTTIME, ENDTIME);
 
-        when(mockedStepRepository.getStepCountSum("1", STARTTIME, ENDTIME)).thenReturn(Optional.of(10));
+        when(mockedStepRepository.getStepCountByUserIdAndDateRange("1", STARTTIME, ENDTIME)).thenReturn(Optional.of(10));
 
         var bulkUsers = starPointServiceTest.getStarPointsByMultipleUsers(correctData);
         assertEquals(1, bulkUsers.size());
@@ -90,8 +90,8 @@ public class StarPointServiceTest {
         List<String> users = new ArrayList<>(List.of("1", "2"));
         RequestStarPointsDTO correctData = new RequestStarPointsDTO(users, STARTTIME, ENDTIME);
 
-        when(mockedStepRepository.getStepCountSum("1", STARTTIME, ENDTIME)).thenReturn(Optional.of(10));
-        when(mockedStepRepository.getStepCountSum("2", STARTTIME, ENDTIME)).thenReturn(Optional.of(20));
+        when(mockedStepRepository.getStepCountByUserIdAndDateRange("1", STARTTIME, ENDTIME)).thenReturn(Optional.of(10));
+        when(mockedStepRepository.getStepCountByUserIdAndDateRange("2", STARTTIME, ENDTIME)).thenReturn(Optional.of(20));
 
         var bulkUsers = starPointServiceTest.getStarPointsByMultipleUsers(correctData);
         assertEquals(2, bulkUsers.size());

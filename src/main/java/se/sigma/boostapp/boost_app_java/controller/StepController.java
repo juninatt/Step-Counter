@@ -185,8 +185,8 @@ public class StepController {
     @Operation(summary = "Get list of steps per day per current week)")
     @GroupedApiResponse
     @GetMapping(value = {"/stepcount/currentweek"})
-    public ResponseEntity<List<StepDateDTO>> getUserWeekSteps(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt) {
-        return stepService.getListOfStepsForCurrentWeekFromUser(parser.convert(jwt))
+    public ResponseEntity<List<StepDateDTO>> getStepDataByUserForCurrentWeek(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt) {
+        return stepService.getListOfStepDataForCurrentWeekFromUser(parser.convert(jwt))
                 .map(ResponseEntity::ok)
                 .orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
     }

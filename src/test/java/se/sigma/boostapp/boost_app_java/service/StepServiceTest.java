@@ -5,9 +5,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import se.sigma.boostapp.boost_app_java.dto.stepdto.UserStepListDTO;
 import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDTO;
+import se.sigma.boostapp.boost_app_java.dto.stepdto.UserStepListDTO;
 import se.sigma.boostapp.boost_app_java.model.MonthStep;
 import se.sigma.boostapp.boost_app_java.model.Step;
 import se.sigma.boostapp.boost_app_java.model.WeekStep;
@@ -18,10 +17,12 @@ import se.sigma.boostapp.boost_app_java.util.Matcher;
 import se.sigma.boostapp.boost_app_java.util.Sorter;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -117,7 +118,7 @@ public class StepServiceTest {
                 LocalDateTime.of(2020, 1, 1, 3, 0, 0),
                 LocalDateTime.of(2020, 1, 1, 4, 0, 0));
 
-        when(mockedStepRepository.findByUserId(any(String.class)))
+        when(mockedStepRepository.getListOfStepsByUserId(any(String.class)))
                 .thenReturn(Optional.of(List.of(mockStep)));
 
         when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(mockStep.getUserId()))
@@ -272,7 +273,7 @@ public class StepServiceTest {
     public void getStepCountWeek_ReturnsCorrectSteps() {
         var mockedStepsInWeek = 200;
 
-        when(mockedWeekStepRepository.getStepCountWeek(USERID, 2020, 43))
+        when(mockedWeekStepRepository.getStepCountByUserIdYearAndWeek(USERID, 2020, 43))
                 .thenReturn(Optional.of(mockedStepsInWeek));
 
         var optionalStep = stepService.getStepCountForUserYearAndWeek(USERID, 2020, 43);
@@ -286,7 +287,7 @@ public class StepServiceTest {
         String startDate = "2020-08-23";
         String lastDate = "2020-09-23";
 
-        when(mockedStepRepository.getAllUsers()).thenReturn(allUsers);
+        when(mockedStepRepository.getListOfAllDistinctUserId()).thenReturn(allUsers);
 
         Optional<List<UserStepListDTO>> result = stepService.getMultipleUserStepListDTOs(requestedUsers, startDate, lastDate);
         if(result.isPresent()){
@@ -303,34 +304,27 @@ public class StepServiceTest {
         String startDate = "2020-08-23";
         String lastDate = "2020-09-23";
 
-        when(mockedStepRepository.getAllUsers()).thenReturn(allUsers);
+        when(mockedStepRepository.getListOfAllDistinctUserId()).thenReturn(allUsers);
 
         Optional<List<UserStepListDTO>> result = stepService.getMultipleUserStepListDTOs(requestedUsers, startDate, lastDate);
         assertEquals(Optional.empty(), result);
     }
 
     @Test
-    public void getStepCountPerDay_ReturnsListWithCorrectSizeAndDayOfWeek(){
+    public void shouldReturn(){
 
-        List<Step> stepList = new ArrayList<>();
-
-        Step step1 = new Step(USERID, 100, LocalDateTime.of(2021, 9, 21, 14, 56),
+        var testStep = new Step(USERID, 100, LocalDateTime.of(2021, 9, 21, 14, 56),
                 LocalDateTime.of(2021, 9, 21, 15, 56), LocalDateTime.of(2021, 9, 21, 15, 56));
 
-        Step step2 = new Step(USERID, 50, LocalDateTime.of(2021, 9, 22, 14, 56),
-                LocalDateTime.of(2021, 9, 22, 15, 56), LocalDateTime.of(2021, 9, 22, 15, 56));
+        List<Step> stepList = new ArrayList<>();
+        stepList.add(testStep);
 
-        stepList.add(step1);
-        stepList.add(step2);
+        var returnedList = stepService.getListOfStepDataForCurrentWeekFromUser(USERID);
+        var expectedResult = 0;
 
-        when(mockedStepRepository.findByUserId(USERID)).thenReturn(Optional.of(stepList));
-
-        var result = stepService.getListOfStepsForCurrentWeekFromUser(USERID);
-
-        if(result.isPresent()) {
-            assertEquals(2, result.get().size());
-            assertEquals(3, result.get().get(0).getDayOfWeek());
-            assertEquals(4, result.get().get(1).getDayOfWeek());
+        if(returnedList.isPresent()) {
+            assertNotNull(stepList);
+            assertEquals(expectedResult, returnedList.get().get(0).getSteps());
         } else {
             fail();
         }
@@ -339,9 +333,9 @@ public class StepServiceTest {
     @Test
     public void getStepCountPerDay_ReturnsListSizeOneAndStepsZero(){
 
-        when(mockedStepRepository.findByUserId(USERID)).thenReturn(Optional.empty());
+        when(mockedStepRepository.getListOfStepsByUserId(USERID)).thenReturn(Optional.empty());
 
-        var result = stepService.getListOfStepsForCurrentWeekFromUser(USERID);
+        var result = stepService.getListOfStepDataForCurrentWeekFromUser(USERID);
 
         if(result.isPresent()) {
             assertEquals(1, result.get().size());

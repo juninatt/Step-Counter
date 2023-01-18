@@ -62,21 +62,21 @@ public class StepRepositoryTest {
 
     @Test
     public void getAllUsers_Test() {
-        List<String> userList = stepRepository.getAllUsers();
+        List<String> userList = stepRepository.getListOfAllDistinctUserId();
         assertThat(userList.size()).isEqualTo(3);
     }
 
 
     @Test
     public void findByUserId_test(){
-        List<Step> testlist = stepRepository.findByUserId("userA").get();
+        List<Step> testlist = stepRepository.getListOfStepsByUserId("userA").get();
         assertEquals(3, testlist.size());
     }
 
     @Test
     public void deleteAllFromStep_test(){
         stepRepository.deleteAllFromStep();
-        var test = stepRepository.getAllUsers();
+        var test = stepRepository.getListOfAllDistinctUserId();
 
         assertEquals(0, test.size());
 
@@ -84,19 +84,19 @@ public class StepRepositoryTest {
 
     @Test
     public void  getStepCount_test_ReturnsListSizeThree(){
-        var stepList = stepRepository.getStepCount("userA",  Timestamp.valueOf("2020-01-01 01:01:01"), Timestamp.valueOf("2020-01-06 01:01:01"));
+        var stepList = stepRepository.getStepDataByUserIdAndDateRange("userA",  Timestamp.valueOf("2020-01-01 01:01:01"), Timestamp.valueOf("2020-01-06 01:01:01"));
         assertEquals(3, stepList.size());
     }
 
     @Test
     public void  getStepCount_test_ReturnsListSizeOne(){
-        var stepList = stepRepository.getStepCount("userA",  Timestamp.valueOf("2020-01-01 01:01:01"), Timestamp.valueOf("2020-01-01 01:01:01"));
+        var stepList = stepRepository.getStepDataByUserIdAndDateRange("userA",  Timestamp.valueOf("2020-01-01 01:01:01"), Timestamp.valueOf("2020-01-01 01:01:01"));
         assertEquals(1, stepList.size());
     }
 
     @Test
     public void getStepCountSum_test(){
-        var stepSum = stepRepository.getStepCountSum("userA",  LocalDateTime.parse("2020-01-01T00:00:00"), LocalDateTime.parse("2020-01-06T01:00:00"));
+        var stepSum = stepRepository.getStepCountByUserIdAndDateRange("userA",  LocalDateTime.parse("2020-01-01T00:00:00"), LocalDateTime.parse("2020-01-06T01:00:00"));
         assertEquals(Optional.of(2000), stepSum);
     }
 }

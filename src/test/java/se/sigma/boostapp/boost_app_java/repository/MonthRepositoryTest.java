@@ -18,14 +18,14 @@ public class MonthRepositoryTest {
     MonthStepRepository monthStepRepository;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MonthStep m1 = new MonthStep("daniel", 12, 2020, 300);
         monthStepRepository.save(m1);
     }
 
     @Test
     public void getStepCountMonth_test() {
-       var test =  monthStepRepository.getStepCountMonth("daniel", 2020, 12);
+       var test =  monthStepRepository.getStepCountByUserIdYearAndMonth("daniel", 2020, 12);
         assertEquals(300, (int) test.get());
     }
 }
