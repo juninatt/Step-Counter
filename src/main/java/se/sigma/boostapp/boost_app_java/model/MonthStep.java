@@ -35,6 +35,9 @@ public class MonthStep {
     @Column(name = "steps")
     private int steps;
 
+    public MonthStep() {
+    }
+
     public MonthStep(String userId, int month, int year, int steps) {
         this.userId = userId;
         this.month = month;

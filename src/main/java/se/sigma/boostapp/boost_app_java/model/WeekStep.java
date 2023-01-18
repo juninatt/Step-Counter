@@ -32,6 +32,9 @@ public class WeekStep {
     @Column(name = "steps")
     private int steps;
 
+    public WeekStep() {
+    }
+
     public WeekStep(String userId, int week, int year, int steps) {
         this.userId = userId;
         this.week = week;

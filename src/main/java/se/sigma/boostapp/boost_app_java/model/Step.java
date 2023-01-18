@@ -40,6 +40,9 @@ public class Step {
     @Column(name = "uploaded", nullable = false)
     private LocalDateTime uploadedTime;
 
+    public Step() {
+    }
+
     public Step(String userId, int stepCount, LocalDateTime start, LocalDateTime end, LocalDateTime uploadedTime) {
         this.userId = userId;
         this.stepCount = stepCount;
