@@ -13,7 +13,6 @@ import se.sigma.boostapp.boost_app_java.model.WeekStep;
 import se.sigma.boostapp.boost_app_java.repository.MonthStepRepository;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 import se.sigma.boostapp.boost_app_java.repository.WeekStepRepository;
-import se.sigma.boostapp.boost_app_java.util.Matcher;
 import se.sigma.boostapp.boost_app_java.util.Sorter;
 
 import java.time.LocalDateTime;
@@ -44,14 +43,11 @@ public class StepServiceTest {
 
     Sorter sorter;
 
-    Matcher matcher;
-
     @Before
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
         stepService = new StepService(mockedStepRepository, mockedMonthStepRepository, mockedWeekStepRepository);
         sorter = new Sorter();
-        matcher = new Matcher();
     }
 
     @Test

@@ -14,11 +14,12 @@ import se.sigma.boostapp.boost_app_java.model.WeekStep;
 import se.sigma.boostapp.boost_app_java.repository.MonthStepRepository;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 import se.sigma.boostapp.boost_app_java.repository.WeekStepRepository;
-import se.sigma.boostapp.boost_app_java.util.Matcher;
 import se.sigma.boostapp.boost_app_java.util.ObjectUpdater;
 import se.sigma.boostapp.boost_app_java.util.Sorter;
+import se.sigma.boostapp.boost_app_java.util.StringComparator;
 import se.sigma.boostapp.boost_app_java.util.parser.StringToTimeStampParser;
 
+import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.time.DateTimeException;
 import java.time.DayOfWeek;
@@ -35,8 +36,6 @@ public abstract class AbstractStepService {
     private final StepRepository stepRepository;
     private final MonthStepRepository monthStepRepository;
     private final WeekStepRepository weekStepRepository;
-
-    private final Matcher matcher = new Matcher();
     private final Sorter sorter = new Sorter();
 
 
@@ -52,7 +51,7 @@ public abstract class AbstractStepService {
         try {
             Step latestStepForUser = getLatestStepFromUser(userId).orElse(null);
             assert latestStepForUser != null;
-            return matcher.shouldCreateNewStep(stepData, latestStepForUser) ?
+            return shouldCreateNewStep(stepData, latestStepForUser) ?
                     createAndSaveNewStepForUser(userId, stepData) :
                     updateAndSaveExistingStep(latestStepForUser, stepData);
         } catch (DataAccessException e) {
@@ -161,8 +160,8 @@ public abstract class AbstractStepService {
 
     public Optional<List<UserStepListDTO>> getMultipleUserStepListDTOs(List<String> users, String startDate, String endDate) {
         var parser = new StringToTimeStampParser();
-        var matchingUsers = matcher.getMatchingStrings(users, stepRepository.getListOfAllDistinctUserId());
-        var usersStepDTOs = createMultipleUserStepListDTOs(matchingUsers, parser.convert(startDate), parser.convert(endDate));
+        var matchingUsers = StringComparator.getMatching(users, stepRepository.getListOfAllDistinctUserId());
+        var usersStepDTOs = createMultipleUserStepListDTOs(new ArrayList<>(matchingUsers), parser.convert(startDate), parser.convert(endDate));
         return matchingUsers.isEmpty() ?
                 Optional.empty() :
                 Optional.of(usersStepDTOs);
@@ -204,6 +203,9 @@ public abstract class AbstractStepService {
                     return dto;
                 })
                 .collect(Collectors.toList());
+    }
+    private boolean shouldCreateNewStep(@NotNull StepDTO stepDto, @NotNull Step existingStep) {
+        return existingStep.getStepCount() == 0 || !existingStep.getEndTime().isBefore(stepDto.getEndTime());
     }
 
     public void deleteStepTable() {
