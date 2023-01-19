@@ -9,6 +9,9 @@ public class StepDateDTO {
     private String userId;
     private int dayOfWeek;
 
+    public StepDateDTO() {
+    }
+
     public StepDateDTO(String userId, Date date, int dayOfWeek, long steps) {
         this.steps = steps;
         this.userId = userId;
@@ -45,6 +48,9 @@ public class StepDateDTO {
 
     public int getDayOfWeek() {
         return dayOfWeek;
+    }
+    public void setDayOfWeek(int dayOfWeek) {
+        this.dayOfWeek = dayOfWeek;
     }
 
     public String getUserId() {

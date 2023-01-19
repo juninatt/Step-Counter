@@ -244,32 +244,6 @@ public class StepServiceTest {
     }
 
     @Test
-    public void getWeekNumber_ReturnsCorrectWeek() {
-
-        LocalDateTime inputDate = LocalDateTime.of(2020, 10, 22, 14, 56);
-
-        int returnWeek = matcher.getWeekNumberFromDate(inputDate);
-
-        assertEquals(43, returnWeek);
-    }
-    @Test
-    public void getWeekNumber_ReturnsOneForFirstWeek() {
-        LocalDateTime inputDate = LocalDateTime.of(2021, 1, 1, 1, 1);
-
-        int weekNumber = matcher.getWeekNumberFromDate(inputDate);
-
-        assertEquals(1, weekNumber);
-    }
-    @Test
-    public void getWeekNumber_Returns52ForLastWeek() {
-        LocalDateTime inputDate = LocalDateTime.of(2022, 12, 30, 23, 59);
-
-        int weekNumber = matcher.getWeekNumberFromDate(inputDate);
-
-        assertEquals(52, weekNumber);
-    }
-
-    @Test
     public void getStepCountWeek_ReturnsCorrectSteps() {
         var mockedStepsInWeek = 200;
 

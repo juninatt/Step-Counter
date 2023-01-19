@@ -1,6 +1,5 @@
 package se.sigma.boostapp.boost_app_java.util;
 
-import org.springframework.stereotype.Component;
 import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDTO;
 import se.sigma.boostapp.boost_app_java.model.MonthStep;
 import se.sigma.boostapp.boost_app_java.model.Step;
@@ -13,7 +12,6 @@ import javax.validation.constraints.NotNull;
  * This class provide the functionality of updating step, monthStep and weekStep with stepDTO
  *
  */
-@Component
 public class ObjectUpdater {
 
     private static final ObjectUpdater INSTANCE = new ObjectUpdater();

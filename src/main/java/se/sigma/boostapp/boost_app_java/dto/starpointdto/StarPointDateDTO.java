@@ -12,6 +12,9 @@ public class StarPointDateDTO {
 
     private int starPoints;
 
+    public StarPointDateDTO() {
+    }
+
     public StarPointDateDTO(String activity, String description, String startTime, String endTime, int starPoints) {
         this.activity = activity;
         this.description = description;

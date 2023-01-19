@@ -1,8 +1,7 @@
 package se.sigma.boostapp.boost_app_java.util.parser;
 
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.stereotype.Component;
-import se.sigma.boostapp.boost_app_java.converter.BoostAppConverter;
+import se.sigma.boostapp.boost_app_java.util.BoostAppConverter;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -13,7 +12,6 @@ import java.util.Optional;
  * If the JWT is invalid or the user ID claim is not present, a default value is returned.
  *
  */
-@Component
 public class JwtToUserIdParser implements BoostAppConverter<Jwt, String> {
 
     private static final String OID_CLAIM = "oid";

@@ -3,13 +3,11 @@ package se.sigma.boostapp.boost_app_java.service.stepservicelogic;
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
-import se.sigma.boostapp.boost_app_java.converter.implementation.StepDTOtoMonthStepConverter;
-import se.sigma.boostapp.boost_app_java.converter.implementation.StepDTOtoStepConverter;
-import se.sigma.boostapp.boost_app_java.converter.implementation.StepDTOtoWeekStepConverter;
-import se.sigma.boostapp.boost_app_java.converter.implementation.StepToStepDateDTOConverter;
 import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDTO;
 import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDateDTO;
 import se.sigma.boostapp.boost_app_java.dto.stepdto.UserStepListDTO;
+import se.sigma.boostapp.boost_app_java.mapper.DateHelper;
+import se.sigma.boostapp.boost_app_java.mapper.StepMapper;
 import se.sigma.boostapp.boost_app_java.model.MonthStep;
 import se.sigma.boostapp.boost_app_java.model.Step;
 import se.sigma.boostapp.boost_app_java.model.WeekStep;
@@ -63,9 +61,13 @@ public abstract class AbstractStepService {
     }
 
     private Optional<Step> createAndSaveNewStepForUser(String userId, StepDTO stepDto) {
-        return addStepToWeekAndMonthTables(userId, stepDto) ?
-                Optional.of(stepRepository.save(stepDTOtoStep(userId, stepDto))) :
-                Optional.empty();
+        if (addStepToWeekAndMonthTables(userId, stepDto)) {
+            var step = StepMapper.mapper.stepDtoToStep(stepDto);
+            step.setUserId(userId);
+            return Optional.of(stepRepository.save(step));
+        } else {
+            return Optional.empty();
+        }
     }
 
     private boolean addStepToWeekAndMonthTables(String userID, StepDTO stepDTO) {
@@ -77,12 +79,15 @@ public abstract class AbstractStepService {
         var updater = ObjectUpdater.getInstance();
         boolean successfullyAdded = false;
         try {
-            var week = matcher.getWeekNumberFromDate(stepDTO.getEndTime());
-            var converter = new StepDTOtoWeekStepConverter(userId);
+            var week = DateHelper.getWeek(stepDTO.getEndTime());
             weekStepRepository.findByUserIdAndYearAndWeek(userId, stepDTO.getEndTime().getYear(), week)
                     .ifPresentOrElse(
                             weekStep -> weekStepRepository.save(updater.updateWeekStep(weekStep, stepDTO)),
-                            () -> weekStepRepository.save(converter.convert(stepDTO))
+                            () -> {
+                                var weekStep = StepMapper.mapper.stepDtoToWeekStep(stepDTO);
+                                weekStep.setUserId(userId);
+                                weekStepRepository.save(weekStep);
+                            }
                     );
             successfullyAdded = true;
         } catch (NullPointerException | DataAccessException exception) {
@@ -98,10 +103,13 @@ public abstract class AbstractStepService {
         var updater = ObjectUpdater.getInstance();
         boolean successfullyAdded = false;
         try {
-            var converter = new StepDTOtoMonthStepConverter(userId);
             monthStepRepository.findByUserIdAndYearAndMonth(userId, stepDTO.getYear(), stepDTO.getMonth())
                     .ifPresentOrElse(monthStep -> monthStepRepository.save(updater.updateMonthStep(monthStep, stepDTO)),
-                            () -> monthStepRepository.save(converter.convert(stepDTO)));
+                            () -> {
+                        var weekStep = StepMapper.mapper.stepDtoToMonthStep(stepDTO);
+                        weekStep.setUserId(userId);
+                        monthStepRepository.save(weekStep);
+                            });
             successfullyAdded = true;
         } catch (NullPointerException | DataAccessException | ConversionFailedException exception) {
             exception.printStackTrace();
@@ -140,12 +148,15 @@ public abstract class AbstractStepService {
     }
 
     private void saveFirstStepForUser(String userId, StepDTO stepDTO) {
-        var stepConverter = new StepDTOtoStepConverter(userId);
-        var weekConverter = new StepDTOtoWeekStepConverter(userId);
-        var monthConverter = new StepDTOtoMonthStepConverter(userId);
-        stepRepository.save(stepConverter.convert(stepDTO));
-        weekStepRepository.save(weekConverter.convert(stepDTO));
-        monthStepRepository.save(monthConverter.convert(stepDTO));
+        var step =StepMapper.mapper.stepDtoToStep(stepDTO);
+        step.setUserId(userId);
+        stepRepository.save(step);
+        var weekStep =StepMapper.mapper.stepDtoToWeekStep(stepDTO);
+        weekStep.setUserId(userId);
+        weekStepRepository.save(weekStep);
+        var monthStep =StepMapper.mapper.stepDtoToMonthStep(stepDTO);
+        monthStep.setUserId(userId);
+        monthStepRepository.save(monthStep);
     }
 
     public Optional<List<UserStepListDTO>> getMultipleUserStepListDTOs(List<String> users, String startDate, String endDate) {
@@ -176,7 +187,7 @@ public abstract class AbstractStepService {
         LocalDateTime now = LocalDateTime.now();
         var stepList = stepRepository.getStepsByUserIdAndEndTimeBetween(userId, now.with(DayOfWeek.MONDAY).atZone(ZoneId.systemDefault()), now.with(DayOfWeek.SUNDAY).atZone(ZoneId.systemDefault()))
                 .orElse(List.of(new Step(userId, 0, now)));
-        return Optional.of(createStepDateDTOsForUser(userId, stepList));
+        return Optional.of(createStepDateDTOsForUser(stepList));
     }
 
     private List<UserStepListDTO> createMultipleUserStepListDTOs(List<String> users, Timestamp firstDate, Timestamp lastDate) {
@@ -185,19 +196,17 @@ public abstract class AbstractStepService {
         return userStepListDTOList;
     }
 
-    private List<StepDateDTO> createStepDateDTOsForUser(String userId, List<Step> steps) {
-        var converter = new StepToStepDateDTOConverter(userId, new Matcher());
+    private List<StepDateDTO> createStepDateDTOsForUser(List<Step> steps) {
         return steps.stream()
-                .map(converter::convert)
+                .map(step -> {
+                    var dto = StepMapper.mapper.stepToStepDateDto(step);
+                    dto.setDayOfWeek(step.getEndTime().getDayOfWeek().getValue());
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
 
     public void deleteStepTable() {
         stepRepository.deleteAllFromStep();
-    }
-
-    private Step stepDTOtoStep(String userID, StepDTO stepData) {
-        var converter = new StepDTOtoStepConverter(userID);
-        return converter.convert(stepData);
     }
 }

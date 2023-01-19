@@ -59,41 +59,6 @@ public class MatcherTest {
     }
 
     @Nested
-    @DisplayName("GetWeekNumberFromDate-method should ")
-    public class getWeekNumberFromDateTest {
-        LocalDateTime firstMinuteOfYear;
-        LocalDateTime lastMinuteOfYear;
-        int weekNumber;
-
-        @BeforeEach
-        void init() {
-            firstMinuteOfYear = LocalDateTime.of(2022, 1, 1, 1, 1);
-            lastMinuteOfYear = LocalDateTime.of(2022, 12, 31, 23, 59);
-        }
-
-        @Test
-        @DisplayName("return 1 when first minute of the year is used as parameter")
-        public void getWeekNumber_ReturnsOneForFirstWeek() {
-            weekNumber = matcher.getWeekNumberFromDate(firstMinuteOfYear);
-            assertThat(weekNumber, is(1));
-        }
-
-        @Test
-        @DisplayName(" return 52 when last minute of year is used as parameter")
-        public void lastMomentOfYearShouldBeWeek52() {
-            weekNumber = matcher.getWeekNumberFromDate(lastMinuteOfYear);
-            assertThat(weekNumber, is(52));
-        }
-
-        @Test
-        @DisplayName("return 0 when a null value is used as parameter")
-        public void nullValueShouldReturnZero() {
-            weekNumber = matcher.getWeekNumberFromDate(null);
-            assertThat(weekNumber, is(0));
-        }
-    }
-
-    @Nested
     @DisplayName("EndTimeIsSameYear-method should return ")
     public class EndTimeIsSameYearTest {
         protected Step testStepDateA;

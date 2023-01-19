@@ -4,8 +4,11 @@ import java.util.List;
 
 public class UserStepListDTO {
 
-	private final String userId;
-	private final List<StepDateDTO> stepList;
+	private String userId;
+	private List<StepDateDTO> stepList;
+
+	public UserStepListDTO() {
+	}
 
 	public UserStepListDTO(String userId, List<StepDateDTO> stepList) {
 		this.userId = userId;
