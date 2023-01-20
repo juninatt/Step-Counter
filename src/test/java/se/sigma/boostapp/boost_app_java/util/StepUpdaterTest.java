@@ -17,7 +17,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@DisplayName(" <== ObjectUpdater ==>")
+@DisplayName(" <== StepUpdater ==>")
 public class StepUpdaterTest {
 
     private final LocalDateTime START_TIME = LocalDateTime.of(2023, 1, 1, 1, 1, 1);

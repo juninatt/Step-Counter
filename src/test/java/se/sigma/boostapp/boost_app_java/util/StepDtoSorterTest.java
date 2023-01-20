@@ -13,7 +13,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 
-@DisplayName("Class Sorter tests:")
+@DisplayName(" <== StepDtoSorter Tests ==>")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class StepDtoSorterTest {
     StepDtoSorter sorter;

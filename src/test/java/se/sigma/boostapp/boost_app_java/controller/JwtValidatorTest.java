@@ -1,4 +1,4 @@
-package se.sigma.boostapp.boost_app_java.util.parser;
+package se.sigma.boostapp.boost_app_java.controller;
 
 import org.junit.jupiter.api.*;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -6,11 +6,8 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import java.time.Instant;
 import java.util.HashMap;
 
-@DisplayName(" <== JwtToUserIdParser ==>")
-public class JwtToUserIdParserTest {
-
-    JwtToUserIdParser parser = new JwtToUserIdParser();
-
+@DisplayName(" <== JwtValidator Test ==>")
+public class JwtValidatorTest {
     String tokenValue = "JWT";
     Instant thisInstant = Instant.now();
     HashMap<String, Object> headers = new HashMap<>();
@@ -33,7 +30,7 @@ public class JwtToUserIdParserTest {
         @Test
         @DisplayName("chosen default value when input is null")
         void shouldReturnStringWhenInputIsNull() {
-            var actual = parser.convert(null);
+            var actual = JwtValidator.getUserId(null);
 
             Assertions.assertEquals(String.class, actual.getClass());
         }
@@ -45,7 +42,7 @@ public class JwtToUserIdParserTest {
 
             var expected = "testUser";
 
-            var actual = parser.convert(jwt);
+            var actual = JwtValidator.getUserId(jwt);
 
             Assertions.assertEquals(expected, actual);
         }
@@ -55,11 +52,9 @@ public class JwtToUserIdParserTest {
         void shouldReturnDefaultValueWhenExpirationDateHasPassed() {
             var expiredJwt = new Jwt(tokenValue, thisInstant.minusSeconds(60), thisInstant.minusSeconds(30), headers, claims);
 
-            var expected = DEFAULT_VALUE;
+            var actual = JwtValidator.getUserId(expiredJwt);
 
-            var actual = parser.convert(expiredJwt);
-
-            Assertions.assertEquals(expected, actual);
+            Assertions.assertEquals(DEFAULT_VALUE, actual);
         }
 
         @Test
@@ -69,11 +64,9 @@ public class JwtToUserIdParserTest {
             emptyClaims.put("oid", null);
             var jwtWithNoOidClaim = new Jwt(tokenValue, thisInstant, thisInstant.plusSeconds(30), headers, emptyClaims);
 
-            var expected = DEFAULT_VALUE;
+            var actual = JwtValidator.getUserId(jwtWithNoOidClaim);
 
-            var actual = parser.convert(jwtWithNoOidClaim);
-
-            Assertions.assertEquals(expected , actual);
+            Assertions.assertEquals(DEFAULT_VALUE, actual);
         }
 
         @Test
@@ -83,11 +76,9 @@ public class JwtToUserIdParserTest {
             claims.put("oid", 123);
             var jwtWithInvalidOidClaim = new Jwt(tokenValue, thisInstant, thisInstant.plusSeconds(30), headers, claims);
 
-            var expected = DEFAULT_VALUE;
+            var actual = JwtValidator.getUserId(jwtWithInvalidOidClaim);
 
-            var actual = parser.convert(jwtWithInvalidOidClaim);
-
-            Assertions.assertEquals(expected, actual);
+            Assertions.assertEquals(DEFAULT_VALUE, actual);
         }
     }
 }

@@ -19,7 +19,6 @@ import se.sigma.boostapp.boost_app_java.dto.stepdto.UserStepListDTO;
 import se.sigma.boostapp.boost_app_java.exception.NotFoundException;
 import se.sigma.boostapp.boost_app_java.model.Step;
 import se.sigma.boostapp.boost_app_java.service.StepService;
-import se.sigma.boostapp.boost_app_java.util.parser.JwtToUserIdParser;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -30,7 +29,7 @@ import java.util.List;
  * with the added security features.
  *
  * @see StepService
- * @see JwtToUserIdParser
+ * @see JwtValidator
  * @see GroupedApiResponse
  */
 @RestController
@@ -40,16 +39,14 @@ import java.util.List;
 public class StepController {
 
     private final StepService stepService;
-    private final JwtToUserIdParser parser;
 
     /**
-     * Constructs a new StepController with the given step service and JWT parser {@link JwtToUserIdParser}.
+     * Constructs a new StepController with the given step service and JWT parser {@link JwtValidator}.
      *
      * @param stepService the service to use for handling steps {@link StepService}
      */
     public StepController(final StepService stepService) {
         this.stepService = stepService;
-        parser = new JwtToUserIdParser();
     }
 
     /**
@@ -77,7 +74,7 @@ public class StepController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Step> registerStep(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                              final @RequestBody @Valid StepDTO stepDTO) {
-        return stepService.createOrUpdateStepForUser(parser.convert(jwt), stepDTO)
+        return stepService.createOrUpdateStepForUser(JwtValidator.getUserId(jwt), stepDTO)
                 .map(ResponseEntity::ok)
                 .orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
@@ -94,7 +91,7 @@ public class StepController {
     @PostMapping(value = "/multiple", consumes = MediaType.APPLICATION_JSON_VALUE)
     public List<StepDTO> registerMultipleSteps(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                                final @RequestBody List<@Valid StepDTO> stepDtoList) {
-        return stepService.registerMultipleStepsForUser(parser.convert(jwt), stepDtoList);
+        return stepService.registerMultipleStepsForUser(JwtValidator.getUserId(jwt), stepDtoList);
     }
 
 
@@ -129,7 +126,7 @@ public class StepController {
     @GroupedApiResponse
     @GetMapping(value = "/latest")
     public ResponseEntity<Step> getUsersLatestStep(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt) {
-        return stepService.getLatestStepFromUser(parser.convert(jwt))
+        return stepService.getLatestStepFromUser(JwtValidator.getUserId(jwt))
                 .map(ResponseEntity::ok)
                 .orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
     }
@@ -149,7 +146,7 @@ public class StepController {
     public ResponseEntity<Integer> getUserMonthStepCountForYearAndMonth(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                                                         final @PathVariable int year,
                                                                         final @PathVariable int month) {
-        return stepService.getStepCountForUserYearAndMonth(parser.convert(jwt), year, month)
+        return stepService.getStepCountForUserYearAndMonth(JwtValidator.getUserId(jwt), year, month)
                 .map(ResponseEntity::ok)
                 .orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
     }
@@ -169,7 +166,7 @@ public class StepController {
     public ResponseEntity<Integer> getUserWeekStepCountForWeekAndYear(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                                                       final @PathVariable int year,
                                                                       final @PathVariable int week) {
-        return stepService.getStepCountForUserYearAndWeek(parser.convert(jwt), year, week)
+        return stepService.getStepCountForUserYearAndWeek(JwtValidator.getUserId(jwt), year, week)
                 .map(ResponseEntity::ok)
                 .orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
     }
@@ -186,7 +183,7 @@ public class StepController {
     @GroupedApiResponse
     @GetMapping(value = {"/stepcount/currentweek"})
     public ResponseEntity<List<StepDateDTO>> getStepDataByUserForCurrentWeek(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt) {
-        return stepService.getListOfStepDataForCurrentWeekFromUser(parser.convert(jwt))
+        return stepService.getListOfStepDataForCurrentWeekFromUser(JwtValidator.getUserId(jwt))
                 .map(ResponseEntity::ok)
                 .orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
     }

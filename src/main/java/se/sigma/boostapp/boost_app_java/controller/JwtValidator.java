@@ -1,8 +1,8 @@
-package se.sigma.boostapp.boost_app_java.util.parser;
+package se.sigma.boostapp.boost_app_java.controller;
 
 import org.springframework.security.oauth2.jwt.Jwt;
-import se.sigma.boostapp.boost_app_java.util.BoostAppConverter;
 
+import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
@@ -12,7 +12,7 @@ import java.util.Optional;
  * If the JWT is invalid or the user ID claim is not present, a default value is returned.
  *
  */
-public class JwtToUserIdParser implements BoostAppConverter<Jwt, String> {
+public class JwtValidator {
 
     private static final String OID_CLAIM = "oid";
     private static final String DEFAULT_VALUE = "";
@@ -23,8 +23,7 @@ public class JwtToUserIdParser implements BoostAppConverter<Jwt, String> {
      * @param jwt the JWT to be converted
      * @return the user ID if the JWT is valid, DEFAULT_VALUE otherwise
      */
-    @Override
-    public String convert(Jwt jwt) {
+    public static String getUserId(@NotNull Jwt jwt) {
         return jwtIsValid(jwt) ?
                 extractUserIdFromJwtClaim(jwt) :
                 DEFAULT_VALUE;
@@ -53,18 +52,14 @@ public class JwtToUserIdParser implements BoostAppConverter<Jwt, String> {
      * @param jwt the JWT to validate
      * @return true if the JWT is valid, false otherwise
      */
-    private boolean jwtIsValid(Jwt jwt) {
-        var isValid = false;
+    private static boolean jwtIsValid(Jwt jwt) {
         try {
-            var thisMoment = Instant.now();
-            var expirationDate = jwt.getExpiresAt();
-            var issuedAt = jwt.getIssuedAt();
-            isValid = !Objects.requireNonNull(expirationDate).isBefore(thisMoment) && !Objects.requireNonNull(issuedAt).isAfter(thisMoment);
+            var now = Instant.now();
+            return !Objects.requireNonNull(jwt.getExpiresAt()).isBefore(now) && !Objects.requireNonNull(jwt.getIssuedAt()).isAfter(now);
         }
         catch (NullPointerException exception) {
             exception.printStackTrace();
+            return false;
         }
-        return isValid;
     }
-
 }
