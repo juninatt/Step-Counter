@@ -15,7 +15,7 @@ import se.sigma.boostapp.boost_app_java.repository.MonthStepRepository;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 import se.sigma.boostapp.boost_app_java.repository.WeekStepRepository;
 import se.sigma.boostapp.boost_app_java.util.ObjectUpdater;
-import se.sigma.boostapp.boost_app_java.util.Sorter;
+import se.sigma.boostapp.boost_app_java.util.StepDtoSorter;
 import se.sigma.boostapp.boost_app_java.util.StringComparator;
 import se.sigma.boostapp.boost_app_java.util.parser.StringToTimeStampParser;
 
@@ -36,7 +36,7 @@ public abstract class AbstractStepService {
     private final StepRepository stepRepository;
     private final MonthStepRepository monthStepRepository;
     private final WeekStepRepository weekStepRepository;
-    private final Sorter sorter = new Sorter();
+    private final StepDtoSorter sorter = new StepDtoSorter();
 
 
     public AbstractStepService(final StepRepository stepRepository,
@@ -135,13 +135,13 @@ public abstract class AbstractStepService {
     }
 
     private List<StepDTO> registerAndSaveToExistingStepForUser(String userId, List<StepDTO> stepDtoList, Step existingStep) {
-        stepDtoList = sorter.collectStepDTOsWhereEndTimeIsAfter(stepDtoList, existingStep.getEndTime());
+        stepDtoList = sorter.collectEndTimeIsAfter(stepDtoList, existingStep.getEndTime());
         stepDtoList.forEach(stepDTO -> updateExistingStepAndAddToTables(userId, stepDTO, existingStep));
         return stepDtoList;
     }
 
     private List<StepDTO> registerAndSaveFirstStepForUser(String  userId, List<StepDTO> stepDtoList) {
-        var stepDTO = sorter.getOldestDTOFromList(stepDtoList);
+        var stepDTO = sorter.getOldest(stepDtoList);
         saveFirstStepForUser(userId, stepDTO);
         return stepDtoList;
     }

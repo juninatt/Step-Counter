@@ -13,7 +13,7 @@ import se.sigma.boostapp.boost_app_java.model.WeekStep;
 import se.sigma.boostapp.boost_app_java.repository.MonthStepRepository;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 import se.sigma.boostapp.boost_app_java.repository.WeekStepRepository;
-import se.sigma.boostapp.boost_app_java.util.Sorter;
+import se.sigma.boostapp.boost_app_java.util.StepDtoSorter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -41,13 +41,13 @@ public class StepServiceTest {
 
     private final String USERID = "StepTest";
 
-    Sorter sorter;
+    StepDtoSorter sorter;
 
     @Before
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
         stepService = new StepService(mockedStepRepository, mockedMonthStepRepository, mockedWeekStepRepository);
-        sorter = new Sorter();
+        sorter = new StepDtoSorter();
     }
 
     @Test
@@ -234,7 +234,7 @@ public class StepServiceTest {
 
         assertNotEquals(mockStepDTOListTest, mockStepDTOList);
 
-        mockStepDTOListTest = sorter.sortStepDTOListByEndTime(mockStepDTOList);
+        mockStepDTOListTest = sorter.sortByEndTime(mockStepDTOList);
 
         assertEquals(mockStepDTOList, mockStepDTOListTest);
     }
