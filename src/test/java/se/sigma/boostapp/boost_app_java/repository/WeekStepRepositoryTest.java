@@ -35,7 +35,7 @@ public class WeekStepRepositoryTest {
     public void shouldReturnWeekStepForWeek1Year2020() {
 
         var test = weekStepRepository.findByUserIdAndYearAndWeek("johanna", 2020, 1).get();
-        assertEquals(300, test.getSteps());
+        assertEquals(300, test.getStepCount());
 
     }
 

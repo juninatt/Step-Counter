@@ -7,7 +7,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "weekstep")
-public class WeekStep {
+public class WeekStep implements BoostAppStep {
 
     /**
      * Entity weekstep table
@@ -50,14 +50,6 @@ public class WeekStep {
         this.id = id;
     }
 
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
     public int getWeek() {
         return week;
     }
@@ -75,10 +67,33 @@ public class WeekStep {
     }
 
     public int getSteps() {
+        // Exist for mapper to find variable. Rename steps-variable to 'stepCount'
         return steps;
     }
 
     public void setSteps(int steps) {
+        // Exist for mapper to find variable. Rename steps-variable to 'stepCount'
         this.steps = steps;
+    }
+    @Override
+    public void setStepCount(int stepCount) {
+        // exist for database to find variable
+        this.steps = stepCount;
+    }
+    @Override
+    public int getStepCount() {
+        // exist for database to find variable
+        return steps;
+    }
+
+    @Override
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    @Override
+    public String getUserId() {
+
+        return userId;
     }
 }

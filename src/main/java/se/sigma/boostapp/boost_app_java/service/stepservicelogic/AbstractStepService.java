@@ -14,7 +14,7 @@ import se.sigma.boostapp.boost_app_java.model.WeekStep;
 import se.sigma.boostapp.boost_app_java.repository.MonthStepRepository;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 import se.sigma.boostapp.boost_app_java.repository.WeekStepRepository;
-import se.sigma.boostapp.boost_app_java.util.ObjectUpdater;
+import se.sigma.boostapp.boost_app_java.util.StepUpdater;
 import se.sigma.boostapp.boost_app_java.util.StepDtoSorter;
 import se.sigma.boostapp.boost_app_java.util.StringComparator;
 import se.sigma.boostapp.boost_app_java.util.parser.StringToTimeStampParser;
@@ -75,13 +75,13 @@ public abstract class AbstractStepService {
     }
 
     public boolean addStepsToWeekTable(String userId, StepDTO stepDTO) {
-        var updater = ObjectUpdater.getInstance();
+        var updater = StepUpdater.getInstance();
         boolean successfullyAdded = false;
         try {
             var week = DateHelper.getWeek(stepDTO.getEndTime());
             weekStepRepository.findByUserIdAndYearAndWeek(userId, stepDTO.getEndTime().getYear(), week)
                     .ifPresentOrElse(
-                            weekStep -> weekStepRepository.save(updater.updateWeekStep(weekStep, stepDTO)),
+                            weekStep -> weekStepRepository.save((WeekStep)updater.updateStepCountForStep(weekStep, stepDTO)),
                             () -> {
                                 var weekStep = StepMapper.mapper.stepDtoToWeekStep(stepDTO);
                                 weekStep.setUserId(userId);
@@ -99,11 +99,11 @@ public abstract class AbstractStepService {
     }
 
     private boolean addStepsToMonthTable(String userId, StepDTO stepDTO) {
-        var updater = ObjectUpdater.getInstance();
+        var updater = StepUpdater.getInstance();
         boolean successfullyAdded = false;
         try {
             monthStepRepository.findByUserIdAndYearAndMonth(userId, stepDTO.getYear(), stepDTO.getMonth())
-                    .ifPresentOrElse(monthStep -> monthStepRepository.save(updater.updateMonthStep(monthStep, stepDTO)),
+                    .ifPresentOrElse(monthStep -> monthStepRepository.save((MonthStep)updater.updateStepCountForStep(monthStep, stepDTO)),
                             () -> {
                         var weekStep = StepMapper.mapper.stepDtoToMonthStep(stepDTO);
                         weekStep.setUserId(userId);
@@ -124,8 +124,8 @@ public abstract class AbstractStepService {
                 Optional.of(stepRepository.save(currentStep)) : Optional.empty();
     }
     private boolean updateExistingStepAndAddToTables(String userId, StepDTO stepDTO, Step existingStep) {
-        var updater = ObjectUpdater.getInstance();
-        return updater.updateExistingStep(existingStep, stepDTO) != null && addStepToWeekAndMonthTables(userId, stepDTO);
+        var updater = StepUpdater.getInstance();
+        return updater.updateCurrentStep(existingStep, stepDTO) != null && addStepToWeekAndMonthTables(userId, stepDTO);
     }
 
     public List<StepDTO> registerMultipleStepsForUser(String userId, List<StepDTO> stepDtoList) {

@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Entity
 @DynamicUpdate
 @Table(name = "monthstep")
-public class MonthStep {
+public class MonthStep implements BoostAppStep{
 
     /**
      * Entity monthstep table
@@ -53,14 +53,6 @@ public class MonthStep {
         this.id = id;
     }
 
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
     public int getMonth() {
         return month;
     }
@@ -85,6 +77,25 @@ public class MonthStep {
         this.steps = steps;
     }
 
+    @Override
+    public String getUserId() {
+        return userId;
+    }
+
+    @Override
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    @Override
+    public void setStepCount(int stepCount) {
+        this.steps = stepCount;
+    }
+
+    @Override
+    public int getStepCount() {
+        return steps;
+    }
     @Override
     public String toString() {
         return "MonthStep{" +

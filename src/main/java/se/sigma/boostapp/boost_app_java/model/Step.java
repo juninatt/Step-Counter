@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "step")
 @Schema(description = "All details about the step entity. ")
-public class Step {
+public class Step implements BoostAppStep {
 
     /**
      * Entity step table
@@ -57,13 +57,6 @@ public class Step {
         this.endTime = endTime;
     }
 
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
 
     public long getId() {
         return id;
@@ -71,14 +64,6 @@ public class Step {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public int getStepCount() {
-        return stepCount;
-    }
-
-    public void setStepCount(int stepCount) {
-        this.stepCount = stepCount;
     }
 
     public LocalDateTime getStartTime() {
@@ -103,6 +88,26 @@ public class Step {
 
     public void setUploadedTime(LocalDateTime uploadedSteps) {
         this.uploadedTime = uploadedSteps;
+    }
+
+    @Override
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    @Override
+    public String getUserId() {
+        return userId;
+    }
+
+    @Override
+    public void setStepCount(int stepCount) {
+        this.stepCount = stepCount;
+    }
+
+    @Override
+    public int getStepCount() {
+        return stepCount;
     }
 
     @Override

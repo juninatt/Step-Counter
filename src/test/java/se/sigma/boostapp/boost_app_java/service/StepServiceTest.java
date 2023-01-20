@@ -193,7 +193,7 @@ public class StepServiceTest {
         ArgumentCaptor<WeekStep> argumentCaptor = ArgumentCaptor.forClass(WeekStep.class);
         verify(mockedWeekStepRepository).save(argumentCaptor.capture());
         WeekStep capturedWeekStep = argumentCaptor.getValue();
-        assertEquals(expectedSteps, capturedWeekStep.getSteps());
+        assertEquals(expectedSteps, capturedWeekStep.getStepCount());
     }
 
     @Test

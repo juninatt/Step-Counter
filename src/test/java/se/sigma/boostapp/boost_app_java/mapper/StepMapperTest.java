@@ -40,7 +40,7 @@ public class StepMapperTest {
 
         assertThat(testStepDto.getYear()).isEqualTo(weekStep.getYear());
         assertThat(DateHelper.getWeek(testStepDto.getEndTime())).isEqualTo(weekStep.getWeek());
-        assertThat(testStepDto.getStepCount()).isEqualTo(weekStep.getSteps());
+        assertThat(testStepDto.getStepCount()).isEqualTo(weekStep.getStepCount());
     }
 
     @Test
@@ -50,7 +50,7 @@ public class StepMapperTest {
 
         assertThat(testStepDto.getYear()).isEqualTo(monthStep.getYear());
         assertThat(testStepDto.getMonth()).isEqualTo(monthStep.getMonth());
-        assertThat(testStepDto.getStepCount()).isEqualTo(monthStep.getSteps());
+        assertThat(testStepDto.getStepCount()).isEqualTo(monthStep.getStepCount());
     }
 
     @Test
