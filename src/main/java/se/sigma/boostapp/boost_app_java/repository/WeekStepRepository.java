@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import se.sigma.boostapp.boost_app_java.model.WeekStep;
 
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 /**
@@ -19,6 +20,9 @@ import java.util.Optional;
 @Repository
 public interface WeekStepRepository extends JpaRepository<WeekStep, Long> {
 
+    @Transactional
+    @Query(QueryHelper.DELETE_ALL_WEEK_STEP)
+    void deleteAllFromWeekStep();
 
     /**
      * Retrieve week-step entity with the given user id from the given year and week

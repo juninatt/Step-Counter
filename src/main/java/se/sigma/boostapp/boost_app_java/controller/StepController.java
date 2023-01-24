@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import se.sigma.boostapp.boost_app_java.controller.apiresponse.GroupedApiResponse;
 import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDTO;
 import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDateDTO;
-import se.sigma.boostapp.boost_app_java.dto.stepdto.UserStepListDTO;
+import se.sigma.boostapp.boost_app_java.dto.stepdto.BulkStepDateDTO;
 import se.sigma.boostapp.boost_app_java.exception.NotFoundException;
 import se.sigma.boostapp.boost_app_java.model.Step;
 import se.sigma.boostapp.boost_app_java.service.StepService;
@@ -74,7 +74,7 @@ public class StepController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Step> registerStep(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                              final @RequestBody @Valid StepDTO stepDTO) {
-        return stepService.createOrUpdateStepForUser(JwtValidator.getUserId(jwt), stepDTO)
+        return stepService.addSingleStepForUser(JwtValidator.getUserId(jwt), stepDTO)
                 .map(ResponseEntity::ok)
                 .orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
@@ -91,7 +91,7 @@ public class StepController {
     @PostMapping(value = "/multiple", consumes = MediaType.APPLICATION_JSON_VALUE)
     public List<StepDTO> registerMultipleSteps(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                                final @RequestBody List<@Valid StepDTO> stepDtoList) {
-        return stepService.registerMultipleStepsForUser(JwtValidator.getUserId(jwt), stepDtoList);
+        return stepService.addMultipleStepsForUser(JwtValidator.getUserId(jwt), stepDtoList);
     }
 
 
@@ -101,13 +101,13 @@ public class StepController {
      * @param users     List of userIds
      * @param startDate Start date as String in the format "yyyy-[m]m-[d]d"
      * @param endDate   End date as String in the format "yyyy-[m]m-[d]d" (optional)
-     * @return A list of {@link UserStepListDTO} objects
+     * @return A list of {@link BulkStepDateDTO} objects
      * @throws NotFoundException if no step data is found for the specified users and date range
      */
     @Operation(summary = "Get step count per day for a list of users by start date and end date (optional).")
     @GroupedApiResponse
     @PostMapping(value = "/stepcount/bulk/date", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<UserStepListDTO> getBulkStepsByUsers(final @RequestBody List<String> users,
+    public List<BulkStepDateDTO> getBulkStepsByUsers(final @RequestBody List<String> users,
                                                      final @RequestParam String startDate,
                                                      final @RequestParam(required = false) String endDate) {
         return stepService.getMultipleUserStepListDTOs(users, startDate, endDate)

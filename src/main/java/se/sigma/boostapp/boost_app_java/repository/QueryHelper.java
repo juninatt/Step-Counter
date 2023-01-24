@@ -47,6 +47,13 @@ class QueryHelper {
 
 
     /**
+     * DELETE_ALL_WEEK_STEP is a query that deletes all rows in the Step table
+     */
+    public static final String DELETE_ALL_WEEK_STEP =
+            "DELETE FROM WeekStep";
+
+
+    /**
      * SELECT_STEP_COUNT_YEAR_MONTH is a query that selects the total step count for a given user ID for a specific year and month
      */
     public static final String SELECT_STEP_COUNT_YEAR_MONTH =

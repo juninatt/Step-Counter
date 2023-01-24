@@ -3,7 +3,7 @@ package se.sigma.boostapp.boost_app_java.service;
 import org.springframework.stereotype.Service;
 import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDTO;
 import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDateDTO;
-import se.sigma.boostapp.boost_app_java.dto.stepdto.UserStepListDTO;
+import se.sigma.boostapp.boost_app_java.dto.stepdto.BulkStepDateDTO;
 import se.sigma.boostapp.boost_app_java.model.Step;
 import se.sigma.boostapp.boost_app_java.repository.MonthStepRepository;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
@@ -29,8 +29,8 @@ public class StepService extends AbstractStepService {
     }
 
     @Override
-    public Optional<Step> createOrUpdateStepForUser(String userId, StepDTO stepData) {
-        return super.createOrUpdateStepForUser(userId, stepData);
+    public Optional<Step> addSingleStepForUser(String userId, StepDTO stepData) {
+        return super.addSingleStepForUser(userId, stepData);
     }
 
     @Override
@@ -39,18 +39,18 @@ public class StepService extends AbstractStepService {
     }
 
     @Override
-    public List<StepDTO> registerMultipleStepsForUser(String userId, List<StepDTO> stepDtoList) {
-        return super.registerMultipleStepsForUser(userId, stepDtoList);
+    public List<StepDTO> addMultipleStepsForUser(String userId, List<StepDTO> stepDtoList) {
+        return super.addMultipleStepsForUser(userId, stepDtoList);
     }
 
     @Override
-    public Optional<List<UserStepListDTO>> getMultipleUserStepListDTOs(List<String> users, String startDate, String endDate) {
+    public Optional<List<BulkStepDateDTO>> getMultipleUserStepListDTOs(List<String> users, String startDate, String endDate) {
         return super.getMultipleUserStepListDTOs(users, startDate, endDate);
     }
 
     @Override
-    public boolean addStepsToWeekTable(String userId, StepDTO stepDTO) {
-        return super.addStepsToWeekTable(userId, stepDTO);
+    public void addStepsToWeekTable(StepDTO stepDto) {
+        super.addStepsToWeekTable(stepDto);
     }
 
     @Override

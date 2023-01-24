@@ -2,16 +2,22 @@ package se.sigma.boostapp.boost_app_java.util;
 
 import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDTO;
 import se.sigma.boostapp.boost_app_java.model.BoostAppStep;
-import se.sigma.boostapp.boost_app_java.model.MonthStep;
 import se.sigma.boostapp.boost_app_java.model.Step;
 
 import javax.validation.constraints.NotNull;
 
 /**
  * A utility class for updating step-related objects.
- * This class provide the functionality of updating step, monthStep and weekStep with stepDTO
+ * This class provides the functionality of updating Step, MonthStep, and WeekStep with StepDTO.
+ * The main method of this class is 'update(BoostAppStep, StepDTO)'. It takes a BoostAppStep object and a StepDTO object as input.
+ * If the BoostAppStep object is of type Step, it will update the step count, end time and uploaded time of the Step object.
+ * If the BoostAppStep object is not of type Step, it will update the step count of the BoostAppStep object.
+ * This class follows the singleton pattern, use 'getInstance()' to get the instance of the class.
  *
+ * @see BoostAppStep
+ * @see StepDTO
  */
+
 public class StepUpdater {
 
     private static final StepUpdater INSTANCE = new StepUpdater();
@@ -24,71 +30,61 @@ public class StepUpdater {
         // private constructor to prevent instantiation
     }
 
-    /**
-     * Gets the singleton instance of this class.
-     *
-     * @return the singleton instance of this class.
-     */
     public static StepUpdater getInstance() {
         return INSTANCE;
     }
 
-
     /**
-     * Updates an existing step with the data from a step DTO.
+     * Update BoostAppStep object.
      *
-     * @param currentStep the {@link Step} object to update
-     * @param newStepData the {@link StepDTO} object to update the step with
-     * @return the updated step
-     */
-    public Step updateCurrentStep(@NotNull Step currentStep, @NotNull StepDTO newStepData) {
-        return (Step) updateStepCount(updateTime(currentStep, newStepData), newStepData);
-    }
-
-
-    /**
-     * Updates an existing MonthStep with the data from a step DTO.
-     *
-     * @param currentStep the {@link MonthStep} object to update
-     * @param newStepData the {@link StepDTO} object to update the step with
-     * @return the updated MonthStep
-     */
-    public BoostAppStep updateStepCountForStep(@NotNull BoostAppStep currentStep, @NotNull StepDTO newStepData) {
-        return updateStepCount(currentStep, newStepData);
-    }
-
-
-    /**
-     * Updates the step count of a BoostAppStep object.
-     *
-     * @param currentStep the BoostAppStep object to update
-     * @param newStepData the StepDTO object containing the updated step count
+     * @param step the BoostAppStep object to be updated. It can be an instance of Step, WeekStep or MonthStep
+     * @param newStepData the StepDTO object that contains the new Step data
      * @return the updated BoostAppStep object
+     * @throws IllegalArgumentException if step or newStepData is null
      */
-    private BoostAppStep updateStepCount(BoostAppStep currentStep, StepDTO newStepData) {
-        try {
-            currentStep.setStepCount(currentStep.getStepCount() + newStepData.getStepCount());
-        } catch (IllegalArgumentException | NullPointerException exception) {
-            exception.printStackTrace();
+    public <T extends BoostAppStep> T update(@NotNull T step, @NotNull StepDTO newStepData) {
+        if (step instanceof Step)
+            return (T) updateStep((Step) step, newStepData);
+        else {
+            return updateStepCount(step, newStepData.getStepCount());
         }
-        return currentStep;
     }
 
     /**
-     * Updates the end time and uploaded time of a Step object.
+     * Update a {@link Step} object with new step data.
      *
-     * @param currentStep the Step object to update
-     * @param newStepData the StepDTO object containing the updated time information
+     * @param step the Step object to update
+     * @param newStepData the new Step data
      * @return the updated Step object
+     * @throws IllegalArgumentException if there is an error updating the Step object
      */
-    private Step updateTime(Step currentStep, StepDTO newStepData) {
+    private Step updateStep(Step step, StepDTO newStepData) {
         try {
-            currentStep.setEndTime(newStepData.getEndTime());
-            currentStep.setUploadedTime(newStepData.getUploadTime());
+            step.setStepCount(step.getStepCount() + newStepData.getStepCount());
+            step.setEndTime(newStepData.getEndTime());
+            step.setUploadedTime(newStepData.getUploadTime());
         } catch (IllegalArgumentException | NullPointerException exception) {
-            exception.printStackTrace();
+            throw new IllegalArgumentException("Error updating step: " + exception.getMessage(), exception);
         }
-        return currentStep;
+        return step;
+    }
+
+    /**
+     * Update the step count of a {@link se.sigma.boostapp.boost_app_java.model.WeekStep} or
+     * {@link se.sigma.boostapp.boost_app_java.model.MonthStep} object.
+     *
+     * @param step the BoostAppStep object to update. It can be an instance of either WeekStep or MonthStep
+     * @param newSteps the new step count
+     * @param <T> the type of object
+     * @return the updated object
+     * @throws IllegalArgumentException if there is an error updating the step count
+     */
+    private  <T extends BoostAppStep> T updateStepCount(T step, int newSteps) {
+        try {
+            step.setStepCount(step.getStepCount() + newSteps);
+        } catch (IllegalArgumentException | NullPointerException exception) {
+            throw new IllegalArgumentException("Error updating step count: " + exception.getMessage(), exception);
+        }
+        return step;
     }
 }
-

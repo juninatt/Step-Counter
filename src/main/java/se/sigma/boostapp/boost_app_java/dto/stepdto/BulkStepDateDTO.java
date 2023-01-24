@@ -2,15 +2,15 @@ package se.sigma.boostapp.boost_app_java.dto.stepdto;
 
 import java.util.List;
 
-public class UserStepListDTO {
+public class BulkStepDateDTO {
 
 	private String userId;
 	private List<StepDateDTO> stepList;
 
-	public UserStepListDTO() {
+	public BulkStepDateDTO() {
 	}
 
-	public UserStepListDTO(String userId, List<StepDateDTO> stepList) {
+	public BulkStepDateDTO(String userId, List<StepDateDTO> stepList) {
 		this.userId = userId;
 		this.stepList = stepList;
 	}

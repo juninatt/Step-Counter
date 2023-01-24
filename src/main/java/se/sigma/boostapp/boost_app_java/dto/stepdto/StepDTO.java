@@ -15,6 +15,9 @@ public class StepDTO {
     /**
      * Data for the steps
      */
+
+    @Schema(description = "User Id")
+    private String userId;
     @Schema(description = "step count")
     @Min(value = 1, message = "Step count must be greater than or equal to 1")
     @NotNull(message = "Step count must not be null")
@@ -38,11 +41,24 @@ public class StepDTO {
     public StepDTO() {
     }
 
+    public StepDTO(String userId, LocalDateTime uploadTime) {
+        this.userId = userId;
+        this.uploadTime = uploadTime;
+    }
+
     public StepDTO(int stepCount, LocalDateTime startTime, LocalDateTime endTime, LocalDateTime uploadTime) {
         this.stepCount = stepCount;
         this.startTime = startTime;
         this.endTime = endTime;
         this.uploadTime = uploadTime;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public int getStepCount() {

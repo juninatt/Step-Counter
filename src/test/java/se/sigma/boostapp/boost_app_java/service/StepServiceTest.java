@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDTO;
-import se.sigma.boostapp.boost_app_java.dto.stepdto.UserStepListDTO;
+import se.sigma.boostapp.boost_app_java.dto.stepdto.BulkStepDateDTO;
 import se.sigma.boostapp.boost_app_java.model.MonthStep;
 import se.sigma.boostapp.boost_app_java.model.Step;
 import se.sigma.boostapp.boost_app_java.model.WeekStep;
@@ -69,7 +69,7 @@ public class StepServiceTest {
         // user is now i databas
         assertNotNull(testStep.getUserId());
         assertEquals(400, testStep.getStepCount());
-        var optionalStep = stepService.createOrUpdateStepForUser(testStep.getUserId(), stepDto);
+        var optionalStep = stepService.addSingleStepForUser(testStep.getUserId(), stepDto);
         if (optionalStep.isPresent()) {
             assertEquals("userTestId", optionalStep.get().getUserId());
         } else {
@@ -122,7 +122,7 @@ public class StepServiceTest {
 
         when(mockedStepRepository.save(any(Step.class))).thenReturn(mockStep);
 
-        var expectedStep = stepService.createOrUpdateStepForUser("userTest3", mockDTO);
+        var expectedStep = stepService.addSingleStepForUser("userTest3", mockDTO);
 
         if (expectedStep.isPresent()) {
             assertEquals(150, expectedStep.get().getStepCount());
@@ -154,7 +154,7 @@ public class StepServiceTest {
                 .thenReturn(Optional.of(mockStep));
         when(mockedStepRepository.save(any())).thenReturn(mockStep);
 
-        stepService.registerMultipleStepsForUser("idTest", mockStepDTOList);
+        stepService.addMultipleStepsForUser("idTest", mockStepDTOList);
 
         assertEquals(135, (mockStep.getStepCount()));
     }
@@ -181,13 +181,14 @@ public class StepServiceTest {
         int initialSteps = 500;
         int stepsToAdd = 100;
         var mockDTO = new StepDTO(stepsToAdd, null, LocalDateTime.of(2020, 1,1,1,0,0), null);
+        mockDTO.setUserId(USERID);
         int expectedSteps = initialSteps + stepsToAdd;
         var mockWeek = new WeekStep(USERID, week, year, initialSteps);
 
         when(mockedWeekStepRepository.findByUserIdAndYearAndWeek(USERID, year, week))
                 .thenReturn(Optional.of(mockWeek));
 
-        stepService.addStepsToWeekTable(USERID, mockDTO);
+        stepService.addStepsToWeekTable(mockDTO);
         verify(mockedWeekStepRepository).findByUserIdAndYearAndWeek(USERID, year, week);
 
         ArgumentCaptor<WeekStep> argumentCaptor = ArgumentCaptor.forClass(WeekStep.class);
@@ -259,7 +260,7 @@ public class StepServiceTest {
 
         when(mockedStepRepository.getListOfAllDistinctUserId()).thenReturn(allUsers);
 
-        Optional<List<UserStepListDTO>> result = stepService.getMultipleUserStepListDTOs(requestedUsers, startDate, lastDate);
+        Optional<List<BulkStepDateDTO>> result = stepService.getMultipleUserStepListDTOs(requestedUsers, startDate, lastDate);
         if(result.isPresent()){
             assertEquals(2, result.get().size());
         } else {
@@ -276,7 +277,7 @@ public class StepServiceTest {
 
         when(mockedStepRepository.getListOfAllDistinctUserId()).thenReturn(allUsers);
 
-        Optional<List<UserStepListDTO>> result = stepService.getMultipleUserStepListDTOs(requestedUsers, startDate, lastDate);
+        Optional<List<BulkStepDateDTO>> result = stepService.getMultipleUserStepListDTOs(requestedUsers, startDate, lastDate);
         assertEquals(Optional.empty(), result);
     }
 
