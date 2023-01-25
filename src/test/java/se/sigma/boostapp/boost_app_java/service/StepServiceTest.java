@@ -114,8 +114,6 @@ public class StepServiceTest {
                 LocalDateTime.of(2020, 1, 1, 3, 0, 0),
                 LocalDateTime.of(2020, 1, 1, 4, 0, 0));
 
-        when(mockedStepRepository.getListOfStepsByUserId(any(String.class)))
-                .thenReturn(Optional.of(List.of(mockStep)));
 
         when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(mockStep.getUserId()))
                 .thenReturn(Optional.of(mockStep));
@@ -260,25 +258,12 @@ public class StepServiceTest {
 
         when(mockedStepRepository.getListOfAllDistinctUserId()).thenReturn(allUsers);
 
-        Optional<List<BulkStepDateDTO>> result = stepService.getMultipleUserStepListDTOs(requestedUsers, startDate, lastDate);
+        Optional<List<BulkStepDateDTO>> result = stepService.filterUsersAndCreateListOfBulkStepDateDtoWithRange(requestedUsers, startDate, lastDate);
         if(result.isPresent()){
             assertEquals(2, result.get().size());
         } else {
             fail();
         }
-    }
-
-    @Test
-    public void getStepsByMultipleUsers_ReturnsOptionalEmpty(){
-        List<String> allUsers = new ArrayList<>();
-        List<String> requestedUsers = new ArrayList<>(List.of("user1", "user2"));
-        String startDate = "2020-08-23";
-        String lastDate = "2020-09-23";
-
-        when(mockedStepRepository.getListOfAllDistinctUserId()).thenReturn(allUsers);
-
-        Optional<List<BulkStepDateDTO>> result = stepService.getMultipleUserStepListDTOs(requestedUsers, startDate, lastDate);
-        assertEquals(Optional.empty(), result);
     }
 
     @Test
@@ -290,12 +275,12 @@ public class StepServiceTest {
         List<Step> stepList = new ArrayList<>();
         stepList.add(testStep);
 
-        var returnedList = stepService.getListOfStepDataForCurrentWeekFromUser(USERID);
+        var returnedList = stepService.createBulkStepDateDtoForUserForCurrentWeek(USERID);
         var expectedResult = 0;
 
         if(returnedList.isPresent()) {
             assertNotNull(stepList);
-            assertEquals(expectedResult, returnedList.get().get(0).getSteps());
+            assertEquals(expectedResult, returnedList.get().getStepList().get(0).getSteps());
         } else {
             fail();
         }
@@ -304,13 +289,11 @@ public class StepServiceTest {
     @Test
     public void getStepCountPerDay_ReturnsListSizeOneAndStepsZero(){
 
-        when(mockedStepRepository.getListOfStepsByUserId(USERID)).thenReturn(Optional.empty());
-
-        var result = stepService.getListOfStepDataForCurrentWeekFromUser(USERID);
+        var result = stepService.createBulkStepDateDtoForUserForCurrentWeek(USERID);
 
         if(result.isPresent()) {
-            assertEquals(1, result.get().size());
-            assertEquals(0, result.get().get(0).getSteps());
+            assertEquals(1, result.get().getStepList().size());
+            assertEquals(0, result.get().getStepList().get(0).getSteps());
         } else {
             fail();
         }

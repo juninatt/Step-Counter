@@ -19,8 +19,16 @@ public class BulkStepDateDTO {
 		return userId;
 	}
 
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
 	public List<StepDateDTO> getStepList() {
 		return stepList;
+	}
+
+	public void setStepList(List<StepDateDTO> stepList) {
+		this.stepList = stepList;
 	}
 
 	@Override

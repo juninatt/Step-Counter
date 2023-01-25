@@ -104,7 +104,7 @@ public class StepControllerDev {
     public List<BulkStepDateDTO> getBulkStepsByUsers(final @RequestBody List<String> users,
                                                      final @RequestParam String startDate,
                                                      final @RequestParam(required = false) String endDate) {
-        return stepService.getMultipleUserStepListDTOs(users, startDate, endDate)
+        return stepService.filterUsersAndCreateListOfBulkStepDateDtoWithRange(users, startDate, endDate)
                 .orElseThrow(NotFoundException::new);
     }
 
@@ -179,8 +179,8 @@ public class StepControllerDev {
     @Operation(summary = "Get list of steps per day per current week)")
     @GroupedApiResponse
     @GetMapping(value = {"/stepcount/{userId}/currentweek"})
-    public ResponseEntity<List<StepDateDTO>> getUserWeekSteps(final @PathVariable String userId) {
-        return stepService.getListOfStepDataForCurrentWeekFromUser(userId)
+    public ResponseEntity<BulkStepDateDTO> getUserWeekSteps(final @PathVariable String userId) {
+        return stepService.createBulkStepDateDtoForUserForCurrentWeek(userId)
                 .map(ResponseEntity::ok)
                 .orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
     }

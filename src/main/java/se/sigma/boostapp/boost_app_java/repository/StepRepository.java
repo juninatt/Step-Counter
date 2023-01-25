@@ -44,7 +44,7 @@ public interface StepRepository extends JpaRepository<Step, Long> {
      */
     Optional<List<Step>> getListOfStepsByUserId(@Param("userId") String userId);
 
-    Optional<List<Step>> getStepsByUserIdAndEndTimeBetween(@Param("userId") String userId, @Param("startTime") ZonedDateTime startTime, @Param("endTime") ZonedDateTime endOfWeek);
+    Optional<List<Step>> getStepsByUserIdAndEndTimeBetween(@Param("userId") String userId, @Param("startTime") ZonedDateTime startTime, @Param("endTime") ZonedDateTime endTime);
 
 
     /**

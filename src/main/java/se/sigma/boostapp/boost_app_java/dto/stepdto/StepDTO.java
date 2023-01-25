@@ -65,6 +65,18 @@ public class StepDTO {
         return stepCount;
     }
 
+    public void setStepCount(int stepCount) {
+        this.stepCount = stepCount;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setUploadTime(LocalDateTime uploadTime) {
+        this.uploadTime = uploadTime;
+    }
+
     public LocalDateTime getStartTime() {
         return startTime;
     }

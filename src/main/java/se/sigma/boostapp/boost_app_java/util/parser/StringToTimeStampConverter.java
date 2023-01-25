@@ -1,7 +1,5 @@
 package se.sigma.boostapp.boost_app_java.util.parser;
 
-import se.sigma.boostapp.boost_app_java.util.BoostAppConverter;
-
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -12,7 +10,7 @@ import java.time.format.DateTimeParseException;
  * This class is a component that converts a string representation of a date and time into a Timestamp object.
  * It uses the format "yyyy-MM-dd HH:mm" for parsing the string
  */
-public class StringToTimeStampParser implements BoostAppConverter<String, Timestamp> {
+public class StringToTimeStampConverter {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     /**
@@ -21,7 +19,6 @@ public class StringToTimeStampParser implements BoostAppConverter<String, Timest
      * @param dateAsString a non-null string representation of a date and time in the format "yyyy-MM-dd HH:mm"
      * @return a Timestamp object representing the given date and time
      */
-    @Override
     public Timestamp convert(@NotNull String dateAsString) {
         var dateTime = toLocalDateTime(dateAsString);
         return Timestamp.valueOf(dateTime);

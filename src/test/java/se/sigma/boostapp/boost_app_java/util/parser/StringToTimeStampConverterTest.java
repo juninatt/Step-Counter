@@ -12,9 +12,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @DisplayName(" <== StringToTimeStampParser ==>")
-public class StringToTimeStampParserTest {
+public class StringToTimeStampConverterTest {
 
-    private final StringToTimeStampParser parser = new StringToTimeStampParser();
+    private final StringToTimeStampConverter parser = new StringToTimeStampConverter();
     private final int MARGIN = 1000;
 
     @Nested

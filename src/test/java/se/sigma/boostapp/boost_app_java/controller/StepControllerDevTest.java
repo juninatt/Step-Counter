@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import se.sigma.boostapp.boost_app_java.builder.BulkStepDateDTOBuilder;
 import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDTO;
 import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDateDTO;
 import se.sigma.boostapp.boost_app_java.dto.stepdto.BulkStepDateDTO;
@@ -200,7 +201,7 @@ public class StepControllerDevTest {
         bulkStepListDTODate.add(new BulkStepDateDTO("Test1", stepDateDTOList1));
         bulkStepListDTODate.add(new BulkStepDateDTO("Test2", stepDateDTOList2));
 
-        when(service.getMultipleUserStepListDTOs(testUsers, startDate, endDate)).thenReturn(Optional.of(bulkStepListDTODate));
+        when(service.filterUsersAndCreateListOfBulkStepDateDtoWithRange(testUsers, startDate, endDate)).thenReturn(Optional.of(bulkStepListDTODate));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post(url)
@@ -297,7 +298,12 @@ public class StepControllerDevTest {
         stepDateDTOList.add(new StepDateDTO(userId, Date.valueOf("2020-06-07"), 2, 100L));
         stepDateDTOList.add(new StepDateDTO(userId, Date.valueOf("2020-06-08"), 3, 300L));
 
-        when(service.getListOfStepDataForCurrentWeekFromUser(any(String.class))).thenReturn(Optional.of(stepDateDTOList));
+        var bulkSteps = new BulkStepDateDTOBuilder()
+                .withStepList(stepDateDTOList)
+                .withUserId(userId)
+                .build();
+
+        when(service.createBulkStepDateDtoForUserForCurrentWeek(any(String.class))).thenReturn(Optional.of(bulkSteps));
 
         MvcResult result = mvc.perform(get(url, userId))
                 .andExpect(status().isOk())
@@ -306,7 +312,7 @@ public class StepControllerDevTest {
                 .andReturn();
 
         String actualResponseJson = result.getResponse().getContentAsString();
-        String expectedResultJson = objectMapper.writeValueAsString(stepDateDTOList);
+        String expectedResultJson = objectMapper.writeValueAsString(bulkSteps);
 
         assertEquals(actualResponseJson, expectedResultJson);
     }
@@ -315,7 +321,7 @@ public class StepControllerDevTest {
     public void getUserWeekStepList_withInValidInput_ReturnsStatusNoContent() throws Exception {
         String url = "/steps/stepcount/{userId}/currentweek";
 
-        when(service.getListOfStepDataForCurrentWeekFromUser(invalidUserId)).thenReturn(Optional.empty());
+        when(service.createBulkStepDateDtoForUserForCurrentWeek(invalidUserId)).thenReturn(Optional.empty());
 
         mvc.perform(get(url, invalidUserId))
                 .andExpect(status().isNoContent())

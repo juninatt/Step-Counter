@@ -2,7 +2,6 @@ package se.sigma.boostapp.boost_app_java.service;
 
 import org.springframework.stereotype.Service;
 import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDTO;
-import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDateDTO;
 import se.sigma.boostapp.boost_app_java.dto.stepdto.BulkStepDateDTO;
 import se.sigma.boostapp.boost_app_java.model.Step;
 import se.sigma.boostapp.boost_app_java.repository.MonthStepRepository;
@@ -44,8 +43,8 @@ public class StepService extends AbstractStepService {
     }
 
     @Override
-    public Optional<List<BulkStepDateDTO>> getMultipleUserStepListDTOs(List<String> users, String startDate, String endDate) {
-        return super.getMultipleUserStepListDTOs(users, startDate, endDate);
+    public Optional<List<BulkStepDateDTO>> filterUsersAndCreateListOfBulkStepDateDtoWithRange(List<String> users, String startDate, String endDate) {
+        return super.filterUsersAndCreateListOfBulkStepDateDtoWithRange(users, startDate, endDate);
     }
 
     @Override
@@ -63,9 +62,8 @@ public class StepService extends AbstractStepService {
         return super.getStepCountForUserYearAndWeek(userId, year, week);
     }
 
-    @Override
-    public Optional<List<StepDateDTO>> getListOfStepDataForCurrentWeekFromUser(String userId) {
-        return super.getListOfStepDataForCurrentWeekFromUser(userId);
+    public Optional<BulkStepDateDTO> createBulkStepDateDtoForUserForCurrentWeek(String userId) {
+        return super.createBulkStepDateDtoForUserForCurrentWeek(userId);
     }
 
     @Override
