@@ -2,14 +2,17 @@ package se.sigma.boostapp.boost_app_java.service;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
-import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDTO;
 import se.sigma.boostapp.boost_app_java.dto.stepdto.BulkStepDateDTO;
+import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDTO;
 import se.sigma.boostapp.boost_app_java.model.MonthStep;
 import se.sigma.boostapp.boost_app_java.model.Step;
-import se.sigma.boostapp.boost_app_java.model.WeekStep;
 import se.sigma.boostapp.boost_app_java.repository.MonthStepRepository;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
 import se.sigma.boostapp.boost_app_java.repository.WeekStepRepository;
@@ -172,30 +175,6 @@ public class StepServiceTest {
     }
 
     @Test
-    public void addStepsToWeekTable_CallsRepositoryAndSavesCorrectSteps() {
-
-        int year = 2020;
-        int week = 1;
-        int initialSteps = 500;
-        int stepsToAdd = 100;
-        var mockDTO = new StepDTO(stepsToAdd, null, LocalDateTime.of(2020, 1,1,1,0,0), null);
-        mockDTO.setUserId(USERID);
-        int expectedSteps = initialSteps + stepsToAdd;
-        var mockWeek = new WeekStep(USERID, week, year, initialSteps);
-
-        when(mockedWeekStepRepository.findByUserIdAndYearAndWeek(USERID, year, week))
-                .thenReturn(Optional.of(mockWeek));
-
-        stepService.addStepsToWeekTable(mockDTO);
-        verify(mockedWeekStepRepository).findByUserIdAndYearAndWeek(USERID, year, week);
-
-        ArgumentCaptor<WeekStep> argumentCaptor = ArgumentCaptor.forClass(WeekStep.class);
-        verify(mockedWeekStepRepository).save(argumentCaptor.capture());
-        WeekStep capturedWeekStep = argumentCaptor.getValue();
-        assertEquals(expectedSteps, capturedWeekStep.getStepCount());
-    }
-
-    @Test
     public void deleteAllFromStep_test() {
         stepService.deleteStepTable();
         verify(mockedStepRepository).deleteAllFromStep();
@@ -267,35 +246,37 @@ public class StepServiceTest {
     }
 
     @Test
-    public void shouldReturn(){
+    public void testCreateBulkStepDateDtoForUserForCurrentWeek_ReturnsZero(){
+        // Arrange
+        var testStep = new Step(
+                USERID,
+                100,
+                LocalDateTime.of(2021, 9, 21, 14, 56),
+                LocalDateTime.of(2021, 9, 21, 15, 56),
+                LocalDateTime.of(2021, 9, 21, 15, 56));
 
-        var testStep = new Step(USERID, 100, LocalDateTime.of(2021, 9, 21, 14, 56),
-                LocalDateTime.of(2021, 9, 21, 15, 56), LocalDateTime.of(2021, 9, 21, 15, 56));
+        // Act
+        var result = stepService.createBulkStepDateDtoForUserForCurrentWeek(USERID);
 
-        List<Step> stepList = new ArrayList<>();
-        stepList.add(testStep);
-
-        var returnedList = stepService.createBulkStepDateDtoForUserForCurrentWeek(USERID);
+        // Expected values
         var expectedResult = 0;
 
-        if(returnedList.isPresent()) {
-            assertNotNull(stepList);
-            assertEquals(expectedResult, returnedList.get().getStepList().get(0).getSteps());
-        } else {
-            fail();
-        }
+        // Assert
+        assertTrue(result.isPresent());
+        assertEquals(expectedResult, result.get().getStepList().size());
     }
 
     @Test
-    public void getStepCountPerDay_ReturnsListSizeOneAndStepsZero(){
-
+    @DisplayName("Method should return list of size 0 when no data is found in database for userr")
+    public void testCreateBulkStepDateDtoForUser_ReturnsListWithSizeZero(){
+        // Act
         var result = stepService.createBulkStepDateDtoForUserForCurrentWeek(USERID);
 
-        if(result.isPresent()) {
-            assertEquals(1, result.get().getStepList().size());
-            assertEquals(0, result.get().getStepList().get(0).getSteps());
-        } else {
-            fail();
-        }
+        // Expected values
+        var expected = 0;
+
+        // Assert
+        assertTrue(result.isPresent());
+        assertEquals(expected, result.get().getStepList().size());
     }
 }

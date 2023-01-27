@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 import se.sigma.boostapp.boost_app_java.dto.stepdto.BulkStepDateDTO;
 import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDTO;
-import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDateDTO;
 import se.sigma.boostapp.boost_app_java.mapper.DateHelper;
 import se.sigma.boostapp.boost_app_java.mapper.StepMapper;
 import se.sigma.boostapp.boost_app_java.model.BoostAppStep;
@@ -46,18 +45,18 @@ public abstract class AbstractStepService {
     }
 
     public Optional<Step> addSingleStepForUser(String userId, StepDTO stepData) {
-        if (userId == null || stepData == null)
-            return Optional.empty();
+        if (userId == null || !isValidDto(stepData))
+            return Optional.of(new Step("Invalid Data",0,  LocalDateTime.now()));
         else {
             stepData.setUserId(userId);
-            return getLatestStepFromUser(userId).map(step -> updateAndSaveStepForUser(step, stepData))
-                    .orElseGet(() -> createAndSaveStepForUser(stepData));
+            return getLatestStepFromUser(userId).map(step -> updateAndSaveStepForUser(step, stepData, stepRepository))
+                    .orElseGet(() -> Optional.of(StepMapper.mapper.stepDtoToStep(saveToAllTables(stepData))));
         }
     }
 
     public List<StepDTO> addMultipleStepsForUser(String userId, List<StepDTO> stepDtoList) {
-        if (userId == null || stepDtoList == null) {
-            return List.of(new StepDTO("Incorrect data. Try again", LocalDateTime.now()));
+        if (userId == null || isValidDtoList(stepDtoList)) {
+            return List.of(new StepDTO("Invalid Data", LocalDateTime.now()));
         }
         else {
             stepDtoList.forEach(stepDto -> stepDto.setUserId(userId));
@@ -69,6 +68,7 @@ public abstract class AbstractStepService {
     public Optional<Step> getLatestStepFromUser(String userId) {
         return stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId);
     }
+
 
     public Optional<Integer> getStepCountForUserYearAndMonth(String userId, int year, int month) {
         return Optional.of(monthStepRepository.getStepCountByUserIdYearAndMonth(userId, year, month)
@@ -93,73 +93,67 @@ public abstract class AbstractStepService {
     public Optional<BulkStepDateDTO> createBulkStepDateDtoForUserForCurrentWeek(String userId) {
         var weekStart = DateHelper.getWeekStart(LocalDateTime.now(), ZoneId.systemDefault());
         var weekEnd = DateHelper.getWeekEnd(LocalDateTime.now(), ZoneId.systemDefault());
-        var thisWeeksSteps = stepRepository.getStepsByUserIdAndEndTimeBetween(userId, weekStart, weekEnd)
-                .orElse(List.of(new Step(userId, 0, LocalDateTime.now())));
-        var stepDateDtoList = listOfStepsToStepDateDTO(thisWeeksSteps);
-        return Optional.of(new BulkStepDateDTO(userId, stepDateDtoList));
+        var listOfUserStepDateDto = stepRepository.getStepDataByUserIdAndDateRange(userId, Timestamp.valueOf(weekStart.toLocalDateTime()), Timestamp.valueOf(weekEnd.toLocalDateTime()));
+        return Optional.of(new BulkStepDateDTO(userId, listOfUserStepDateDto));
     }
 
     public Optional<BulkStepDateDTO> createBulkStepDateDtoForUser(String userId, Timestamp startTime, Timestamp endTime) {
-        var thisWeeksSteps = stepRepository.getStepsByUserIdAndEndTimeBetween(userId, startTime.toLocalDateTime().atZone(ZoneId.systemDefault()), endTime.toLocalDateTime().atZone(ZoneId.systemDefault()))
-                .orElse(List.of(new Step(userId, 0, LocalDateTime.now())));
-        var stepDateDtoList = listOfStepsToStepDateDTO(thisWeeksSteps);
-        return Optional.of(new BulkStepDateDTO(userId, stepDateDtoList));
+        var listOfStepsDateDtoForUser = stepRepository.getStepDataByUserIdAndDateRange(userId, startTime, endTime);
+        return Optional.of(new BulkStepDateDTO(userId, listOfStepsDateDtoForUser));
     }
 
-    private List<StepDateDTO> listOfStepsToStepDateDTO(List<Step> stepList) {
-        return stepList.stream()
-                .map(StepMapper.mapper::stepToStepDateDto)
-                .collect(Collectors.toList());
+    private <T extends BoostAppStep> Optional<T> updateAndSaveStepForUser(T currentStep, StepDTO stepDto, JpaRepository<T, Long> repository) {
+        var updatedStep = StepUpdater.getInstance().update(currentStep, stepDto);
+        updateOrSaveNewWeekStep(stepDto);
+        updateOrSaveNewMonthStep(stepDto);
+        return Optional.of(repository.save(updatedStep));
     }
 
-    private Optional<Step> createAndSaveStepForUser(StepDTO stepDto) {
-        addStepToWeekAndMonthTables(stepDto);
-        return Optional.of((Step)saveStep(StepMapper.mapper.stepDtoToStep(stepDto), stepRepository));
-    }
-
-    private Optional<Step> updateAndSaveStepForUser(Step currentStep, StepDTO stepDto) {
-        addStepToWeekAndMonthTables(stepDto);
-        return Optional.of((Step)updateAndSaveStep(currentStep, stepDto, stepRepository));
-    }
-
-    private <T extends BoostAppStep> BoostAppStep updateAndSaveStep(T step, StepDTO stepDto, JpaRepository<T, Long> repository) {
-        var updatedStep = StepUpdater.getInstance().update(step, stepDto);
-        return saveStep(updatedStep, repository);
-    }
-
-    private <T extends BoostAppStep> BoostAppStep saveStep(T step, JpaRepository<T, Long> repository) {
+    private <T extends BoostAppStep> BoostAppStep saveBoostAppStepStep(T step, JpaRepository<T, Long> repository) {
         return repository.save(step);
     }
 
-    private void addStepToWeekAndMonthTables(StepDTO stepDto) {
-         addStepsToWeekTable(stepDto);
-         addStepsToMonthTable(stepDto);
-    }
-
-    protected void addStepsToWeekTable(StepDTO stepDto) {
+    private void updateOrSaveNewWeekStep(StepDTO stepDto) {
         var week = DateHelper.getWeek(stepDto.getEndTime());
             weekStepRepository.findByUserIdAndYearAndWeek(stepDto.getUserId(), stepDto.getEndTime().getYear(), week)
-                    .ifPresentOrElse(weekStep -> updateAndSaveStep(weekStep, stepDto, weekStepRepository),
-                            () -> weekStepRepository.save(StepMapper.mapper.stepDtoToWeekStep(stepDto)));
+                    .ifPresentOrElse(weekStep -> saveBoostAppStepStep(StepUpdater.getInstance().update(weekStep, stepDto), weekStepRepository),
+                            () -> saveBoostAppStepStep(StepMapper.mapper.stepDtoToWeekStep(stepDto), weekStepRepository));
     }
 
-    private void addStepsToMonthTable(StepDTO stepDto) {
+    private void updateOrSaveNewMonthStep(StepDTO stepDto) {
         monthStepRepository.findByUserIdAndYearAndMonth(stepDto.getUserId(), stepDto.getYear(), stepDto.getMonth())
-                    .ifPresentOrElse(monthStep -> updateAndSaveStep(monthStep, stepDto, monthStepRepository),
+                    .ifPresentOrElse(monthStep -> saveBoostAppStepStep(StepUpdater.getInstance().update(monthStep, stepDto), monthStepRepository),
                             () -> monthStepRepository.save(StepMapper.mapper.stepDtoToMonthStep(stepDto)));
     }
 
 
     private List<StepDTO> filterStepDtoListAndUpdateStep(List<StepDTO> stepDtoList, Step currentStep) {
         stepDtoList = sorter.collectEndTimeIsAfter(stepDtoList, currentStep.getEndTime());
-        stepDtoList.forEach(stepDto -> updateAndSaveStepForUser(currentStep, stepDto));
+        stepDtoList.forEach(stepDto -> updateAndSaveStepForUser(currentStep, stepDto, stepRepository));
         return stepDtoList;
     }
 
     private StepDTO saveToAllTables(StepDTO stepDto) {
-        saveStep(StepMapper.mapper.stepDtoToStep(stepDto), stepRepository);
-        saveStep(StepMapper.mapper.stepDtoToWeekStep(stepDto), weekStepRepository);
-        saveStep(StepMapper.mapper.stepDtoToMonthStep(stepDto), monthStepRepository);
+        saveBoostAppStepStep(StepMapper.mapper.stepDtoToStep(stepDto), stepRepository);
+        saveBoostAppStepStep(StepMapper.mapper.stepDtoToWeekStep(stepDto), weekStepRepository);
+        saveBoostAppStepStep(StepMapper.mapper.stepDtoToMonthStep(stepDto), monthStepRepository);
         return stepDto;
+    }
+    private boolean isValidDtoList(List<StepDTO> stepDtoList) {
+        if (stepDtoList != null) {
+            for (StepDTO dto : stepDtoList) {
+                if (!isValidDto(dto))
+                    return false;
+            }
+        }
+        return true;
+    }
+    private boolean isValidDto(StepDTO dto) {
+        return dto != null
+                && dto.getStartTime() != null
+                && dto.getEndTime() != null
+                && dto.getUploadTime() != null
+                && dto.getEndTime().isAfter(dto.getStartTime())
+                && dto.getUploadTime().isAfter(dto.getEndTime());
     }
 }

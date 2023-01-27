@@ -51,10 +51,10 @@ public class Step implements BoostAppStep {
         this.uploadedTime = uploadedTime;
     }
 
-    public Step(String userId, int stepCount, LocalDateTime endTime) {
+    public Step(String userId, int stepCount, LocalDateTime uploadedTime) {
         this.userId = userId;
         this.stepCount = stepCount;
-        this.endTime = endTime;
+        this.uploadedTime = uploadedTime;
     }
 
 

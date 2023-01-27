@@ -1,8 +1,8 @@
 package se.sigma.boostapp.boost_app_java.service;
 
 import org.springframework.stereotype.Service;
-import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDTO;
 import se.sigma.boostapp.boost_app_java.dto.stepdto.BulkStepDateDTO;
+import se.sigma.boostapp.boost_app_java.dto.stepdto.StepDTO;
 import se.sigma.boostapp.boost_app_java.model.Step;
 import se.sigma.boostapp.boost_app_java.repository.MonthStepRepository;
 import se.sigma.boostapp.boost_app_java.repository.StepRepository;
@@ -45,11 +45,6 @@ public class StepService extends AbstractStepService {
     @Override
     public Optional<List<BulkStepDateDTO>> filterUsersAndCreateListOfBulkStepDateDtoWithRange(List<String> users, String startDate, String endDate) {
         return super.filterUsersAndCreateListOfBulkStepDateDtoWithRange(users, startDate, endDate);
-    }
-
-    @Override
-    public void addStepsToWeekTable(StepDTO stepDto) {
-        super.addStepsToWeekTable(stepDto);
     }
 
     @Override
