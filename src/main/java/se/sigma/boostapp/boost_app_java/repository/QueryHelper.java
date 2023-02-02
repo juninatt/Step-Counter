@@ -57,7 +57,7 @@ class QueryHelper {
      * SELECT_STEP_COUNT_YEAR_MONTH is a query that selects the total step count for a given user ID for a specific year and month
      */
     public static final String SELECT_STEP_COUNT_YEAR_MONTH =
-            "SELECT m.steps " +
+            "SELECT m.stepCount " +
                     "FROM MonthStep m " +
                     "WHERE m.userId = :userId " +
                     "AND m.year = :year " +
@@ -68,7 +68,7 @@ class QueryHelper {
      * SELECT_STEP_COUNT_YEAR_AND_WEEK is a query that selects the total step count for a given user ID for a specific year and week
      */
     public static final String SELECT_STEP_COUNT_YEAR_AND_WEEK =
-            "SELECT w.steps " +
+            "SELECT w.stepCount " +
                     "FROM WeekStep w " +
                     "WHERE w.userId = :userId " +
                     "AND w.year = :year " +

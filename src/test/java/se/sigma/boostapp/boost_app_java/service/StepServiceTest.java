@@ -168,7 +168,7 @@ public class StepServiceTest {
                 .thenReturn(Optional.of(mockMonth));
         var optionalStep = mockedMonthStepRepository.findByUserIdAndYearAndMonth(USERID, 2020, 10);
         if (optionalStep.isPresent()) {
-            assertEquals(1600, mockMonth.getSteps() + optionalStep.get().getSteps());
+            assertEquals(1600, mockMonth.getStepCount() + optionalStep.get().getStepCount());
         } else {
             fail();
         }

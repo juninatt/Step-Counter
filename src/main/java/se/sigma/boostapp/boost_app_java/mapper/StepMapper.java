@@ -41,7 +41,7 @@ public interface StepMapper {
      * @return A {@link WeekStep} object
      */
     @Mapping(target = "userId", source = "userId")
-    @Mapping(target = "steps", source = "stepCount")
+    @Mapping(target = "stepCount", source = "stepCount")
     @Mapping(target = "week", expression = "java(DateHelper.getWeek(stepDto.getEndTime()))")
     @Mapping(target = "year", expression = "java(stepDto.getYear())")
     WeekStep stepDtoToWeekStep(StepDTO stepDto);
@@ -51,7 +51,7 @@ public interface StepMapper {
      * @return A {@link MonthStep} object
      */
     @Mapping(target = "userId", source = "userId")
-    @Mapping(target = "steps", source = "stepCount")
+    @Mapping(target = "stepCount", source = "stepCount")
     @Mapping(target = "month", expression = "java(stepDto.getMonth())")
     @Mapping(target = "year", expression = "java(stepDto.getYear())") MonthStep stepDtoToMonthStep(StepDTO stepDto);
 

@@ -33,16 +33,16 @@ public class MonthStep implements BoostAppStep{
     private int year;
 
     @Column(name = "steps")
-    private int steps;
+    private int stepCount;
 
     public MonthStep() {
     }
 
-    public MonthStep(String userId, int month, int year, int steps) {
+    public MonthStep(String userId, int month, int year, int stepCount) {
         this.userId = userId;
         this.month = month;
         this.year = year;
-        this.steps = steps;
+        this.stepCount = stepCount;
     }
 
     public long getId() {
@@ -69,14 +69,6 @@ public class MonthStep implements BoostAppStep{
         this.year = year;
     }
 
-    public int getSteps() {
-        return steps;
-    }
-
-    public void setSteps(int steps) {
-        this.steps = steps;
-    }
-
     @Override
     public String getUserId() {
         return userId;
@@ -89,12 +81,12 @@ public class MonthStep implements BoostAppStep{
 
     @Override
     public void setStepCount(int stepCount) {
-        this.steps = stepCount;
+        this.stepCount = stepCount;
     }
 
     @Override
     public int getStepCount() {
-        return steps;
+        return stepCount;
     }
     @Override
     public String toString() {
@@ -103,7 +95,7 @@ public class MonthStep implements BoostAppStep{
                 ", userId='" + userId + '\'' +
                 ", month=" + month +
                 ", year=" + year +
-                ", steps=" + steps +
+                ", steps=" + stepCount +
                 '}';
     }
 }

@@ -283,7 +283,7 @@ class AbstractStepServiceTest {
             var actualUserId = result.get().getUserId();
             var actualYear = result.get().getYear();
             var actualWeek = result.get().getWeek();
-            var actualStepCount = result.get().getSteps();
+            var actualStepCount = result.get().getStepCount();
 
             // Assert
             assertTrue(result.isPresent(), "Expected WeekStep to be returned but it was empty");
@@ -311,7 +311,7 @@ class AbstractStepServiceTest {
 
             // Assert
             assertTrue(result.isPresent(), "Expected step count to be returned but it was empty");
-            assertEquals(expectedStepCount, result.get().getSteps(), "Expected step count to be '" + expectedStepCount + "' but got " + result.get());
+            assertEquals(expectedStepCount, result.get().getStepCount(), "Expected step count to be '" + expectedStepCount + "' but got " + result.get());
         }
 
         @Test
@@ -335,7 +335,7 @@ class AbstractStepServiceTest {
             var actualUserId = result.get().getUserId();
             var actualYear = result.get().getYear();
             var actualMonth = result.get().getMonth();
-            var actualStepCount = result.get().getSteps();
+            var actualStepCount = result.get().getStepCount();
 
             // Assert
             assertTrue(result.isPresent(), "Expected MonthStep to be returned but it was empty");

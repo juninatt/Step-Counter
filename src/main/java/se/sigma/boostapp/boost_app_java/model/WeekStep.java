@@ -30,16 +30,16 @@ public class WeekStep implements BoostAppStep {
     private int year;
 
     @Column(name = "steps")
-    private int steps;
+    private int stepCount;
 
     public WeekStep() {
     }
 
-    public WeekStep(String userId, int week, int year, int steps) {
+    public WeekStep(String userId, int week, int year, int stepCount) {
         this.userId = userId;
         this.week = week;
         this.year = year;
-        this.steps = steps;
+        this.stepCount = stepCount;
     }
 
     public long getId() {
@@ -65,25 +65,15 @@ public class WeekStep implements BoostAppStep {
     public void setYear(int year) {
         this.year = year;
     }
-
-    public int getSteps() {
-        // Exist for mapper to find variable. Rename steps-variable to 'stepCount'
-        return steps;
-    }
-
-    public void setSteps(int steps) {
-        // Exist for mapper to find variable. Rename steps-variable to 'stepCount'
-        this.steps = steps;
-    }
     @Override
     public void setStepCount(int stepCount) {
         // exist for database to find variable
-        this.steps = stepCount;
+        this.stepCount = stepCount;
     }
     @Override
     public int getStepCount() {
         // exist for database to find variable
-        return steps;
+        return stepCount;
     }
 
     @Override
