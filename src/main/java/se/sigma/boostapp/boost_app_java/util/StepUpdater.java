@@ -11,10 +11,13 @@ import javax.validation.constraints.NotNull;
  * This class provides the functionality of updating Step, MonthStep, and WeekStep with StepDTO.
  * The main method of this class is 'update(BoostAppStep, StepDTO)'. It takes a BoostAppStep object and a StepDTO object as input.
  * If the BoostAppStep object is of type Step, it will update the step count, end time and uploaded time of the Step object.
- * If the BoostAppStep object is not of type Step, it will update the step count of the BoostAppStep object.
+ * If the BoostAppStep object is of type WeekStep or MonthStep, it will update the steCount of the object.
  * This class follows the singleton pattern, use 'getInstance()' to get the instance of the class.
  *
  * @see BoostAppStep
+ * @see Step
+ * @see se.sigma.boostapp.boost_app_java.model.WeekStep
+ * @see se.sigma.boostapp.boost_app_java.model.MonthStep
  * @see StepDTO
  */
 
@@ -35,12 +38,13 @@ public class StepUpdater {
     }
 
     /**
-     * Update BoostAppStep object.
+     * Update {@link BoostAppStep} object.
      *
+     * @param <T> represents the object implementing {@link BoostAppStep}
      * @param step the BoostAppStep object to be updated. It can be an instance of Step, WeekStep or MonthStep
-     * @param newStepData the StepDTO object that contains the new Step data
+     * @param newStepData the {@link StepDTO} object that contains the new Step data
      * @return the updated BoostAppStep object
-     * @throws IllegalArgumentException if step or newStepData is null
+     * @throws IllegalArgumentException if {@link BoostAppStep} or {@link StepDTO} is null
      */
     public <T extends BoostAppStep> T update(@NotNull T step, @NotNull StepDTO newStepData) {
         if (step instanceof Step)
@@ -53,8 +57,8 @@ public class StepUpdater {
     /**
      * Update a {@link Step} object with new step data.
      *
-     * @param step the Step object to update
-     * @param newStepData the new Step data
+     * @param step the {@link Step} object to update
+     * @param newStepData the {@link StepDTO} object
      * @return the updated Step object
      * @throws IllegalArgumentException if there is an error updating the Step object
      */
@@ -73,10 +77,10 @@ public class StepUpdater {
      * Update the step count of a {@link se.sigma.boostapp.boost_app_java.model.WeekStep} or
      * {@link se.sigma.boostapp.boost_app_java.model.MonthStep} object.
      *
+     * @param <T> represents the object implementing {@link BoostAppStep}
      * @param step the BoostAppStep object to update. It can be an instance of either WeekStep or MonthStep
-     * @param newSteps the new step count
-     * @param <T> the type of object
-     * @return the updated object
+     * @param newSteps the new stepCount
+     * @return the updated {@link BoostAppStep} object
      * @throws IllegalArgumentException if there is an error updating the step count
      */
     private  <T extends BoostAppStep> T updateStepCount(T step, int newSteps) {
