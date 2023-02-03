@@ -11,18 +11,20 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Utility class for sorting and filtering StepDTO objects.
+ * Utility class for sorting and filtering {@link StepDTO} objects.
+ * The class provides methods to sort a list of StepDTO objects based on their end time,
+ * to retrieve the oldest StepDTO object in the list, and to filter the list by end time.
  *
- * @see StepDTO
+ * @see Comparator
  */
 public class StepDtoSorter {
     private static final Comparator<StepDTO> endTimeComparator = Comparator.comparing(StepDTO::getEndTime);
 
     /**
-     * Sorts the provided list of StepDTO objects by their end time.
+     * Sorts the provided list of {@link StepDTO} objects by their end time.
      *
-     * @param stepDtoList the list of StepDTO objects to sort
-     * @return the sorted list of StepDTO objects
+     * @param stepDtoList the list of {@link StepDTO} objects to sort
+     * @return the sorted list of {@link StepDTO} objects
      */
     public List<StepDTO> sortByEndTime(@NotNull List<StepDTO> stepDtoList) {
         return stepDtoList.stream()
@@ -31,10 +33,10 @@ public class StepDtoSorter {
     }
 
     /**
-     * Returns the oldest StepDTO object in the provided list, based on its end time.
+     * Returns the oldest {@link StepDTO} object in the provided list, based on its end time.
      *
-     * @param stepDtoList the list of StepDTO objects to search
-     * @return the oldest StepDTO object in the list
+     * @param stepDtoList the list of {@link StepDTO} objects to search
+     * @return the oldest {@link StepDTO} object in the list
      */
     public StepDTO getOldest(@NotNull List<StepDTO> stepDtoList) {
         return stepDtoList.stream()
@@ -43,12 +45,12 @@ public class StepDtoSorter {
     }
 
     /**
-     * Filters the provided list of StepDTO objects by their end time,
+     * Filters the provided list of {@link StepDTO} objects by their end time,
      * returning only those objects whose end time is after the provided time.
      *
-     * @param dtoList the list of StepDTO objects to filter
-     * @param time the time to compare against
-     * @return the filtered list of StepDTO objects
+     * @param dtoList the list of {@link StepDTO} objects to filter
+     * @param time LocalDateTime object to compare against
+     * @return the filtered list of {@link StepDTO} objects
      */
     public List<StepDTO> collectEndTimeIsAfter(@NotNull List<StepDTO> dtoList, @NotNull LocalDateTime time) {
         return Optional.ofNullable(dtoList).orElse(Collections.emptyList()).stream()
