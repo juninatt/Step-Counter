@@ -21,7 +21,7 @@ package se.sigma.boostapp.boost_app_java.repository;
 class QueryHelper {
 
     /**
-     * This is a query that selects all user IDs from the {@link se.sigma.boostapp.boost_app_java.model.Step} table
+     * SELECT_ALL_USER_ID is a query that selects all user IDs from the {@link se.sigma.boostapp.boost_app_java.model.Step} table
      * and returns them in form of a List.
      */
     public static final String SELECT_ALL_USER_ID =
@@ -29,7 +29,7 @@ class QueryHelper {
 
 
     /**
-     * This is a query that selects the total stepCount in the {@link se.sigma.boostapp.boost_app_java.model.Step} table a specific time range for a given user ID,
+     * SELECT_STEP_COUNT_WITHIN_TIME_RANGE is a query that selects the total stepCount in the {@link se.sigma.boostapp.boost_app_java.model.Step} table a specific time range for a given user ID,
      * and returns it in form af an Integer.
      */
     public static final String SELECT_STEP_COUNT_WITHIN_TIME_RANGE =
@@ -41,7 +41,7 @@ class QueryHelper {
 
 
     /**
-     * This is a query that selects the total stepCount for a given user ID for a specific year and week,
+     * SELECT_STEP_COUNT_YEAR_AND_WEEK is a query that selects the total stepCount for a given user ID for a specific year and week,
      * and returns it in form of an Integer
      */
     public static final String SELECT_STEP_COUNT_YEAR_AND_WEEK =
@@ -53,7 +53,7 @@ class QueryHelper {
 
 
     /**
-     * This is a query that selects the total stepCount for a given user ID for a specific year and month,
+     * SELECT_STEP_COUNT_YEAR_MONTH is a query that selects the total stepCount for a given user ID for a specific year and month,
      * and returns it in form of an integer
      */
     public static final String SELECT_STEP_COUNT_YEAR_MONTH =
@@ -65,7 +65,7 @@ class QueryHelper {
 
 
     /**
-     * This is a query that selects step data for a given user ID, within a specific time range.
+     * SELECT_STEP_DATA_WITHIN_TIME_RANGE is a query that selects step data for a given user ID, within a specific time range.
      * The results are mapped to a more user-friendly format using the {@link se.sigma.boostapp.boost_app_java.dto.stepdto.StepDateDTO} class.
      * It returns a List of {@link se.sigma.boostapp.boost_app_java.dto.stepdto.StepDateDTO} objects
      * representing the data within the specified time range.
@@ -80,7 +80,7 @@ class QueryHelper {
 
 
     /**
-     * This is a query that deletes all rows in the {@link se.sigma.boostapp.boost_app_java.model.Step} table.
+     * DELETE_ALL_STEP is a query that deletes all rows in the {@link se.sigma.boostapp.boost_app_java.model.Step} table.
      * Returns void
      */
     public static final String DELETE_ALL_STEP =
@@ -88,7 +88,7 @@ class QueryHelper {
 
 
     /**
-     * This is a query that deletes all rows in the {@link se.sigma.boostapp.boost_app_java.model.WeekStep} table.
+     * DELETE_ALL_WEEK_STEP is a query that deletes all rows in the {@link se.sigma.boostapp.boost_app_java.model.WeekStep} table.
      * Returns void
      */
     public static final String DELETE_ALL_WEEK_STEP =
