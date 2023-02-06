@@ -8,4 +8,4 @@ ENV BOOSTAPPDBSECRET=${BOOSTAPPDBSECRET}
 COPY ${DEPENDENCY}/BOOT-INF/lib /app/lib
 COPY ${DEPENDENCY}/META-INF /app/META-INF
 COPY ${DEPENDENCY}/BOOT-INF/classes /app
-ENTRYPOINT ["java","-cp","app:app/lib/*","se.sigma.boostapp.boost_app_java.Application"]
+ENTRYPOINT ["java","-cp","app:app/lib/*","com.nexergroup.boostapp.java.step.Application"]
