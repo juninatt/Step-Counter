@@ -1,16 +1,19 @@
 package com.nexergroup.boostapp.java.step.builder;
 
 /**
- * The BaseDTOBuilder class is an abstract class that serves as a base for building
- * DTO objects using the builder pattern. It provides a template for creating the DTO object
- * and a build method that returns the DTO object.
+ * The BaseDTOBuilder class is an abstract class that provides a template for building DTO (Data Transfer Objects) objects
+ * DTO(Data Transfer Objects) using the builder pattern. It provides a template for creating the DTO objects
+ * and a build method that returns the final DTO object after building.
  *
  * @param <T> The type of the DTO object that the builder will create
+ * @see com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO
+ * @see com.nexergroup.boostapp.java.step.dto.stepdto.StepDateDTO
+ * @see com.nexergroup.boostapp.java.step.dto.stepdto.BulkStepDateDTO
  */
 abstract class BaseDTOBuilder<T> {
 
     /**
-     *  The dto instance to be returned after building
+     *  The DTO instance to be returned after building
      */
     protected T dto;
 

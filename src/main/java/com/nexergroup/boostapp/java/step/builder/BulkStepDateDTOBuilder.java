@@ -12,34 +12,38 @@ import java.util.List;
  *  step by step, by setting its different properties.
  */
 public class BulkStepDateDTOBuilder extends BaseDTOBuilder<BulkStepDateDTO> {
+
+    /**
+     * A list containing the {@link StepDateDTO} objects to be added to
+     * the {@link BulkStepDateDTO} object being built.
+     */
     private final List<StepDateDTO> stepList = new ArrayList<>();
 
     /**
      * Creates an instance of the class
      *
-     * @return An instance of BulkStepDateDTO
+     * @return an instance of {@link BulkStepDateDTO}
      */
     protected BulkStepDateDTO createDto() {
         return new BulkStepDateDTO();
     }
 
     /**
-     * Sets the userId of the BulkStepDateDTO
+     * Sets the userId of the {@link BulkStepDateDTO}.
      *
-     * @param userId the userId of the BulkStepDateDTO
-     * @return this builder instance
+     * @param userId the userId of the {@link BulkStepDateDTO}.
+     * @return an instance of this builder class.
      */
-
     public BulkStepDateDTOBuilder withUserId(String userId) {
         dto.setUserId(userId);
         return this;
     }
 
     /**
-     * Sets the stepList of the BulkStepDateDTO
+     * Sets the of {@link StepDateDTO} object to the {@link BulkStepDateDTO} object.
      *
-     * @param stepList the list of {@link StepDateDTO} to be added to the BulkStepDateDTO
-     * @return this builder instance
+     * @param stepList the list of {@link StepDateDTO} to be added to the {@link BulkStepDateDTO} object.
+     * @return an instance of this builder class.
      */
     public BulkStepDateDTOBuilder withStepList(List<StepDateDTO> stepList) {
         this.stepList.addAll(stepList);
@@ -47,9 +51,9 @@ public class BulkStepDateDTOBuilder extends BaseDTOBuilder<BulkStepDateDTO> {
     }
 
     /**
-     * Builds the BulkStepDateDTO with all the properties set
+     * Builds the {@link BulkStepDateDTO} object with all the properties set
      *
-     * @return The built BulkStepDateDTO object
+     * @return The built {@link BulkStepDateDTO} object
      */
     public BulkStepDateDTO build(){
         dto.setStepList(stepList);
