@@ -64,4 +64,17 @@ public interface StepMapper {
     @Mapping(target = "date", source = "endTime")
     @Mapping(target = "dayOfWeek", expression = "java(DateHelper.getWeek(step.getEndTime()))")
     StepDateDTO stepToStepDateDto(Step step);
+
+    /**
+     * Maps a Step object to a StepDTO object.
+     *
+     * @param step A {@link Step} object
+     * @return A {@link StepDTO} object
+     */
+    @Mapping(target = "userId", source = "userId")
+    @Mapping(target = "stepCount", source = "stepCount")
+    @Mapping(target = "startTime", source = "startTime")
+    @Mapping(target = "endTime", source = "endTime")
+    @Mapping(target = "uploadTime", source = "uploadedTime")
+    StepDTO stepToStepDTO(Step step);
 }

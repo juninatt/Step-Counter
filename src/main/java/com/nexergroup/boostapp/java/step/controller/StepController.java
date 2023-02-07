@@ -1,6 +1,7 @@
 package com.nexergroup.boostapp.java.step.controller;
 
 import com.nexergroup.boostapp.java.step.controller.apiresponse.GroupedApiResponse;
+import com.nexergroup.boostapp.java.step.mapper.StepMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -22,6 +23,7 @@ import com.nexergroup.boostapp.java.step.service.StepService;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Rest controller for handling steps taken by users
@@ -55,7 +57,7 @@ public class StepController {
      */
     @ConditionalOnProperty(name = "deleting.enabled", matchIfMissing = true)
     @SuppressWarnings("null")
-    // 1=second , 0=minut, 0= hours, *-dayOfTheMonth *-month MON-Monday
+    // 1=seconds , 0=minutes, 0=hours, *-dayOfTheMonth *-month MON-Monday
     @Scheduled(cron = "1 0 0 * * MON")
     public void deleteStepTable() {
         stepService.deleteStepTable();
@@ -118,17 +120,13 @@ public class StepController {
      * Get the latest step for the authenticated user.
      *
      * @param jwt A JSON Web Token (JWT) representing the authenticated user
-     * @return A ResponseEntity containing a {@link Step} object in the body,
-     * or a status 204 (NO_CONTENT) if no step data is found for the authenticated user
-     * @throws IllegalArgumentException if the provided JWT is invalid or does not contain a valid user ID
+     * @return An Optional containing a {@link StepDTO} object in the body,
      */
     @Operation(summary = "Get user's latest step")
     @GroupedApiResponse
     @GetMapping(value = "/latest")
-    public ResponseEntity<Step> getUsersLatestStep(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt) {
-        return stepService.getLatestStepFromUser(JwtValidator.getUserId(jwt))
-                .map(ResponseEntity::ok)
-                .orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
+    public Optional<StepDTO> getUsersLatestStep ( final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt) {
+        return Optional.ofNullable(StepMapper.mapper.stepToStepDTO(stepService.getLatestStepFromUser(JwtValidator.getUserId(jwt)).get()));
     }
 
     /**
