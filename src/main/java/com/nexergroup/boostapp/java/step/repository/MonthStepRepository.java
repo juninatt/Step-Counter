@@ -1,10 +1,12 @@
 package com.nexergroup.boostapp.java.step.repository;
 
+import com.nexergroup.boostapp.java.step.model.MonthStep;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import com.nexergroup.boostapp.java.step.model.MonthStep;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -40,6 +42,18 @@ public interface MonthStepRepository extends JpaRepository<MonthStep, Long> {
      */
     @Query(QueryHelper.SELECT_STEP_COUNT_YEAR_MONTH)
     Optional<Integer> getStepCountByUserIdYearAndMonth(@Param("userId") String userId, @Param("year") int year, @Param("month") int month);
+
+    /**
+     * Increments the stepCount field of a specific {@link MonthStep} object in the database.
+     *
+     * @param id The id of the {@link MonthStep} object to be updated.
+     * @param increment The number to be added to the existing stepCount.
+     */
+    @Transactional
+    @Modifying
+    @Query("UPDATE MonthStep ms SET ms.stepCount = ms.stepCount + :increment WHERE ms.id = :id")
+    void incrementMonthStepCount(@Param("id") Long id, @Param("increment") int increment);
+
 }
 
 

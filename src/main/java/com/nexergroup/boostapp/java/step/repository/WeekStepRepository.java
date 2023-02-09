@@ -1,6 +1,7 @@
 package com.nexergroup.boostapp.java.step.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -19,10 +20,6 @@ import java.util.Optional;
  */
 @Repository
 public interface WeekStepRepository extends JpaRepository<WeekStep, Long> {
-
-    @Transactional
-    @Query(QueryHelper.DELETE_ALL_WEEK_STEP)
-    void deleteAllFromWeekStep();
 
     /**
      * Retrieve week-step entity with the given user id from the given year and week
@@ -44,5 +41,18 @@ public interface WeekStepRepository extends JpaRepository<WeekStep, Long> {
      */
     @Query(QueryHelper.SELECT_STEP_COUNT_YEAR_AND_WEEK)
     Optional<Integer> getStepCountByUserIdYearAndWeek(@Param("userId") String userId, @Param("year") int year, @Param("week") int week);
+
+
+    /**
+     * Increments the stepCount field of a specific {@link WeekStep} object in the database.
+     *
+     * @param id The id of the {@link WeekStep} object to be updated.
+     * @param increment The number to be added to the existing stepCount.
+     */
+    @Transactional
+    @Modifying
+    @Query("UPDATE WeekStep ws SET ws.stepCount = ws.stepCount + :increment WHERE ws.id = :id")
+    void incrementWeekStepCount(@Param("id") Long id, @Param("increment") int increment);
+
 
 }

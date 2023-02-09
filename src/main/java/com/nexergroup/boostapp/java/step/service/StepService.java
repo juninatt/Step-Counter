@@ -38,7 +38,7 @@ public class StepService extends AbstractStepService {
     }
 
     @Override
-    public List<StepDTO> addMultipleStepsForUser(String userId, List<StepDTO> stepDtoList) {
+    public StepDTO addMultipleStepsForUser(String userId, List<StepDTO> stepDtoList) {
         return super.addMultipleStepsForUser(userId, stepDtoList);
     }
 

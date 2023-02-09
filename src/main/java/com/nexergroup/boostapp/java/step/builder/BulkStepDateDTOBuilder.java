@@ -20,15 +20,6 @@ public class BulkStepDateDTOBuilder extends BaseDTOBuilder<BulkStepDateDTO> {
     private final List<StepDateDTO> stepList = new ArrayList<>();
 
     /**
-     * Creates an instance of the class
-     *
-     * @return an instance of {@link BulkStepDateDTO}
-     */
-    protected BulkStepDateDTO createDto() {
-        return new BulkStepDateDTO();
-    }
-
-    /**
      * Sets the userId of the {@link BulkStepDateDTO}.
      *
      * @param userId the userId of the {@link BulkStepDateDTO}.
@@ -51,10 +42,21 @@ public class BulkStepDateDTOBuilder extends BaseDTOBuilder<BulkStepDateDTO> {
     }
 
     /**
+     * Creates an instance of the class
+     *
+     * @return an instance of {@link BulkStepDateDTO}
+     */
+    @Override
+    protected BulkStepDateDTO createDto() {
+        return new BulkStepDateDTO();
+    }
+
+    /**
      * Builds the {@link BulkStepDateDTO} object with all the properties set
      *
      * @return The built {@link BulkStepDateDTO} object
      */
+    @Override
     public BulkStepDateDTO build(){
         dto.setStepList(stepList);
         return dto;

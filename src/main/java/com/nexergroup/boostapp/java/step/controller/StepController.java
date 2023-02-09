@@ -93,7 +93,7 @@ public class StepController {
     @PostMapping(value = "/multiple", consumes = MediaType.APPLICATION_JSON_VALUE)
     public List<StepDTO> registerMultipleSteps(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                                final @RequestBody List<@Valid StepDTO> stepDtoList) {
-        return stepService.addMultipleStepsForUser(JwtValidator.getUserId(jwt), stepDtoList);
+        return List.of(stepService.addMultipleStepsForUser(JwtValidator.getUserId(jwt), stepDtoList));
     }
 
 

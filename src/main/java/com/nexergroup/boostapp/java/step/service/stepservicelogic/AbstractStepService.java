@@ -1,26 +1,24 @@
 package com.nexergroup.boostapp.java.step.service.stepservicelogic;
 
+import com.nexergroup.boostapp.java.step.builder.StepDTOBuilder;
+import com.nexergroup.boostapp.java.step.dto.stepdto.BulkStepDateDTO;
+import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
 import com.nexergroup.boostapp.java.step.mapper.DateHelper;
 import com.nexergroup.boostapp.java.step.mapper.StepMapper;
-import com.nexergroup.boostapp.java.step.model.BoostAppStep;
 import com.nexergroup.boostapp.java.step.model.MonthStep;
 import com.nexergroup.boostapp.java.step.model.Step;
 import com.nexergroup.boostapp.java.step.model.WeekStep;
 import com.nexergroup.boostapp.java.step.repository.MonthStepRepository;
 import com.nexergroup.boostapp.java.step.repository.StepRepository;
 import com.nexergroup.boostapp.java.step.repository.WeekStepRepository;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Component;
-import com.nexergroup.boostapp.java.step.dto.stepdto.BulkStepDateDTO;
-import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
-import com.nexergroup.boostapp.java.step.util.StepDtoSorter;
-import com.nexergroup.boostapp.java.step.util.StepUpdater;
 import com.nexergroup.boostapp.java.step.util.StringComparator;
 import com.nexergroup.boostapp.java.step.util.parser.StringToTimeStampConverter;
+import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,7 +31,6 @@ import java.util.stream.Collectors;
  * @see StepRepository
  * @see WeekStepRepository
  * @see MonthStepRepository
- * @see StepDtoSorter
  */
 @Component
 public abstract class AbstractStepService {
@@ -41,7 +38,6 @@ public abstract class AbstractStepService {
     private final StepRepository stepRepository;
     private final WeekStepRepository weekStepRepository;
     private final MonthStepRepository monthStepRepository;
-    private final StepDtoSorter sorter = new StepDtoSorter();
 
 
     /**
@@ -69,11 +65,11 @@ public abstract class AbstractStepService {
     }
 
     /**
-     * Adds a step data to a specified user in form of a {@link StepDTO} object.
+     * Adds step data for a specified user in the form of a {@link StepDTO} object.
      *
      * @param userId the ID of the user
-     * @param stepData a {@link StepDTO} object holding the data to be added
-     * @return an Optional containing the added {@link Step} object or an empty Optional if the provided data is invalid
+     * @param stepData the {@link StepDTO} object holding the step data to be added
+     * @return an Optional containing the added {@link Step} object or a default 'Invalid Step'-object if the provided data is invalid
      *
      * @see StepRepository
      * @see StepMapper#stepDtoToStep(StepDTO)
@@ -83,34 +79,70 @@ public abstract class AbstractStepService {
             return Optional.of(new Step("Invalid Data",0,  LocalDateTime.now()));
         else {
             stepData.setUserId(userId);
-            return getLatestStepFromUser(userId).map(step -> updateAndSaveStepForUser(step, stepData, stepRepository))
-                    .orElseGet(() -> Optional.of(StepMapper.mapper.stepDtoToStep(saveToAllTables(stepData))));
+            return getLatestStepFromUser(userId).map(step -> updateAndSaveStep(step, stepData))
+                    .or(() -> Optional.of(StepMapper.mapper.stepDtoToStep(saveToAllTables(stepData))));
         }
     }
 
-
     /**
      * This method adds data from multiple {@link StepDTO} objects for a specified user.
-     * If input is invalid, returns a list with single step data object with message "Invalid Data".
-     * Otherwise, adds the userId to each {@link StepDTO} object,
-     * filters the list of objects based on latest {@link Step} object of the user
-     * and updates the step data in the database and returns the filtered step data list.
+     * If input is invalid, returns a list with a default 'Invalid StepDTO' object,
+     * otherwise it gathers the information from the {@link StepDTO} objects and creates a new single
+     * {@link StepDTO} object containing all the data, then converts the DTO to a {@link Step} and saves it to the database.
      *
      * @param userId the ID of the user
      * @param stepDtoList the list of {@link StepDTO} objects
-     * @return the filtered list of {@link StepDTO} objects
+     * @return a {@link StepDTO} object holding all the data from the objects in the stepDtoList
      *
-     * @see StepDtoSorter#getOldest(List)
      */
-    public List<StepDTO> addMultipleStepsForUser(String userId, List<StepDTO> stepDtoList) {
-        if (userId == null || isValidDtoList(stepDtoList)) {
-            return List.of(new StepDTO("Invalid Data", LocalDateTime.now()));
+    public StepDTO addMultipleStepsForUser(String userId, List<StepDTO> stepDtoList) {
+        if (userId == null || !isValidDtoList(stepDtoList)) {
+            return new StepDTO("Invalid Data", LocalDateTime.now());
         }
         else {
-            stepDtoList.forEach(stepDto -> stepDto.setUserId(userId));
-            return getLatestStepFromUser(userId).map(step -> filterStepDtoListAndUpdateStep(stepDtoList, step))
-                    .orElseGet(() -> List.of(saveToAllTables(sorter.getOldest(stepDtoList))));
+            var gatheredData = gatherStepDataForUser(stepDtoList, userId);
+            return StepMapper.mapper.stepToStepDTO(addSingleStepForUser(userId, gatheredData).get());
         }
+    }
+
+    /**
+     * This method takes in a list of {@link StepDTO} and a userId and returns a new {@link StepDTO} object with the
+     * aggregated step data for that user. The method sorts the input list of {@link StepDTO} objects by end time,
+     * calculates the total step count, and sets the start-, end-, and upload-times of the returned {@link StepDTO} object
+     * to the earliest, latest, and latest start times in the input list respectively.
+     *
+     * @param stepDTOList a list containing {@link StepDTO} objects a particular user
+     * @param userId the user id of the user
+     * @return a {@link StepDTO} object containing the users aggregated step data
+     *
+     * @see StepDTOBuilder
+     */
+    private StepDTO gatherStepDataForUser(List<StepDTO> stepDTOList, String userId) {
+        var sortedList =sortDTOListByEndTime(stepDTOList);
+        var totalStepCount = sortedList.stream()
+                .mapToInt(StepDTO::getStepCount)
+                .sum();
+        var startTime = sortedList.get(0).getStartTime();
+        var endTime = sortedList.get(sortedList.size() - 1 ).getEndTime();
+        var uploadTime = sortedList.get(sortedList.size() -1 ).getUploadTime();
+        return new StepDTOBuilder()
+                .withUserId(userId)
+                .withStepCount(totalStepCount)
+                .withStartTime(startTime)
+                .withEndTime(endTime)
+                .withUploadTime(uploadTime)
+                .build();
+    }
+
+    /**
+     * Sorts a list of {@link StepDTO} objects by the value of their endTime field.
+     *
+     * @param stepDtoList a list of {@link StepDTO} objects to sort
+     * @return a sorted list of {@link StepDTO} objects
+     */
+    public List<StepDTO> sortDTOListByEndTime(List<StepDTO> stepDtoList) {
+        stepDtoList.sort(Comparator.comparing(StepDTO::getEndTime));
+        return stepDtoList;
     }
 
     /**
@@ -124,7 +156,6 @@ public abstract class AbstractStepService {
     public Optional<Step> getLatestStepFromUser(String userId) {
         return stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId);
     }
-
 
     /**
      * This method retrieves the stepCount for a given user, year and month.
@@ -212,87 +243,54 @@ public abstract class AbstractStepService {
     }
 
     /**
-     * Updates the given {@link BoostAppStep} and saves the updated step to the specified repository.
+     * Updates the given {@link Step} object with the stepCount, endTime and uploadTime from the {@link StepDTO} object.
+     * Saves the updated {@link Step} object and creates new {@link WeekStep} and {@link MonthStep} objects if necessary.
+     * Returns the latest {@link Step} object for the user.
      *
-     * @param currentStep the current step object to be updated
-     * @param stepDto the {@link StepDTO} object containing the data to update the current step
-     * @param repository the repository where the updated step will be saved
-     * @return an Optional {@link BoostAppStep} object containing the updated step
-     *
-     * @see StepUpdater#update(BoostAppStep, StepDTO)
+     * @param step the {@link Step} object to be updated
+     * @param stepData the {@link StepDTO} object containing the data to update the {@link Step} object with
+     * @return the latest {@link Step} object for the user
      */
-    private <T extends BoostAppStep> Optional<T> updateAndSaveStepForUser(T currentStep, StepDTO stepDto, JpaRepository<T, Long> repository) {
-        var updatedStep = StepUpdater.getInstance().update(currentStep, stepDto);
-        updateOrSaveNewWeekStep(stepDto);
-        updateOrSaveNewMonthStep(stepDto);
-        return Optional.of(repository.save(updatedStep));
+    private Step updateAndSaveStep(Step step, StepDTO stepData) {
+        stepRepository.incrementStepCountAndUpdateTimes(step, stepData.getStepCount(), stepData.getEndTime(), stepData.getUploadTime());
+        updateOrSaveNewWeekStep(stepData);
+        updateOrSaveNewMonthStep(stepData);
+        return getLatestStepFromUser(step.getUserId()).get();
     }
 
-    /**
-     * Saves the given {@link BoostAppStep} to the specified repository.
-     *
-     * @param step the step object to be saved
-     * @param repository the repository where the step will be saved
-     * @return the saved {@link BoostAppStep} object
-     *
-     */
-    private <T extends BoostAppStep> BoostAppStep saveBoostAppStepStep(T step, JpaRepository<T, Long> repository) {
-        return repository.save(step);
-    }
 
     /**
-     * Updates or saves a new {@link WeekStep} object in the database.
-     * If a week step with the same user ID, year, and week exists in the database,
-     * the step is updated using the {@link StepUpdater}.
-     * If it does not exist, a new week step is saved.
+     * Updates or saves a new {@link WeekStep} object in the database,
+     * if a {@link WeekStep} with the corresponding user ID, year, and week as the {@link StepDTO} passed as input.
+     * If it does not exist, a new {@link WeekStep} object is saved.
      *
      * @param stepDto the {@link StepDTO} object containing the step data
      *
      * @see DateHelper#getWeek(LocalDateTime)
      * @see WeekStepRepository#findByUserIdAndYearAndWeek(String, int, int)
-     * @see StepUpdater#update(BoostAppStep, StepDTO)
      * @see StepMapper#stepDtoToWeekStep(StepDTO)
      */
     private void updateOrSaveNewWeekStep(StepDTO stepDto) {
         var week = DateHelper.getWeek(stepDto.getEndTime());
             weekStepRepository.findByUserIdAndYearAndWeek(stepDto.getUserId(), stepDto.getEndTime().getYear(), week)
-                    .ifPresentOrElse(weekStep -> saveBoostAppStepStep(StepUpdater.getInstance().update(weekStep, stepDto), weekStepRepository),
-                            () -> saveBoostAppStepStep(StepMapper.mapper.stepDtoToWeekStep(stepDto), weekStepRepository));
+                    .ifPresentOrElse(weekStep -> weekStepRepository.incrementWeekStepCount(weekStep.getId(), stepDto.getStepCount()),
+                            () -> weekStepRepository.save(StepMapper.mapper.stepDtoToWeekStep(stepDto)));
     }
 
     /**
-     * Updates or saves a new {@link MonthStep} step in the database.
-     * If a month step with the same user ID, year, and month exists in the database,
-     * the step is updated using the {@link StepUpdater}.
-     * If it does not exist, a new month step is saved.
+     * Updates or saves a new {@link MonthStep} object in the database,
+     * if a {@link MonthStep} with the corresponding user ID, year, and month as the {@link StepDTO} passed as input.
+     * If it does not exist, a new {@link MonthStep} object is saved.
      *
      * @param stepDto the {@link StepDTO} object containing the step data
      *
      * @see MonthStepRepository#findByUserIdAndYearAndMonth(String, int, int)
-     * @see StepUpdater#update(BoostAppStep, StepDTO)
      * @see StepMapper#stepDtoToMonthStep(StepDTO)
      */
     private void updateOrSaveNewMonthStep(StepDTO stepDto) {
         monthStepRepository.findByUserIdAndYearAndMonth(stepDto.getUserId(), stepDto.getYear(), stepDto.getMonth())
-                    .ifPresentOrElse(monthStep -> saveBoostAppStepStep(StepUpdater.getInstance().update(monthStep, stepDto), monthStepRepository),
+                    .ifPresentOrElse(monthStep -> monthStepRepository.incrementMonthStepCount(monthStep.getId(), stepDto.getStepCount()),
                             () -> monthStepRepository.save(StepMapper.mapper.stepDtoToMonthStep(stepDto)));
-    }
-
-    /**
-     * Filters a list of {@link StepDTO} objects and updates each step in the database.
-     * The {@link StepDTO} objects are sorted so that only the ones with an endTime after
-     * the current step's end time are included in the filtered list.
-     *
-     * @param stepDtoList the list of {@link StepDTO} objects
-     * @param currentStep the current {@link Step} object to use as a reference for filtering and updating
-     * @return the filtered list of {@link StepDTO} objects
-     *
-     * @see StepDtoSorter#collectEndTimeIsAfter(List, LocalDateTime)
-     */
-    private List<StepDTO> filterStepDtoListAndUpdateStep(List<StepDTO> stepDtoList, Step currentStep) {
-        stepDtoList = sorter.collectEndTimeIsAfter(stepDtoList, currentStep.getEndTime());
-        stepDtoList.forEach(stepDto -> updateAndSaveStepForUser(currentStep, stepDto, stepRepository));
-        return stepDtoList;
     }
 
     /**
@@ -306,12 +304,11 @@ public abstract class AbstractStepService {
      * @see StepMapper#stepDtoToWeekStep(StepDTO)
      */
     private StepDTO saveToAllTables(StepDTO stepDto) {
-        saveBoostAppStepStep(StepMapper.mapper.stepDtoToStep(stepDto), stepRepository);
-        saveBoostAppStepStep(StepMapper.mapper.stepDtoToWeekStep(stepDto), weekStepRepository);
-        saveBoostAppStepStep(StepMapper.mapper.stepDtoToMonthStep(stepDto), monthStepRepository);
+        stepRepository.save(StepMapper.mapper.stepDtoToStep(stepDto));
+        weekStepRepository.save(StepMapper.mapper.stepDtoToWeekStep(stepDto));
+        monthStepRepository.save(StepMapper.mapper.stepDtoToMonthStep(stepDto));
         return stepDto;
     }
-
 
     /**
      * Verifies that the given list of {@link StepDTO} objects are valid.
@@ -323,7 +320,9 @@ public abstract class AbstractStepService {
      * @return true if the list is valid, otherwise false.
      */
     private boolean isValidDtoList(List<StepDTO> stepDtoList) {
-        if (stepDtoList != null) {
+        if (stepDtoList == null)
+            return false;
+        else {
             for (StepDTO dto : stepDtoList) {
                 if (!isValidDto(dto))
                     return false;

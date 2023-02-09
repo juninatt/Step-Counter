@@ -85,7 +85,7 @@ public class StepControllerDev {
     @PostMapping(value = "/multiple/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public List<StepDTO> registerMultipleSteps(final @PathVariable String userId,
                                                final @RequestBody List<@Valid StepDTO> stepDtoList) {
-        return stepService.addMultipleStepsForUser(userId, stepDtoList);
+        return List.of(stepService.addMultipleStepsForUser(userId, stepDtoList));
     }
 
 

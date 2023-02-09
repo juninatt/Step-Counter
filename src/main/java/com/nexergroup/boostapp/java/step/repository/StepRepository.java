@@ -1,17 +1,16 @@
 package com.nexergroup.boostapp.java.step.repository;
 
+import com.nexergroup.boostapp.java.step.dto.stepdto.StepDateDTO;
+import com.nexergroup.boostapp.java.step.model.Step;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import com.nexergroup.boostapp.java.step.dto.stepdto.StepDateDTO;
-import com.nexergroup.boostapp.java.step.model.Step;
 
 import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +35,23 @@ public interface StepRepository extends JpaRepository<Step, Long> {
     @Query(QueryHelper.DELETE_ALL_STEP)
     void deleteAllFromStep();
 
+    /**
+     * Update the stepCount-, endTime- and uploadedTime- fields of a {@link Step} object in the database.
+     *
+     * @param step The {@link Step} object to update.
+     * @param increment The number to add to the stepCount field.
+     * @param endTime The new endTime value of the object.
+     * @param uploadedTime The new uploadedTime value of the object.
+     */
+    @Transactional
+    @Modifying
+    @Query("UPDATE Step s SET s.stepCount = s.stepCount + :increment, s.endTime = :endTime, s.uploadedTime = :uploadedTime WHERE s = :step")
+    void incrementStepCountAndUpdateTimes(
+            @Param("step") Step step,
+            @Param("increment") int increment,
+            @Param("endTime") LocalDateTime endTime,
+            @Param("uploadedTime") LocalDateTime uploadedTime);
+
 
     /**
      * Retrieves a list of steps for a user with the given user ID.
@@ -43,9 +59,6 @@ public interface StepRepository extends JpaRepository<Step, Long> {
      * @return An Optional containing a list of steps for the given user, or an empty Optional if no steps were found
      */
     Optional<List<Step>> getListOfStepsByUserId(@Param("userId") String userId);
-
-    Optional<List<Step>> getStepsByUserIdAndEndTimeBetween(@Param("userId") String userId, @Param("startTime") ZonedDateTime startTime, @Param("endTime") ZonedDateTime endTime);
-
 
     /**
      * Retrieves steps for a user with the given user ID, start- and end date.
@@ -57,7 +70,6 @@ public interface StepRepository extends JpaRepository<Step, Long> {
      */
     @Query(QueryHelper.SELECT_STEP_DATA_WITHIN_TIME_RANGE)
     List<StepDateDTO> getStepDataByUserIdAndDateRange(@Param("userId") String userId, @Param("startDate") Timestamp startDate, @Param("endDate") Timestamp endDate);
-
 
     /**
      * Retrieves all distinct users from step table

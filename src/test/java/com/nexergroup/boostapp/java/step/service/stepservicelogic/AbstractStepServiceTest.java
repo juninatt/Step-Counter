@@ -1,9 +1,5 @@
 package com.nexergroup.boostapp.java.step.service.stepservicelogic;
 
-import org.junit.Before;
-import org.junit.jupiter.api.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
 import com.nexergroup.boostapp.java.step.mapper.DateHelper;
 import com.nexergroup.boostapp.java.step.model.MonthStep;
@@ -13,10 +9,13 @@ import com.nexergroup.boostapp.java.step.repository.MonthStepRepository;
 import com.nexergroup.boostapp.java.step.repository.StepRepository;
 import com.nexergroup.boostapp.java.step.repository.WeekStepRepository;
 import com.nexergroup.boostapp.java.step.service.StepService;
-import com.nexergroup.boostapp.java.step.util.StepDtoSorter;
+import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,30 +23,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class AbstractStepServiceTest {
-
     @Autowired
     private StepService stepService;
-
     @Autowired
     private StepRepository stepRepository;
-
     @Autowired
     private WeekStepRepository weekStepRepository;
-
     @Autowired
     private MonthStepRepository monthStepRepository;
 
     String testUser = "testUser";
-
     Duration errorMargin = Duration.ofSeconds(1);
-
-    StepDtoSorter sorter;
-
-    @Before
-    public void setUp() {
-        sorter = new StepDtoSorter();
-    }
-
 
     @AfterEach
     public void cleanUp() {
@@ -477,6 +463,40 @@ class AbstractStepServiceTest {
         }
 
         @Test
+        public void shouldReturnUpdatedStepCount() {
+
+            // Arrange
+
+            var testStep = new Step(
+                    testUser,
+                    100,
+                    LocalDateTime.of(2020, 1, 1, 1, 0, 0),
+                    LocalDateTime.of(2020, 1, 1, 2, 0, 0),
+                    LocalDateTime.of(2020, 1, 1, 3, 0, 0));
+
+            var testDTO = new StepDTO(
+                    50,
+                    LocalDateTime.of(2020, 1, 1, 1, 0, 0),
+                    LocalDateTime.of(2020, 1, 1, 2, 0, 0),
+                    LocalDateTime.of(2020, 1, 1, 4, 0, 0));
+
+            stepRepository.save(testStep);
+
+            // Act
+            var result = stepService.addSingleStepForUser(testUser, testDTO);
+
+            // Expected Values
+            Integer expectedStepCount = 150;
+
+            // Actual values
+            var actualStepCount = result.map(step -> step.getStepCount())
+                    .orElse(0);
+
+            // Assert
+            assertEquals(expectedStepCount, actualStepCount, "userId  " + result.get().getUserId());
+        }
+
+        @Test
         @DisplayName("Should not create new step if step exists in database")
         public void testAddSingleStepForUser_DoesNotCreateNewStep() {
             // Arrange
@@ -512,24 +532,21 @@ class AbstractStepServiceTest {
     @Nested
     @DisplayName("addMultipleStepsForUser method: ")
     public class AddMultipleStepsForUserTest {
-        List<StepDTO> stepDtoList;
+        List<StepDTO> stepDtoList = new ArrayList<>();
 
         @BeforeEach
         public void setUp() {
             var now = LocalDateTime.now();
-            stepDtoList = List.of(
-                    new StepDTO(0, now, now.plusMinutes(1), now.plusMinutes(2)),
-                    new StepDTO(2, now.plusMinutes(3), now.plusMinutes(4), now.plusMinutes(5)),
-                    new StepDTO(3, now.plusMinutes(6), now.plusMinutes(7), now.plusMinutes(8))
-            );
-            stepDtoList.forEach(step -> step.setUserId(testUser));
+            stepDtoList.add(new StepDTO(0, now, now.plusMinutes(1), now.plusMinutes(2)));
+            stepDtoList.add(new StepDTO(2, now.plusMinutes(3), now.plusMinutes(4), now.plusMinutes(5)));
+            stepDtoList.add(new StepDTO(3, now.plusMinutes(6), now.plusMinutes(7), now.plusMinutes(8)));
         }
 
         @Test
         @DisplayName("Should return a list with an object of StepDTO class when no step exists in database for user")
         public void testAddMultipleStepsForUser_ReturnsListOfStepDTOObject() {
             // Act
-            var result = stepService.addMultipleStepsForUser(testUser, stepDtoList).get(0);
+            var result = stepService.addMultipleStepsForUser(testUser, stepDtoList);
 
             // Expected values
             Class<?> expectedClass = StepDTO.class;
@@ -543,27 +560,28 @@ class AbstractStepServiceTest {
         }
 
         @Test
-        @DisplayName("Should return a list with size 1 when no step exists in database for user")
+        @DisplayName("Should return a DTO object with the total stepCount of the StepDTO:s in the list passed as input")
         public void testAddMultipleStepsForUser_ReturnsListOfSizeOne_WhenNoUserExistsInDatabase() {
             // Act
             var result = stepService.addMultipleStepsForUser(testUser, stepDtoList);
 
             // Expected values
-            int expectedSize = 1;
+            int expectedStepCount = 5;
 
             // Actual values
-            int actualSize = result.size();
+            int actualStepCount = result.getStepCount();
 
             // Assert
             assertNotNull(result, "Expected result not to be null but it was.");
-            assertEquals(expectedSize, actualSize, "Expected list size to be '" + expectedSize + "' but got " + actualSize);
+            System.out.println(stepDtoList);
+            assertEquals(expectedStepCount, actualStepCount,"Expected stepCount to be '" + expectedStepCount + "' but got " + actualStepCount);
         }
 
         @Test
         @DisplayName("Returns 'Invalid Data' object when input userId is null")
         public void testAddMultipleStepsForUser_ReturnsCorrectObject_WhenUserIdInputIsNull() {
             // Act
-            var result = stepService.addMultipleStepsForUser(null, stepDtoList).get(0);
+            var result = stepService.addMultipleStepsForUser(null, stepDtoList);
 
             // Expected values
             var expectedUserId = "Invalid Data";
@@ -584,7 +602,7 @@ class AbstractStepServiceTest {
         @DisplayName("Should return correct object when stepDTO-input is null")
         public void testAddMultipleStepsForUser_ReturnsEmptyOptional_WhenTestDtoIsNull() {
             // Act
-            var result = stepService.addMultipleStepsForUser(testUser, null).get(0);
+            var result = stepService.addMultipleStepsForUser(testUser, null);
 
             // Expected values
             var expectedUserId = "Invalid Data";

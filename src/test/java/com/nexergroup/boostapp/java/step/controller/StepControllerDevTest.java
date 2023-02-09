@@ -2,6 +2,7 @@ package com.nexergroup.boostapp.java.step.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.nexergroup.boostapp.java.step.builder.StepDTOBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -167,7 +168,13 @@ public class StepControllerDevTest {
         stepDTOList.add(stepDTO2);
         stepDTOList.add(stepDTO3);
 
-        when(service.addMultipleStepsForUser(Mockito.anyString(), Mockito.anyList())).thenReturn(stepDTOList);
+        when(service.addMultipleStepsForUser(Mockito.anyString(), Mockito.anyList())).thenReturn(new StepDTOBuilder()
+                .withUserId("testId")
+                .withStepCount(30)
+                .withStartTime(stepDTO1.getStartTime())
+                .withEndTime(stepDTO1.getEndTime())
+                .withUploadTime(stepDTO1.getUploadTime())
+                .build());
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post("/steps/multiple/{userId}", "testId")
