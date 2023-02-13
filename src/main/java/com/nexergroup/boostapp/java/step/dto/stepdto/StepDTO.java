@@ -46,7 +46,8 @@ public class StepDTO {
         this.uploadTime = uploadTime;
     }
 
-    public StepDTO(int stepCount, LocalDateTime startTime, LocalDateTime endTime, LocalDateTime uploadTime) {
+    public StepDTO(String userId, int stepCount, LocalDateTime startTime, LocalDateTime endTime, LocalDateTime uploadTime) {
+        this.userId = userId;
         this.stepCount = stepCount;
         this.startTime = startTime;
         this.endTime = endTime;

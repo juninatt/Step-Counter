@@ -92,7 +92,9 @@ public class StepControllerDevTest {
     public void shouldReturnBadRequestWhenStepCount0() throws Exception {
         objectMapper.registerModule(new JavaTimeModule());
 
-        StepDTO stepDTO = new StepDTO(0,
+        StepDTO stepDTO = new StepDTO(
+                "testId",
+                0,
                 LocalDateTime.parse("2020-01-01T00:00:00"),
                 LocalDateTime.parse("2020-01-01T01:00:00"),
                 LocalDateTime.parse("2020-01-01T02:00:00"));
@@ -114,7 +116,9 @@ public class StepControllerDevTest {
                 LocalDateTime.parse("2020-01-01T00:00:00"),
                 LocalDateTime.parse("2020-01-01T00:00:00"),
                 LocalDateTime.parse("2020-01-01T00:00:00"));
-        StepDTO stepDTO = new StepDTO(300,
+        StepDTO stepDTO = new StepDTO(
+                "testId",
+                300,
                 LocalDateTime.parse("2020-01-01T00:00:00"),
                 LocalDateTime.parse("2020-01-01T01:00:00"),
                 LocalDateTime.parse("2020-01-01T02:00:00"));
@@ -152,15 +156,18 @@ public class StepControllerDevTest {
         List<StepDTO> stepDTOList = new ArrayList<>();
         objectMapper.registerModule(new JavaTimeModule());
 
-        StepDTO stepDTO1 = new StepDTO(10, LocalDateTime.parse("2020-08-21T00:01:00"),
+        StepDTO stepDTO1 = new StepDTO("testId",
+                10, LocalDateTime.parse("2020-08-21T00:01:00"),
                 LocalDateTime.parse("2020-08-21T01:01:10"),
                 LocalDateTime.parse("2020-08-21T02:01:20"));
 
-        StepDTO stepDTO2 = new StepDTO(10, LocalDateTime.parse("2020-08-22T00:01:00"),
+        StepDTO stepDTO2 = new StepDTO("testId",
+                10, LocalDateTime.parse("2020-08-22T00:01:00"),
                 LocalDateTime.parse("2020-08-22T01:01:10"),
                 LocalDateTime.parse("2020-08-22T02:01:20"));
 
-        StepDTO stepDTO3 = new StepDTO(10, LocalDateTime.parse("2020-08-22T00:01:00"),
+        StepDTO stepDTO3 = new StepDTO("testId",
+                10, LocalDateTime.parse("2020-08-22T00:01:00"),
                 LocalDateTime.parse("2020-08-22T01:01:10"),
                 LocalDateTime.parse("2020-08-22T02:01:20"));
 

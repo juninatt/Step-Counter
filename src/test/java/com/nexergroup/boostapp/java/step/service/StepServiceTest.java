@@ -1,7 +1,6 @@
 package com.nexergroup.boostapp.java.step.service;
 
 import com.nexergroup.boostapp.java.step.dto.stepdto.BulkStepDateDTO;
-import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
 import com.nexergroup.boostapp.java.step.model.MonthStep;
 import com.nexergroup.boostapp.java.step.model.Step;
 import com.nexergroup.boostapp.java.step.repository.MonthStepRepository;
@@ -45,34 +44,6 @@ public class StepServiceTest {
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
         stepService = new StepService(mockedStepRepository, mockedMonthStepRepository, mockedWeekStepRepository);
-    }
-
-    @Test
-    public void registerStepsTest() {
-        Step testStep = new Step("test", 0, LocalDateTime.now());
-
-        // user is not i databas
-        assertEquals(0, testStep.getStepCount());
-
-        testStep = new Step("userTestId", 100, LocalDateTime.parse("2020-01-02T01:00:00"),
-                LocalDateTime.parse("2020-01-02T02:00:00"), LocalDateTime.parse("2020-01-02T03:00:00"));
-
-        when(mockedStepRepository.save(any(Step.class))).thenReturn(testStep);
-
-        StepDTO stepDto = new StepDTO(300, LocalDateTime.parse("2020-01-02T02:00:00"),
-                LocalDateTime.parse("2020-01-02T03:00:00"), LocalDateTime.parse("2020-01-02T04:00:00"));
-        testStep.setStepCount(testStep.getStepCount() + stepDto.getStepCount());
-
-        // user is now i databas
-        assertNotNull(testStep.getUserId());
-        assertEquals(400, testStep.getStepCount());
-        var optionalStep = stepService.addSingleStepForUser(testStep.getUserId(), stepDto);
-        if (optionalStep.isPresent()) {
-            assertEquals("userTestId", optionalStep.get().getUserId());
-        } else {
-            fail();
-        }
-
     }
 
     @Test

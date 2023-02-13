@@ -78,7 +78,6 @@ public abstract class AbstractStepService {
         if (userId == null || !isValidDto(stepData))
             return Optional.of(new Step("Invalid Data",0,  LocalDateTime.now()));
         else {
-            stepData.setUserId(userId);
             return getLatestStepFromUser(userId).map(step -> updateAndSaveStep(step, stepData))
                     .or(() -> Optional.of(StepMapper.mapper.stepDtoToStep(saveToAllTables(stepData))));
         }

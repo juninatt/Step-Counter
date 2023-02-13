@@ -20,7 +20,7 @@ public class StepMapperTest {
 
     private final StepMapper stepMapper = StepMapper.mapper;
     private final LocalDateTime now = LocalDateTime.now();
-    StepDTO testStepDto = new StepDTO(69, now, now, now);
+    StepDTO testStepDto = new StepDTO("userId", 69, now, now, now);
 
     @Test
     @DisplayName("Test StepDTO to Step mapping")
