@@ -17,6 +17,9 @@ public class DateTimeRangeValidator implements ConstraintValidator<DateTimeRange
     @Override
     public boolean isValid(StepDTO value, ConstraintValidatorContext context) {
         return !value.getEndTime().isAfter(value.getUploadTime())
-                && !value.getStartTime().isAfter(value.getEndTime());
+                && !value.getStartTime().isAfter(value.getEndTime())
+                && !value.getEndTime().isAfter(value.getUploadTime())
+                && !value.getStartTime().isEqual(value.getEndTime())
+                && !value.getStartTime().isAfter(value.getUploadTime());
     }
 }
