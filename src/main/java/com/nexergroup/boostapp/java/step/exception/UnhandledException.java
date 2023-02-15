@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * Not best practise!!
+ * The UnhandledException wraps unhandled exceptions for Step Entity validation
+ * and with a custom error message.
  */
 
 @ResponseStatus(value = HttpStatus.I_AM_A_TEAPOT)
