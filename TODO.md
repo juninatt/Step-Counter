@@ -1,7 +1,15 @@
 # TODO List
+Currently on project: Petter Bergström, David Urman, Oscar Nordgren.
 
 - Always keep team members and documentation updated on potential changes
 - Make sure TODO list is always updated
+
+### Replace hard code with queries
+- Assigned to: Petter Bergström
+- [ ] Research JPA queries
+- [ ] Decide on what logic to replace
+- [ ] Implement changes
+- [ ] Update README
 
 ### Create custom exceptions
 - Assigned to:
@@ -26,6 +34,12 @@
 - [ ] Apply more responses depending on issue
 - [ ] Add more descriptive responses with potential solutions
 - [ ] Update README
+
+### Things that pop into your mind:
+- Petter Bergström: The 'filterUsersAndCreateListOfBulkStepDateDtoWithRange' method in Abstracts StepService does a lot!
+Can we make sure that the list with users is correct at an earlier stage? With the hypothetical Validation-mechanism?
+Is it even needed? It creates a list of 'BulksStepDateDTO:s' that simply holds a lists of 'StepDateDTO:s'... Should be a better way to do that.
+- Comments:
 
 ### Keep testing up to date by:
 -  Make sure every class is covered
