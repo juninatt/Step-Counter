@@ -80,9 +80,9 @@ public abstract class AbstractStepService {
      *
      * @see StepValidator
      */
-    public Optional<StepDTO> addSingleStepForUser(String userId, StepDTO stepData) {
+    public Optional<Step> addSingleStepForUser(String userId, StepDTO stepData) {
         if (userId == null || !stepValidator.stepDataIsValid(stepData))
-            return Optional.of(getInvalidDataObject());
+            return Optional.of(getInvalidDataObject()); // Kasta exception från Validatorn ?
         else if (stepValidator.stepShouldBeUpdatedWithNewData(stepData))
             return Optional.of(updateAndSaveStep(getLatestStepFromUser(userId).get(), stepData));
         else {
@@ -103,7 +103,7 @@ public abstract class AbstractStepService {
      *
      * @see StepValidator
      */
-    public StepDTO addMultipleStepsForUser(String userId, List<StepDTO> stepDtoList) {
+    public Step addMultipleStepsForUser(String userId, List<StepDTO> stepDtoList) {
         if (userId == null || !stepValidator.stepDataIsValid(stepDtoList)) {
             return getInvalidDataObject();
         }
@@ -259,11 +259,11 @@ public abstract class AbstractStepService {
      * @param stepData the {@link StepDTO} object containing the data to update the {@link Step} object with
      * @return a {@link StepDTO} object holding the data of the latest {@link Step} object for the user
      */
-    private StepDTO updateAndSaveStep(Step step, StepDTO stepData) {
+    private Step updateAndSaveStep(Step step, StepDTO stepData) {
         stepRepository.incrementStepCountAndUpdateTimes(step, stepData.getStepCount(), stepData.getEndTime(), stepData.getUploadTime());
         updateOrSaveNewWeekStep(stepData);
         updateOrSaveNewMonthStep(stepData);
-        return StepMapper.mapper.stepToStepDTO(getLatestStepFromUser(step.getUserId()).get());
+        return getLatestStepFromUser(step.getUserId()).get();
     }
 
 
@@ -311,22 +311,20 @@ public abstract class AbstractStepService {
      * @see StepMapper#stepDtoToWeekStep(StepDTO)
      * @see StepMapper#stepDtoToWeekStep(StepDTO)
      */
-    private StepDTO saveToAllTables(StepDTO stepDto) {
+    private Step saveToAllTables(StepDTO stepDto) {
         stepRepository.save(StepMapper.mapper.stepDtoToStep(stepDto));
         weekStepRepository.save(StepMapper.mapper.stepDtoToWeekStep(stepDto));
         monthStepRepository.save(StepMapper.mapper.stepDtoToMonthStep(stepDto));
-        return stepDto;
+        return StepMapper.mapper.stepDtoToStep(stepDto);
     }
 
     /**
-     * This method creates a default {@link StepDTO} object indicating something went wrong
+     * This method creates a default {@link Step} object indicating something went wrong
      *
-     * @return a {@link StepDTO} object with userId 'Invalid Data' and uploadTime of current moment
+     * @return a {@link Step} object with userId 'Invalid Data' and uploadTime of current moment
      */
-    private StepDTO getInvalidDataObject() {
-        return new StepDTOBuilder()
-                .withUserId("Invalid Data")
-                .withUploadTime(LocalDateTime.now())
-                .build();
+    private Step getInvalidDataObject() {
+        return new Step("Invalid Data", 0, LocalDateTime.now());
+        // stepCount 0 provisoriskt, kasta exception i getInvalidDataObject istället
     }
 }

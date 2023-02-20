@@ -74,7 +74,7 @@ public class StepController {
     @Operation(summary = "Register step entity")
     @GroupedApiResponse
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StepDTO> registerStep(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
+    public ResponseEntity<Step> registerStep(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                              final @RequestBody @Valid StepDTO stepDTO) {
         return stepService.addSingleStepForUser(JwtValidator.getUserId(jwt), stepDTO)
                 .map(ResponseEntity::ok)
@@ -91,7 +91,7 @@ public class StepController {
     @Operation(summary = "Register multiple step entities")
     @GroupedApiResponse
     @PostMapping(value = "/multiple", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public List<StepDTO> registerMultipleSteps(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
+    public List<Step> registerMultipleSteps(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                                final @RequestBody List<@Valid StepDTO> stepDtoList) {
         return List.of(stepService.addMultipleStepsForUser(JwtValidator.getUserId(jwt), stepDtoList));
     }

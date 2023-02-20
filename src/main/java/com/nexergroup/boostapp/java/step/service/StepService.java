@@ -28,7 +28,7 @@ public class StepService extends AbstractStepService {
     }
 
     @Override
-    public Optional<StepDTO> addSingleStepForUser(String userId, StepDTO stepData) {
+    public Optional<Step> addSingleStepForUser(String userId, StepDTO stepData) {
         return super.addSingleStepForUser(userId, stepData);
     }
 
@@ -38,7 +38,7 @@ public class StepService extends AbstractStepService {
     }
 
     @Override
-    public StepDTO addMultipleStepsForUser(String userId, List<StepDTO> stepDtoList) {
+    public Step addMultipleStepsForUser(String userId, List<StepDTO> stepDtoList) {
         return super.addMultipleStepsForUser(userId, stepDtoList);
     }
 
