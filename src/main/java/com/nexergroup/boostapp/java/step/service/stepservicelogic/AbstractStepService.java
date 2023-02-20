@@ -3,6 +3,8 @@ package com.nexergroup.boostapp.java.step.service.stepservicelogic;
 import com.nexergroup.boostapp.java.step.builder.StepDTOBuilder;
 import com.nexergroup.boostapp.java.step.dto.stepdto.BulkStepDateDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
+import com.nexergroup.boostapp.java.step.dto.stepdto.StepDateDTO;
+import com.nexergroup.boostapp.java.step.exception.NotFoundException;
 import com.nexergroup.boostapp.java.step.mapper.DateHelper;
 import com.nexergroup.boostapp.java.step.mapper.StepMapper;
 import com.nexergroup.boostapp.java.step.model.MonthStep;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Component;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -39,9 +42,7 @@ public abstract class AbstractStepService {
     private final StepRepository stepRepository;
     private final WeekStepRepository weekStepRepository;
     private final MonthStepRepository monthStepRepository;
-
     private final StepValidator stepValidator;
-
 
     /**
      * Constructor for AbstractStepService class.
@@ -80,13 +81,13 @@ public abstract class AbstractStepService {
      *
      * @see StepValidator
      */
-    public Optional<Step> addSingleStepForUser(String userId, StepDTO stepData) {
+    public Step addSingleStepForUser(String userId, StepDTO stepData) {
         if (userId == null || !stepValidator.stepDataIsValid(stepData))
-            return Optional.of(getInvalidDataObject()); // Kasta exception från Validatorn ?
+            return getInvalidDataObject(); // throw exception from Validator ?
         else if (stepValidator.stepShouldBeUpdatedWithNewData(stepData))
-            return Optional.of(updateAndSaveStep(getLatestStepFromUser(userId).get(), stepData));
+            return updateAndSaveStep(getLatestStepFromUser(userId), stepData);
         else {
-            return Optional.of(saveToAllTables(stepData));
+            return saveToAllTables(stepData);
         }
     }
 
@@ -109,7 +110,7 @@ public abstract class AbstractStepService {
         }
         else {
             var gatheredData = gatherStepDataForUser(stepDtoList, userId);
-            return addSingleStepForUser(userId, gatheredData).get();
+            return addSingleStepForUser(userId, gatheredData);
         }
     }
 
@@ -161,9 +162,8 @@ public abstract class AbstractStepService {
      *
      * @see StepRepository#findFirstByUserIdOrderByEndTimeDesc(String)
      */
-    public Optional<Step> getLatestStepFromUser(String userId) {
-        return stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId);
-
+    public Step getLatestStepFromUser(String userId) {
+        return stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).orElseThrow();
     }
 
     /**
@@ -177,9 +177,8 @@ public abstract class AbstractStepService {
      *
      * @see MonthStepRepository#getStepCountByUserIdYearAndMonth(String, int, int)
      */
-    public Optional<Integer> getStepCountForUserYearAndMonth(String userId, int year, int month) {
-        return Optional.of(monthStepRepository.getStepCountByUserIdYearAndMonth(userId, year, month)
-                .orElse(0));
+    public Integer getStepCountForUserYearAndMonth(String userId, int year, int month) {
+        return monthStepRepository.getStepCountByUserIdYearAndMonth(userId, year, month).orElseThrow();
     }
 
     /**
@@ -193,9 +192,8 @@ public abstract class AbstractStepService {
      *
      * @see WeekStepRepository#getStepCountByUserIdYearAndWeek(String, int, int)
      */
-    public Optional<Integer> getStepCountForUserYearAndWeek(String userId, int year, int week) {
-        return Optional.of(weekStepRepository.getStepCountByUserIdYearAndWeek(userId, year, week)
-                .orElse(0));
+    public Integer getStepCountForUserYearAndWeek(String userId, int year, int week) {
+        return weekStepRepository.getStepCountByUserIdYearAndWeek(userId, year, week).orElseThrow();
     }
 
     /**
@@ -210,14 +208,13 @@ public abstract class AbstractStepService {
      * @see StringComparator#getMatching(List, List)
      * @see StepRepository#getListOfAllDistinctUserId()
      */
-    public Optional<List<BulkStepDateDTO>> filterUsersAndCreateListOfBulkStepDateDtoWithRange(List<String> users, String startDate, String endDate) {
+    public List<BulkStepDateDTO> filterUsersAndCreateListOfBulkStepDateDtoWithRange(List<String> users, String startDate, String endDate) {
         var stringConverter = new StringToTimeStampConverter();
         var matchingUsers = StringComparator.getMatching(users, stepRepository.getListOfAllDistinctUserId());
         var listOfBulkStepDateDto = matchingUsers.stream()
-                .map(user -> createBulkStepDateDtoForUser(user, stringConverter.convert(startDate), stringConverter.convert(endDate))
-                        .orElse(new BulkStepDateDTO("Invalid Data", List.of())))
+                .map(user -> createBulkStepDateDtoForUser(user, stringConverter.convert(startDate), stringConverter.convert(endDate)))
                 .collect(Collectors.toList());
-        return Optional.of(listOfBulkStepDateDto);
+        return listOfBulkStepDateDto;
     }
 
     /**
@@ -232,7 +229,8 @@ public abstract class AbstractStepService {
     public Optional<BulkStepDateDTO> createBulkStepDateDtoForUserForCurrentWeek(String userId) {
         var weekStart = DateHelper.getWeekStart(LocalDateTime.now(), ZoneId.systemDefault());
         var weekEnd = DateHelper.getWeekEnd(LocalDateTime.now(), ZoneId.systemDefault());
-        var listOfUserStepDateDto = stepRepository.getStepDataByUserIdAndDateRange(userId, Timestamp.valueOf(weekStart.toLocalDateTime()), Timestamp.valueOf(weekEnd.toLocalDateTime()));
+        var listOfUserStepDateDto = stepRepository.getStepDataByUserIdAndDateRange(
+                userId, Timestamp.valueOf(weekStart.toLocalDateTime()), Timestamp.valueOf(weekEnd.toLocalDateTime()));
         return Optional.of(new BulkStepDateDTO(userId, listOfUserStepDateDto));
     }
 
@@ -246,9 +244,16 @@ public abstract class AbstractStepService {
      *
      * @see StepRepository#getStepDataByUserIdAndDateRange(String, Timestamp, Timestamp)
      */
-    public Optional<BulkStepDateDTO> createBulkStepDateDtoForUser(String userId, Timestamp startTime, Timestamp endTime) {
-        var listOfStepsDateDtoForUser = stepRepository.getStepDataByUserIdAndDateRange(userId, startTime, endTime);
-        return Optional.of(new BulkStepDateDTO(userId, listOfStepsDateDtoForUser));
+    public BulkStepDateDTO createBulkStepDateDtoForUser(String userId, Timestamp startTime, Timestamp endTime) {
+        List<StepDateDTO> listOfStepsDateDtoForUser;
+        try {
+            listOfStepsDateDtoForUser = stepRepository.getStepDataByUserIdAndDateRange(userId, startTime, endTime);
+        } catch (Exception e) {
+            throw new NotFoundException();
+        }
+        var bulkStepDateDTO = new BulkStepDateDTO();
+        listOfStepsDateDtoForUser.forEach(stepDateDTO -> bulkStepDateDTO.getStepList().add(stepDateDTO));
+        return bulkStepDateDTO;
     }
 
     /**
@@ -263,7 +268,7 @@ public abstract class AbstractStepService {
         stepRepository.incrementStepCountAndUpdateTimes(step, stepData.getStepCount(), stepData.getEndTime(), stepData.getUploadTime());
         updateOrSaveNewWeekStep(stepData);
         updateOrSaveNewMonthStep(stepData);
-        return getLatestStepFromUser(step.getUserId()).get();
+        return getLatestStepFromUser(step.getUserId());
     }
 
 
@@ -325,6 +330,6 @@ public abstract class AbstractStepService {
      */
     private Step getInvalidDataObject() {
         return new Step("Invalid Data", 0, LocalDateTime.now());
-        // stepCount 0 provisoriskt, kasta exception i getInvalidDataObject istället
+        // stepCount 0 is a placeholder, throw exception in getInvalidDataObject instead ?
     }
 }

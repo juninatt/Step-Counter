@@ -59,7 +59,7 @@ class AbstractStepServiceTest {
             var testDto = dtoBuilder.createStepDTOWhereUserIdIsNull();
 
             // Act
-            var result = stepService.addSingleStepForUser(null, testDto).get();
+            var result = stepService.addSingleStepForUser(null, testDto);
 
             // Expected values
             var expectedUserId = "Invalid Data";
@@ -82,7 +82,7 @@ class AbstractStepServiceTest {
         @DisplayName("Should return 'Invalid Data' object when stepDTO-input is null")
         public void testAddSingleStepForUser_ReturnsEmptyOptional_WhenTestDtoIsNull() {
             // Act
-            var result = stepService.addSingleStepForUser(testUser, null).get();
+            var result = stepService.addSingleStepForUser(testUser, null);
 
             // Expected values
             var expectedUserId = "Invalid Data";
@@ -108,7 +108,7 @@ class AbstractStepServiceTest {
             var testDto = dtoBuilder.createStepDTOOfFirstMinuteOfYear();
 
             // Act
-            var actual = stepService.addSingleStepForUser(testUser, testDto).orElse(null);
+            var actual = stepService.addSingleStepForUser(testUser, testDto);
 
             // Expected values
             var expectedClass = Step.class;
@@ -131,8 +131,7 @@ class AbstractStepServiceTest {
             int expectedStepCount = 10;
 
             // Assert
-            assertTrue(result.isPresent(), "Expected a Step to be returned but it was empty");
-            assertEquals(expectedStepCount, result.get().getStepCount(), "Expected step count to be '" + expectedStepCount + "' but was " + result.get().getStepCount());
+            assertEquals(expectedStepCount, result.getStepCount(), "Expected step count to be '" + expectedStepCount + "' but was " + result.getStepCount());
         }
 
         @Test
@@ -150,8 +149,7 @@ class AbstractStepServiceTest {
             var expectedStepCount = 20 + 10;
 
             // Assert
-            assertTrue(result.isPresent(), "Expected a step to be returned but it was empty");
-            assertEquals(expectedStepCount, result.get().getStepCount(), "Expected step count to be '" + expectedStepCount + "' but was " + result.get().getStepCount());
+            assertEquals(expectedStepCount, result.getStepCount(), "Expected step count to be '" + expectedStepCount + "' but was " + result.getStepCount());
         }
 
         @Test
@@ -168,9 +166,8 @@ class AbstractStepServiceTest {
             var expectedEndTime = testDto.getEndTime();
 
             // Assert
-            assertTrue(result.isPresent(), "Expected a step to be returned but it was empty");
-            assertTrue(Duration.between(expectedEndTime, result.get().getEndTime()).abs().compareTo(errorMargin) <= 0,
-                    "Expected endTime to be within " + errorMargin + " second of '" + expectedEndTime + "' but was " + result.get().getEndTime());
+            assertTrue(Duration.between(expectedEndTime, result.getEndTime()).abs().compareTo(errorMargin) <= 0,
+                    "Expected endTime to be within " + errorMargin + " second of '" + expectedEndTime + "' but was " + result.getEndTime());
         }
 
         @Test
@@ -187,9 +184,8 @@ class AbstractStepServiceTest {
             var expectedUploadTime = testDto.getUploadTime();
 
             // Assert
-            assertTrue(result.isPresent(), "Expected a step to be returned but it was empty");
-            assertTrue(Duration.between(expectedUploadTime, result.get().getUploadedTime()).abs().compareTo(errorMargin) <= 0,
-                    "Expected uploadTime to be within " + errorMargin + " second of '" + expectedUploadTime + "' but was " + result.get().getUploadedTime());
+            assertTrue(Duration.between(expectedUploadTime, result.getUploadedTime()).abs().compareTo(errorMargin) <= 0,
+                    "Expected uploadTime to be within " + errorMargin + " second of '" + expectedUploadTime + "' but was " + result.getUploadedTime());
         }
 
         @Test
@@ -197,16 +193,12 @@ class AbstractStepServiceTest {
         public void testAddSingleStepForUser_ReturnsObjectWithCorrectValues_WhenCreatingNewStep() {
             // Arrange
             var testDto = dtoBuilder.createStepDTOOfFirstMinuteOfYear();
-
             // Act
             var result = stepService.addSingleStepForUser(testUser, testDto);
-
             // Expected values
             var expectedUserId = testUser;
-
             // Assert
-            assertTrue(result.isPresent(), "Expected a step to be returned but it was empty");
-            assertEquals(expectedUserId, result.get().getUserId(), "Expected userId to be '" + expectedUserId + "'  but was " + result.get().getUserId());
+            assertEquals(expectedUserId, result.getUserId(), "Expected userId to be '" + expectedUserId + "'  but was " + result.getUserId());
         }
 
         @Test
@@ -215,16 +207,12 @@ class AbstractStepServiceTest {
             // Arrange
             stepRepository.save(stepBuilder.createStepOfFirstMinuteOfYear());
             var testDto = dtoBuilder.createStepDTOOfSecondMinuteOfYear();
-
             // Act
             var result = stepService.addSingleStepForUser(testUser, testDto);
-
             // Expected values
             var expectedUserId = testUser;
-
             // Assert
-            assertTrue(result.isPresent());
-            assertEquals(expectedUserId, result.get().getUserId(), "Expected userId to be '" + expectedUserId + "' but was " + result.get().getUserId());
+            assertEquals(expectedUserId, result.getUserId(), "Expected userId to be '" + expectedUserId + "' but was " + result.getUserId());
         }
 
         @Test
@@ -233,13 +221,10 @@ class AbstractStepServiceTest {
             // Arrange
             var testDto = dtoBuilder.createStepDTOOfFirstMinuteOfYear();
             stepService.addSingleStepForUser(testUser, testDto);
-
             // Act
             var actualStepCount = weekStepRepository.getStepCountByUserIdYearAndWeek(testUser, testDto.getEndTime().getYear(), DateHelper.getWeek(testDto.getEndTime()));
-
             // Expected values
             var expectedStepCount = 10;
-
             // Assert
             assertTrue(actualStepCount.isPresent(), "Expected step count to be returned but it was empty");
             assertEquals(Optional.of(expectedStepCount), actualStepCount, "Expected step count to be '" + expectedStepCount + "'  but got " + actualStepCount.get());
@@ -334,7 +319,7 @@ class AbstractStepServiceTest {
             var badTestDto = dtoBuilder.createStepDTOWhereTimeFieldsAreIncompatible();
 
             // Act
-            var result = stepService.addSingleStepForUser(testUser, badTestDto).get();
+            var result = stepService.addSingleStepForUser(testUser, badTestDto);
 
             // Expected values
             var expectedUserId = "Invalid Data";

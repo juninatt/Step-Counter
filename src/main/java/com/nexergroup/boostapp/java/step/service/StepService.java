@@ -28,12 +28,12 @@ public class StepService extends AbstractStepService {
     }
 
     @Override
-    public Optional<Step> addSingleStepForUser(String userId, StepDTO stepData) {
+    public Step addSingleStepForUser(String userId, StepDTO stepData) {
         return super.addSingleStepForUser(userId, stepData);
     }
 
     @Override
-    public Optional<Step> getLatestStepFromUser(String userId) {
+    public Step getLatestStepFromUser(String userId) {
         return super.getLatestStepFromUser(userId);
     }
 
@@ -43,17 +43,17 @@ public class StepService extends AbstractStepService {
     }
 
     @Override
-    public Optional<List<BulkStepDateDTO>> filterUsersAndCreateListOfBulkStepDateDtoWithRange(List<String> users, String startDate, String endDate) {
+    public List<BulkStepDateDTO> filterUsersAndCreateListOfBulkStepDateDtoWithRange(List<String> users, String startDate, String endDate) {
         return super.filterUsersAndCreateListOfBulkStepDateDtoWithRange(users, startDate, endDate);
     }
 
     @Override
-    public Optional<Integer> getStepCountForUserYearAndMonth(String userId, int year, int month) {
+    public Integer getStepCountForUserYearAndMonth(String userId, int year, int month) {
         return super.getStepCountForUserYearAndMonth(userId, year, month);
     }
 
     @Override
-    public Optional<Integer> getStepCountForUserYearAndWeek(String userId, int year, int week) {
+    public Integer getStepCountForUserYearAndWeek(String userId, int year, int week) {
         return super.getStepCountForUserYearAndWeek(userId, year, week);
     }
 
