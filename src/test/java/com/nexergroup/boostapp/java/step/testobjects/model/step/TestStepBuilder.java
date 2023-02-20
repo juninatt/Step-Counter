@@ -28,7 +28,7 @@ public class TestStepBuilder {
                 10,
                 firstMinuteOfYear,
                 firstMinuteOfYear.plusSeconds(10),
-                thirdMinuteOfYear.plusSeconds(20));
+                firstMinuteOfYear.plusSeconds(20));
     }
 
     public Step createStepOfSecondMinuteOfYear() {

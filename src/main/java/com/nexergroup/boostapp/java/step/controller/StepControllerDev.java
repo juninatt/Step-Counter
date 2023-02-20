@@ -66,7 +66,7 @@ public class StepControllerDev {
     @Operation(summary = "Register step entity")
     @GroupedApiResponse
     @PostMapping(value = "/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Step> registerStep(final @PathVariable String userId,
+    public ResponseEntity<StepDTO> registerStep(final @PathVariable String userId,
                                              final @RequestBody @Valid StepDTO stepDTO) {
         return stepService.addSingleStepForUser(userId, stepDTO)
                 .map(ResponseEntity::ok)

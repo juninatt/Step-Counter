@@ -13,6 +13,7 @@ import com.nexergroup.boostapp.java.step.repository.StepRepository;
 import com.nexergroup.boostapp.java.step.repository.WeekStepRepository;
 import com.nexergroup.boostapp.java.step.util.StringComparator;
 import com.nexergroup.boostapp.java.step.util.parser.StringToTimeStampConverter;
+import com.nexergroup.boostapp.java.step.validator.boostappvalidator.StepValidator;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
@@ -39,6 +40,8 @@ public abstract class AbstractStepService {
     private final WeekStepRepository weekStepRepository;
     private final MonthStepRepository monthStepRepository;
 
+    private final StepValidator stepValidator;
+
 
     /**
      * Constructor for AbstractStepService class.
@@ -53,6 +56,7 @@ public abstract class AbstractStepService {
         this.stepRepository = stepRepository;
         this.monthStepRepository = monthStepRepository;
         this.weekStepRepository = weekStepRepository;
+        this.stepValidator = new StepValidator(stepRepository);
     }
 
     /**
@@ -65,42 +69,47 @@ public abstract class AbstractStepService {
     }
 
     /**
-     * Adds step data for a specified user in the form of a {@link StepDTO} object.
+     * This method first checks if {@link StepDTO} object passed as input passes the {@link StepValidator#stepDataIsValid(StepDTO)} method.
+     * If it does, it either updates the last {@link Step} object belonging to the same userId, or creates a new {@link Step} object
+     * depending on the values of its time-fields.
      *
      * @param userId the ID of the user
-     * @param stepData the {@link StepDTO} object holding the step data to be added
-     * @return an Optional containing the added {@link Step} object or a default 'Invalid Step'-object if the provided data is invalid
+     * @param stepData the {@link StepDTO} object holding the data to be added to the database
+     * @return an Optional containing the data of the most recent {@link Step} object belonging to the user,
+     * or a default {@link StepDTO} object indicating that the provided data is invalid
      *
-     * @see StepRepository
-     * @see StepMapper#stepDtoToStep(StepDTO)
+     * @see StepValidator
      */
-    public Optional<Step> addSingleStepForUser(String userId, StepDTO stepData) {
-        if (userId == null || !isValidDto(stepData))
-            return Optional.of(new Step("Invalid Data",0,  LocalDateTime.now()));
+    public Optional<StepDTO> addSingleStepForUser(String userId, StepDTO stepData) {
+        if (userId == null || !stepValidator.stepDataIsValid(stepData))
+            return Optional.of(getInvalidDataObject());
+        else if (stepValidator.stepShouldBeUpdatedWithNewData(stepData))
+            return Optional.of(updateAndSaveStep(getLatestStepFromUser(userId).get(), stepData));
         else {
-            return getLatestStepFromUser(userId).map(step -> updateAndSaveStep(step, stepData))
-                    .or(() -> Optional.of(StepMapper.mapper.stepDtoToStep(saveToAllTables(stepData))));
+            return Optional.of(saveToAllTables(stepData));
         }
     }
 
     /**
-     * This method adds data from multiple {@link StepDTO} objects for a specified user.
-     * If input is invalid, returns a list with a default 'Invalid StepDTO' object,
-     * otherwise it gathers the information from the {@link StepDTO} objects and creates a new single
-     * {@link StepDTO} object containing all the data, then converts the DTO to a {@link Step} and saves it to the database.
+     * This method checks if the list passed to it passes the {@link StepValidator#stepDataIsValid(List)} method,
+     * and if they do, gathers the data from the list and converts it to a single {@link StepDTO} object.
+     * Then the new {@link StepDTO} object gets passed to the {@link AbstractStepService#addSingleStepForUser(String, StepDTO)} method,
+     * for the data to be persisted to the database.
      *
      * @param userId the ID of the user
-     * @param stepDtoList the list of {@link StepDTO} objects
-     * @return a {@link StepDTO} object holding all the data from the objects in the stepDtoList
+     * @param stepDtoList the list of {@link StepDTO} objects holding the data to be persisted to the database
+     * @return a {@link StepDTO} object holding the collected data from the objects in the stepDtoList,
+     * or default {@link StepDTO} object indicating that the provided data is invalid
      *
+     * @see StepValidator
      */
     public StepDTO addMultipleStepsForUser(String userId, List<StepDTO> stepDtoList) {
-        if (userId == null || !isValidDtoList(stepDtoList)) {
-            return new StepDTO("Invalid Data", LocalDateTime.now());
+        if (userId == null || !stepValidator.stepDataIsValid(stepDtoList)) {
+            return getInvalidDataObject();
         }
         else {
             var gatheredData = gatherStepDataForUser(stepDtoList, userId);
-            return StepMapper.mapper.stepToStepDTO(addSingleStepForUser(userId, gatheredData).get());
+            return addSingleStepForUser(userId, gatheredData).get();
         }
     }
 
@@ -154,6 +163,7 @@ public abstract class AbstractStepService {
      */
     public Optional<Step> getLatestStepFromUser(String userId) {
         return stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId);
+
     }
 
     /**
@@ -244,17 +254,16 @@ public abstract class AbstractStepService {
     /**
      * Updates the given {@link Step} object with the stepCount, endTime and uploadTime from the {@link StepDTO} object.
      * Saves the updated {@link Step} object and creates new {@link WeekStep} and {@link MonthStep} objects if necessary.
-     * Returns the latest {@link Step} object for the user.
      *
      * @param step the {@link Step} object to be updated
      * @param stepData the {@link StepDTO} object containing the data to update the {@link Step} object with
-     * @return the latest {@link Step} object for the user
+     * @return a {@link StepDTO} object holding the data of the latest {@link Step} object for the user
      */
-    private Step updateAndSaveStep(Step step, StepDTO stepData) {
+    private StepDTO updateAndSaveStep(Step step, StepDTO stepData) {
         stepRepository.incrementStepCountAndUpdateTimes(step, stepData.getStepCount(), stepData.getEndTime(), stepData.getUploadTime());
         updateOrSaveNewWeekStep(stepData);
         updateOrSaveNewMonthStep(stepData);
-        return getLatestStepFromUser(step.getUserId()).get();
+        return StepMapper.mapper.stepToStepDTO(getLatestStepFromUser(step.getUserId()).get());
     }
 
 
@@ -310,42 +319,14 @@ public abstract class AbstractStepService {
     }
 
     /**
-     * Verifies that the given list of {@link StepDTO} objects are valid.
-     * A list is considered valid if the list containing the objects is not null
-     * and if the {@link StepDTO} objects in the list passes the requirements
-     * of the {@link AbstractStepService#isValidDto(StepDTO)} method
+     * This method creates a default {@link StepDTO} object indicating something went wrong
      *
-     * @param stepDtoList the list of {@link StepDTO} objects to be verified.
-     * @return true if the list is valid, otherwise false.
+     * @return a {@link StepDTO} object with userId 'Invalid Data' and uploadTime of current moment
      */
-    private boolean isValidDtoList(List<StepDTO> stepDtoList) {
-        if (stepDtoList == null)
-            return false;
-        else {
-            for (StepDTO dto : stepDtoList) {
-                if (!isValidDto(dto))
-                    return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Verifies if the given {@link StepDTO} object is valid.
-     * A {@link StepDTO} is considered valid if it is not null and all its properties
-     * 'startTime', 'endTime' and 'uploadTime' are not null.
-     * Additionally, the 'endTime' must be after 'startTime' and
-     * the 'uploadTime' must be after 'endTime'.
-     *
-     * @param stepDto the {@link StepDTO} object to be verified.
-     * @return true if the object is valid, otherwise false.
-     */
-    private boolean isValidDto(StepDTO stepDto) {
-        return stepDto != null
-                && stepDto.getStartTime() != null
-                && stepDto.getEndTime() != null
-                && stepDto.getUploadTime() != null
-                && stepDto.getEndTime().isAfter(stepDto.getStartTime())
-                && stepDto.getUploadTime().isAfter(stepDto.getEndTime());
+    private StepDTO getInvalidDataObject() {
+        return new StepDTOBuilder()
+                .withUserId("Invalid Data")
+                .withUploadTime(LocalDateTime.now())
+                .build();
     }
 }

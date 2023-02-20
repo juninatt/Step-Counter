@@ -74,7 +74,7 @@ public class StepController {
     @Operation(summary = "Register step entity")
     @GroupedApiResponse
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Step> registerStep(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
+    public ResponseEntity<StepDTO> registerStep(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                              final @RequestBody @Valid StepDTO stepDTO) {
         return stepService.addSingleStepForUser(JwtValidator.getUserId(jwt), stepDTO)
                 .map(ResponseEntity::ok)

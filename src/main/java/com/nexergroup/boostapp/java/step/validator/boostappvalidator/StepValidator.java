@@ -1,0 +1,167 @@
+package com.nexergroup.boostapp.java.step.validator.boostappvalidator;
+
+import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
+import com.nexergroup.boostapp.java.step.repository.StepRepository;
+import org.springframework.lang.NonNull;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static java.util.Optional.of;
+import static java.util.Optional.ofNullable;
+
+/**
+ * A utility class that validates the data in {@link StepDTO} objects.
+ * Uses Optional wrappers to avoid nullPointer exceptions when data is not present.
+ * Uses {@link StepRepository} to find Step objects in the database belonging to the same userId as the {@link StepDTO}.
+ *
+ * @see com.nexergroup.boostapp.java.step.model.Step
+ */
+public class StepValidator {
+    private final StepRepository repository;
+
+    /**
+     * Constructs a new StepValidator with the given repository.
+     *
+     * @param repository the {@link StepRepository} used for interacting with the database
+     */
+    public StepValidator(StepRepository repository) {
+        this.repository = repository;
+    }
+
+    /**
+     * Checks if a single {@link StepDTO} object is valid.
+     * The {@link StepDTO} object is seen as valid if is passes the {@link StepValidator#stepDtoIsValid(StepDTO)} method.
+     *
+     * @param stepData the {@link StepDTO} object to validate
+     * @return true if the object is valid, false otherwise
+     */
+    public boolean stepDataIsValid(StepDTO stepData) {
+        return stepDtoIsValid(stepData);
+    }
+
+    /**
+     * Checks if the list passed as input is null or not
+     * and if the {@link StepDTO} objects in the list passes the {@link StepValidator#stepDtoIsValid(StepDTO)} method.
+     * *
+     * @param stepDataList the list of {@link StepDTO} objects to validate
+     * @return true if all objects in the list are seen as valid, false otherwise
+     */
+    public boolean stepDataIsValid(List<StepDTO> stepDataList) {
+        return stepDataList != null &&
+                stepDataList.stream()
+                        .allMatch(this::stepDtoIsValid);
+    }
+
+    /**
+     * Finds the most recent Step object for the userId of the {@link StepDTO} passed as input.
+     * If the endTime of that Step objects is after the startTime of the {@link StepDTO} object, the Step object should be updated
+     *
+     * @param stepData the {@link StepDTO} object holding the new data
+     * @return true if the Step object should be updated, false otherwise
+     */
+    public boolean stepShouldBeUpdatedWithNewData(@NonNull StepDTO stepData) {
+        return of(stepData)
+                .map(StepDTO::getUserId)
+                .flatMap(repository::findFirstByUserIdOrderByEndTimeDesc)
+                .map(mostRecentStep -> firstTimeFieldIsAfterSecondTimeField(stepData.getStartTime(), mostRecentStep.getEndTime()))
+                .orElse(false);
+    }
+
+
+    /**
+     * Checks if the fields of the {@link StepDTO} are null or not and if the time-fields are ok.
+     * The time-fields are seen as ok if startTime is before endTime, and endTime is before uploadTime.
+     *
+     * @param stepDto the {@link StepDTO} object holding the data to validate
+     * @return true if no fields are null and the time-fields are ok, false otherwise
+     */
+    private boolean stepDtoIsValid(StepDTO stepDto) {
+        return stepDtoIsNotNull(stepDto) &&
+                startTimeIsNotNull(stepDto) &&
+                endTimeIsNotNull(stepDto) &&
+                uploadTimeIsNotNull(stepDto) &&
+                endTimeIsAfterStartTime(stepDto) &&
+                uploadTimeIsAfterEndTime(stepDto);
+    }
+
+    /**
+     * Checks if a given {@link StepDTO} object is null.
+     *
+     * @param stepDto the {@link StepDTO} object to check
+     * @return true if the object is not null, false otherwise
+     */
+    private boolean stepDtoIsNotNull(StepDTO stepDto) {
+        return ofNullable(stepDto).isPresent();
+    }
+
+    /**
+     * Checks if the startTime field of a given {@link StepDTO} object is null.
+     *
+     * @param stepDto the {@link StepDTO} object holding the data to check
+     * @return true if the startTime field is not null, false otherwise
+     */
+    private boolean startTimeIsNotNull(StepDTO stepDto) {
+        return ofNullable(stepDto)
+                .map(StepDTO::getStartTime).isPresent();
+    }
+
+    /**
+     * Checks if the endTime field of a given {@link StepDTO} object is null.
+     *
+     * @param stepDto the {@link StepDTO} object holding the data to check
+     * @return true if the endTime field is not null, false otherwise
+     */
+    private boolean endTimeIsNotNull(StepDTO stepDto) {
+        return ofNullable(stepDto)
+                .map(StepDTO::getEndTime).isPresent();
+    }
+
+    /**
+     * Checks if the uploadTime field of a given {@link StepDTO} object is null.
+     *
+     * @param stepDto the {@link StepDTO} object holding the data to check
+     * @return true if the uploadTime field is not null, false otherwise
+     */
+    private boolean uploadTimeIsNotNull(StepDTO stepDto) {
+        return ofNullable(stepDto)
+                .map(StepDTO::getUploadTime).isPresent();
+    }
+
+    /**
+     * Checks whether the endTime of a {@link StepDTO} object is after its startTime or not.
+     *
+     * @param stepDto the {@link StepDTO} object holding the time-fields to check
+     * @return true is the endTime of the {@link StepDTO} object is after its startTime, false otherwise
+     */
+    private boolean endTimeIsAfterStartTime(StepDTO stepDto) {
+        return firstTimeFieldIsAfterSecondTimeField(stepDto.getStartTime(), stepDto.getEndTime());
+    }
+
+    /**
+     * Checks whether the uploadTime of a {@link StepDTO} object is after its endTime or not.
+     *
+     * @param stepDto the {@link StepDTO} object holding the time-fields to check
+     * @return true is the uploadTime of the {@link StepDTO} object is after endTime, false otherwise
+     */
+    private boolean uploadTimeIsAfterEndTime(StepDTO stepDto) {
+        return firstTimeFieldIsAfterSecondTimeField(stepDto.getEndTime(), stepDto.getUploadTime());
+    }
+
+    /**
+     * Compares two LocalDateTime objects to determine if the first is after the second,
+     * after wrapping them in an Optional to avoid nullPointer exceptions.
+     *
+     * @param field1 the first LocalDateTime object to compare
+     * @param field2 the second LocalDateTime object to compare
+     * @return true if the first LocalDateTime object is after the second, false otherwise
+     */
+    private boolean firstTimeFieldIsAfterSecondTimeField(LocalDateTime field1, LocalDateTime field2) {
+        return ofNullable(field1)
+                .flatMap(startTime ->
+                        ofNullable(field2)
+                                .map(endTime -> endTime.isAfter(startTime))
+                )
+                .orElse(false);
+    }
+}

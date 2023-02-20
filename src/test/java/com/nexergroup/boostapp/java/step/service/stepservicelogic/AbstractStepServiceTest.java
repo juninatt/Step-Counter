@@ -3,7 +3,6 @@ package com.nexergroup.boostapp.java.step.service.stepservicelogic;
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
 import com.nexergroup.boostapp.java.step.mapper.DateHelper;
 import com.nexergroup.boostapp.java.step.model.MonthStep;
-import com.nexergroup.boostapp.java.step.model.Step;
 import com.nexergroup.boostapp.java.step.model.WeekStep;
 import com.nexergroup.boostapp.java.step.repository.MonthStepRepository;
 import com.nexergroup.boostapp.java.step.repository.StepRepository;
@@ -69,7 +68,7 @@ class AbstractStepServiceTest {
             // Actual values
             var actualUserId = result.getUserId();
             var actualStepCount = result.getStepCount();
-            var actualUploadTime = result.getUploadedTime();
+            var actualUploadTime = result.getUploadTime();
 
             // Assert
             assertEquals(expectedUserId, actualUserId, () -> "Expected userId to be '" + expectedUserId + "' but was " + actualUserId);
@@ -92,18 +91,18 @@ class AbstractStepServiceTest {
             // Actual values
             var actualUserId = result.getUserId();
             var actualStepCount = result.getStepCount();
-            var actualUploadTime = result.getUploadedTime();
+            var actualUploadTime = result.getUploadTime();
 
             // Assert
             assertEquals(expectedUserId, actualUserId, () -> "Expected userId to be '" + expectedUserId + "' but was " + actualUserId);
             assertEquals(expectedUserId, actualUserId, () -> "Expected stepCount to be '" + expectedStepCount + "' but was " + actualStepCount);
-            assertTrue(Duration.between(expectedUploadTime, result.getUploadedTime()).abs().compareTo(errorMargin) <= 0,
-                    "Expected uploadTime to be within " + errorMargin + " second of '" + expectedUploadTime + "' but was " + result.getUploadedTime());
+            assertTrue(Duration.between(expectedUploadTime, result.getUploadTime()).abs().compareTo(errorMargin) <= 0,
+                    "Expected uploadTime to be within " + errorMargin + " second of '" + expectedUploadTime + "' but was " + result.getUploadTime());
         }
 
         @Test
-        @DisplayName("Should return object of Step class when Step is used as input")
-        public void testAddSingleStepForUser_ReturnsObjectOfStepClass() {
+        @DisplayName("Should return object of StepDTO class when Step is used as input")
+        public void testAddSingleStepForUser_ReturnsObjectOfStepDtoClass() {
             // Arrange
             var testDto = dtoBuilder.createStepDTOOfFirstMinuteOfYear();
 
@@ -111,7 +110,7 @@ class AbstractStepServiceTest {
             var actual = stepService.addSingleStepForUser(testUser, testDto).orElse(null);
 
             // Expected values
-            var expectedClass = Step.class;
+            var expectedClass = StepDTO.class;
 
             // Assert
             assertNotNull(actual);
@@ -136,11 +135,12 @@ class AbstractStepServiceTest {
         }
 
         @Test
-        @DisplayName("Should update stepCount of Step passed as input if active Step is found in database")
+        @DisplayName("Should return StepDTO with updated stepCount if Step object in database is updated")
         public void testAddSingleStepForUser_UpdatesStepCount_IfStepIsFoundInDataBase() {
             // Arrange
-            stepRepository.save(stepBuilder.createStepOfFirstMinuteOfYear());
+            var existingStep = stepRepository.save(stepBuilder.createStepOfFirstMinuteOfYear());
             var testDto = dtoBuilder.createStepDTOOfSecondMinuteOfYear();
+            testDto.setStartTime(existingStep.getEndTime().minusSeconds(10));
 
             // Act
             var result = stepService.addSingleStepForUser(testUser, testDto);
@@ -187,8 +187,8 @@ class AbstractStepServiceTest {
 
             // Assert
             assertTrue(result.isPresent(), "Expected a step to be returned but it was empty");
-            assertTrue(Duration.between(expectedUploadTime, result.get().getUploadedTime()).abs().compareTo(errorMargin) <= 0,
-                    "Expected uploadTime to be within " + errorMargin + " second of '" + expectedUploadTime + "' but was " + result.get().getUploadedTime());
+            assertTrue(Duration.between(expectedUploadTime, result.get().getUploadTime()).abs().compareTo(errorMargin) <= 0,
+                    "Expected uploadTime to be within " + errorMargin + " second of '" + expectedUploadTime + "' but was " + result.get().getUploadTime());
         }
 
         @Test
@@ -327,44 +327,6 @@ class AbstractStepServiceTest {
         }
 
         @Test
-        @DisplayName("Should return Step with correctly updated values after first step is added")
-        public void testAddSingleStepForUser_UpdatesStepCorrectly() {
-            // Arrange
-            var now = LocalDateTime.now();
-            var testDto = dtoBuilder.createStepDTOOfFirstMinuteOfYear();
-            var additionalTestDto =dtoBuilder.createStepDTOOfSecondMinuteOfYear();
-
-            stepService.addSingleStepForUser(testUser, testDto);
-
-            // Act
-            var savedStep = stepService.addSingleStepForUser(testUser, additionalTestDto);
-
-            // Expected values
-            var expectedUserId = testUser;
-            var expectedStartTime = testDto.getStartTime();
-            var expectedEndTime = additionalTestDto.getEndTime();
-            var expectedUploadTime = additionalTestDto.getUploadTime();
-
-            // Actual values
-            var actualUserId = savedStep.get().getUserId();
-            var actualStartTime = savedStep.get().getStartTime();
-            var actualEndTime = savedStep.get().getEndTime();
-            var actualUploadTime = savedStep.get().getUploadedTime();
-
-            // Assert
-            assertAll(
-                    () -> assertTrue(savedStep.isPresent(), "Expected a step to be returned but it was empty"),
-                    () -> assertEquals(expectedUserId, actualUserId, "Expected userId to be '" + expectedUserId + "' but was " + actualUserId),
-                    () -> assertTrue(Duration.between(expectedStartTime, actualStartTime).abs().compareTo(errorMargin) <= 0,
-                            "Expected startTime to be within 1 second of '" + expectedStartTime + "' but was " + actualStartTime),
-                    () -> assertTrue(Duration.between(expectedEndTime, actualEndTime).abs().compareTo(errorMargin) <= 0,
-                            "Expected endTime to be within 1 second of '" + expectedEndTime + "' but was " + actualEndTime),
-                    () -> assertTrue(Duration.between(expectedUploadTime, actualUploadTime).abs().compareTo(errorMargin) <= 0,
-                            "Expected uploadTime to be within " + errorMargin + " second of '" + expectedUploadTime + "' but was " + actualUploadTime)
-            );
-        }
-
-        @Test
         @DisplayName("Returns 'Invalid Data' object when DTO with invalid time fields is used as input")
         public void testAddSingleStepForUser_ReturnsOptionalEmpty_WhenTimeValueIsIncorrect() {
             // Arrange
@@ -381,7 +343,7 @@ class AbstractStepServiceTest {
             // Actual values
             var actualUserId = result.getUserId();
             var actualStepCount = result.getStepCount();
-            var actualUploadTime = result.getUploadedTime();
+            var actualUploadTime = result.getUploadTime();
 
 
             // Assert
@@ -454,47 +416,21 @@ class AbstractStepServiceTest {
         }
 
         @Test
-        @DisplayName("Should update Step object in database")
-        public void shouldReturnUpdatedStepCount() {
-
+        @DisplayName("Should not create new Step object if startTime of StepDTO is before endTime of Step")
+        public void testAddSingleStepForUser_DoesNotCreateNewStep_WhenStartTimeIsBeforeEndTime() {
             // Arrange
-
-            var testStep = stepBuilder.createStepOfFirstMinuteOfYear();
-
-            var testDTO = dtoBuilder.createStepDTOOfSecondMinuteOfYear();
-
-            stepRepository.save(testStep);
-
-            // Act
-            var result = stepService.addSingleStepForUser(testUser, testDTO);
-
-            // Expected Values
-            Integer expectedStepCount = 30;
-
-            // Actual values
-            var actualStepCount = result.map(Step::getStepCount)
-                    .orElse(0);
-
-            // Assert
-            assertEquals(expectedStepCount, actualStepCount, "userId  " + result.get().getUserId());
-        }
-
-        @Test
-        @DisplayName("Should not create new step if step exists in database")
-        public void testAddSingleStepForUser_DoesNotCreateNewStep() {
-            // Arrange
-            var now = LocalDateTime.now();
             var existingStep = stepBuilder.createStepOfFirstMinuteOfYear();
             stepRepository.save(existingStep);
 
-            var testDto = dtoBuilder.createStepDTOOfSecondMinuteOfYear();
+            var testDto = dtoBuilder.createStepDTOOfThirdMinuteOfYear();
+            testDto.setStartTime(existingStep.getEndTime().minusSeconds(10));
 
             // Act
             stepService.addSingleStepForUser(testUser, testDto);
 
             // Expected Values
             var expectedUserId = testUser;
-            var expectedStepCount = 30;
+            var expectedStepCount = 40;
             var expectedNumberOfSteps = 1;
 
             // Actual values

@@ -50,11 +50,12 @@ class QueryHelper {
      * and returns it in form of an Integer
      */
     public static final String SELECT_STEP_COUNT_YEAR_AND_WEEK =
-            "SELECT w.stepCount " +
+            "SELECT SUM(w.stepCount) " +
                     "FROM WeekStep w " +
                     "WHERE w.userId = :userId " +
                     "AND w.year = :year " +
                     "AND w.week = :week";
+
 
 
     /**
@@ -62,11 +63,12 @@ class QueryHelper {
      * and returns it in form of an integer
      */
     public static final String SELECT_STEP_COUNT_YEAR_MONTH =
-            "SELECT m.stepCount " +
+            "SELECT SUM(m.stepCount) " +
                     "FROM MonthStep m " +
                     "WHERE m.userId = :userId " +
                     "AND m.year = :year " +
                     "AND m.month = :month";
+
 
 
     /**
