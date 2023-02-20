@@ -66,7 +66,7 @@ public class StepControllerDev {
     @Operation(summary = "Register step entity")
     @GroupedApiResponse
     @PostMapping(value = "/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StepDTO> registerStep(final @PathVariable String userId,
+    public ResponseEntity<Step> registerStep(final @PathVariable String userId,
                                              final @RequestBody @Valid StepDTO stepDTO) {
         return stepService.addSingleStepForUser(userId, stepDTO)
                 .map(ResponseEntity::ok)
@@ -83,7 +83,7 @@ public class StepControllerDev {
     @Operation(summary = "Register multiple step entities")
     @GroupedApiResponse
     @PostMapping(value = "/multiple/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public List<StepDTO> registerMultipleSteps(final @PathVariable String userId,
+    public List<Step> registerMultipleSteps(final @PathVariable String userId,
                                                final @RequestBody List<@Valid StepDTO> stepDtoList) {
         return List.of(stepService.addMultipleStepsForUser(userId, stepDtoList));
     }

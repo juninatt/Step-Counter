@@ -3,6 +3,7 @@ package com.nexergroup.boostapp.java.step.service.stepservicelogic;
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
 import com.nexergroup.boostapp.java.step.mapper.DateHelper;
 import com.nexergroup.boostapp.java.step.model.MonthStep;
+import com.nexergroup.boostapp.java.step.model.Step;
 import com.nexergroup.boostapp.java.step.model.WeekStep;
 import com.nexergroup.boostapp.java.step.repository.MonthStepRepository;
 import com.nexergroup.boostapp.java.step.repository.StepRepository;
@@ -68,7 +69,7 @@ class AbstractStepServiceTest {
             // Actual values
             var actualUserId = result.getUserId();
             var actualStepCount = result.getStepCount();
-            var actualUploadTime = result.getUploadTime();
+            var actualUploadTime = result.getUploadedTime();
 
             // Assert
             assertEquals(expectedUserId, actualUserId, () -> "Expected userId to be '" + expectedUserId + "' but was " + actualUserId);
@@ -91,13 +92,13 @@ class AbstractStepServiceTest {
             // Actual values
             var actualUserId = result.getUserId();
             var actualStepCount = result.getStepCount();
-            var actualUploadTime = result.getUploadTime();
+            var actualUploadTime = result.getUploadedTime();
 
             // Assert
             assertEquals(expectedUserId, actualUserId, () -> "Expected userId to be '" + expectedUserId + "' but was " + actualUserId);
             assertEquals(expectedUserId, actualUserId, () -> "Expected stepCount to be '" + expectedStepCount + "' but was " + actualStepCount);
-            assertTrue(Duration.between(expectedUploadTime, result.getUploadTime()).abs().compareTo(errorMargin) <= 0,
-                    "Expected uploadTime to be within " + errorMargin + " second of '" + expectedUploadTime + "' but was " + result.getUploadTime());
+            assertTrue(Duration.between(expectedUploadTime, result.getUploadedTime()).abs().compareTo(errorMargin) <= 0,
+                    "Expected uploadTime to be within " + errorMargin + " second of '" + expectedUploadTime + "' but was " + result.getUploadedTime());
         }
 
         @Test
@@ -110,7 +111,7 @@ class AbstractStepServiceTest {
             var actual = stepService.addSingleStepForUser(testUser, testDto).orElse(null);
 
             // Expected values
-            var expectedClass = StepDTO.class;
+            var expectedClass = Step.class;
 
             // Assert
             assertNotNull(actual);
@@ -187,8 +188,8 @@ class AbstractStepServiceTest {
 
             // Assert
             assertTrue(result.isPresent(), "Expected a step to be returned but it was empty");
-            assertTrue(Duration.between(expectedUploadTime, result.get().getUploadTime()).abs().compareTo(errorMargin) <= 0,
-                    "Expected uploadTime to be within " + errorMargin + " second of '" + expectedUploadTime + "' but was " + result.get().getUploadTime());
+            assertTrue(Duration.between(expectedUploadTime, result.get().getUploadedTime()).abs().compareTo(errorMargin) <= 0,
+                    "Expected uploadTime to be within " + errorMargin + " second of '" + expectedUploadTime + "' but was " + result.get().getUploadedTime());
         }
 
         @Test
@@ -343,7 +344,7 @@ class AbstractStepServiceTest {
             // Actual values
             var actualUserId = result.getUserId();
             var actualStepCount = result.getStepCount();
-            var actualUploadTime = result.getUploadTime();
+            var actualUploadTime = result.getUploadedTime();
 
 
             // Assert
@@ -468,7 +469,7 @@ class AbstractStepServiceTest {
             var result = stepService.addMultipleStepsForUser(testUser, stepDtoList);
 
             // Expected values
-            Class<?> expectedClass = StepDTO.class;
+            Class<?> expectedClass = Step.class;
 
             // Actual values
             Class<?> actualClass = result.getClass();
@@ -508,7 +509,7 @@ class AbstractStepServiceTest {
 
             // Actual values
             var actualUserId = result.getUserId();
-            var actualUploadTime = result.getUploadTime();
+            var actualUploadTime = result.getUploadedTime();
 
             // Assert
             assertNotNull(result);
@@ -529,7 +530,7 @@ class AbstractStepServiceTest {
 
             // Actual values
             var actualUserId = result.getUserId();
-            var actualUploadTime = result.getUploadTime();
+            var actualUploadTime = result.getUploadedTime();
 
             // Assert
             assertNotNull(result);

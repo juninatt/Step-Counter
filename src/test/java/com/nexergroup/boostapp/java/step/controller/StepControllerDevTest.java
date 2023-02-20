@@ -111,7 +111,7 @@ public class StepControllerDevTest {
     @Test
     public void registerStepsTest() throws Exception {
         objectMapper.registerModule(new JavaTimeModule());
-        StepDTO mockStepDto = new StepDTO("testId",
+        Step mockStep = new Step("testId",
                 100,
                 LocalDateTime.parse("2020-01-01T00:00:00"),
                 LocalDateTime.parse("2020-01-01T00:00:00"),
@@ -123,7 +123,7 @@ public class StepControllerDevTest {
                 LocalDateTime.parse("2020-01-01T01:00:00"),
                 LocalDateTime.parse("2020-01-01T02:00:00"));
         when(service.addSingleStepForUser(Mockito.anyString(),
-                Mockito.any(StepDTO.class))).thenReturn(Optional.of(mockStepDto));
+                Mockito.any(StepDTO.class))).thenReturn(Optional.of(mockStep));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post("/steps/{userId}", "testId")
@@ -175,13 +175,8 @@ public class StepControllerDevTest {
         stepDTOList.add(stepDTO2);
         stepDTOList.add(stepDTO3);
 
-        when(service.addMultipleStepsForUser(Mockito.anyString(), Mockito.anyList())).thenReturn(new StepDTOBuilder()
-                .withUserId("testId")
-                .withStepCount(30)
-                .withStartTime(stepDTO1.getStartTime())
-                .withEndTime(stepDTO1.getEndTime())
-                .withUploadTime(stepDTO1.getUploadTime())
-                .build());
+        when(service.addMultipleStepsForUser(Mockito.anyString(), Mockito.anyList())).thenReturn(
+                new Step("testId", 30, stepDTO1.getStartTime(), stepDTO1.getEndTime(), stepDTO1.getUploadTime()));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post("/steps/multiple/{userId}", "testId")
