@@ -50,20 +50,15 @@ public class StepServiceTest {
     public void getLatestStepTest() {
 
         final String userID = "userId";
-        final int expectedSteg = 100;
+        final int expectedStep = 100;
 
         when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(any(String.class)))
                 .thenReturn(Optional.of(new Step("userTest3", 100, LocalDateTime.parse("2020-01-02T00:00:00"),
                         LocalDateTime.parse("2020-01-02T00:00:00"), LocalDateTime.parse("2020-01-02T00:00:00"))));
 
-        var optionalStep = stepService.getLatestStepFromUser(userID);
-        if (optionalStep.isPresent()) {
-            var step = optionalStep.get();
-            assertEquals(LocalDateTime.parse("2020-01-02T00:00:00"), step.getEndTime());
-            assertEquals(step.getStepCount(), expectedSteg);
-        } else {
-            fail();
-        }
+        var step = stepService.getLatestStepFromUser(userID);
+        assertEquals(LocalDateTime.parse("2020-01-02T00:00:00"), step.getEndTime());
+        assertEquals(step.getStepCount(), expectedStep);
     }
 
     @Test
@@ -93,7 +88,7 @@ public class StepServiceTest {
                 .thenReturn(Optional.of(mockedStepsInWeek));
 
         var optionalStep = stepService.getStepCountForUserYearAndWeek(USERID, 2020, 43);
-        assertEquals(Optional.of(mockedStepsInWeek), optionalStep);
+        assertEquals(Optional.of(mockedStepsInWeek), Optional.of(optionalStep));
     }
 
     @Test
@@ -105,12 +100,8 @@ public class StepServiceTest {
 
         when(mockedStepRepository.getListOfAllDistinctUserId()).thenReturn(allUsers);
 
-        Optional<List<BulkStepDateDTO>> result = stepService.filterUsersAndCreateListOfBulkStepDateDtoWithRange(requestedUsers, startDate, lastDate);
-        if(result.isPresent()){
-            assertEquals(2, result.get().size());
-        } else {
-            fail();
-        }
+        List<BulkStepDateDTO> result = stepService.filterUsersAndCreateListOfBulkStepDateDtoWithRange(requestedUsers, startDate, lastDate);
+        assertEquals(2, result.size());
     }
 
     @Test

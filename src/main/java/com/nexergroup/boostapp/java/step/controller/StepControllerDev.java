@@ -66,11 +66,9 @@ public class StepControllerDev {
     @Operation(summary = "Register step entity")
     @GroupedApiResponse
     @PostMapping(value = "/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Step> registerStep(final @PathVariable String userId,
+    public Step registerStep(final @PathVariable String userId,
                                              final @RequestBody @Valid StepDTO stepDTO) {
-        return stepService.addSingleStepForUser(userId, stepDTO)
-                .map(ResponseEntity::ok)
-                .orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+        return stepService.addSingleStepForUser(userId, stepDTO);
     }
 
     /**
@@ -104,8 +102,7 @@ public class StepControllerDev {
     public List<BulkStepDateDTO> getBulkStepsByUsers(final @RequestBody List<String> users,
                                                      final @RequestParam String startDate,
                                                      final @RequestParam(required = false) String endDate) {
-        return stepService.filterUsersAndCreateListOfBulkStepDateDtoWithRange(users, startDate, endDate)
-                .orElseThrow(NotFoundException::new);
+        return stepService.filterUsersAndCreateListOfBulkStepDateDtoWithRange(users, startDate, endDate);
     }
 
 
@@ -119,10 +116,8 @@ public class StepControllerDev {
     @Operation(summary = "Get user's latest step")
     @GroupedApiResponse
     @GetMapping(value = "/latest/{userId}")
-    public ResponseEntity<Step> getUsersLatestStep(final @PathVariable String userId) {
-        return stepService.getLatestStepFromUser(userId)
-                .map(ResponseEntity::ok)
-                .orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
+    public Step getUsersLatestStep(final @PathVariable String userId) {
+        return stepService.getLatestStepFromUser(userId);
     }
 
 
@@ -138,12 +133,10 @@ public class StepControllerDev {
     @Operation(summary = "Get a user's step count per month by user ID and year and month)")
     @GroupedApiResponse
     @GetMapping(value = {"/stepcount/{userId}/year/{year}/month/{month}"})
-    public ResponseEntity<Integer> getUserMonthSteps(final @PathVariable String userId,
+    public Integer getUserMonthSteps(final @PathVariable String userId,
                                                      final @PathVariable int year,
                                                      final @PathVariable int month) {
-        return stepService.getStepCountForUserYearAndMonth(userId, year, month)
-                .map(ResponseEntity::ok)
-                .orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
+        return stepService.getStepCountForUserYearAndMonth(userId, year, month);
     }
 
 
@@ -159,12 +152,10 @@ public class StepControllerDev {
     @Operation(summary = "Get a user's step count per week by user ID and year and week)")
     @GroupedApiResponse
     @GetMapping(value = {"/stepcount/{userId}/year/{year}/week/{week}"})
-    public ResponseEntity<Integer> getUserWeekStepCountForWeekAndYear(final @PathVariable String userId,
+    public Integer getUserWeekStepCountForWeekAndYear(final @PathVariable String userId,
                                                                       final @PathVariable int year,
                                                                       final @PathVariable int week) {
-        return stepService.getStepCountForUserYearAndWeek(userId, year, week)
-                .map(ResponseEntity::ok)
-                .orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
+        return stepService.getStepCountForUserYearAndWeek(userId, year, week);
     }
 
 
