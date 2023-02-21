@@ -1,4 +1,4 @@
-package com.nexergroup.boostapp.java.step.testobjects.model.dto.stepdto;
+package com.nexergroup.boostapp.java.step.testobjects.dto.stepdto;
 
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
 
@@ -21,10 +21,37 @@ public class TestStepDtoBuilder {
                 thirdMinuteOfYear
         );
     }
+    public StepDTO createStepDTOWhereStartTimeIsNull() {
+        return new StepDTO(
+                testUser,
+                10,
+                null,
+                secondMinuteOfYear,
+                thirdMinuteOfYear
+        );
+    }
+    public StepDTO createStepDTOWhereEndTimeIsNull() {
+        return new StepDTO(
+                testUser,
+                10,
+                firstMinuteOfYear,
+                null,
+                thirdMinuteOfYear
+        );
+    }
+    public StepDTO createStepDTOWhereUploadTimeIsNull() {
+        return new StepDTO(
+                testUser,
+                10,
+                firstMinuteOfYear,
+                secondMinuteOfYear,
+                null
+        );
+    }
 
     public StepDTO createStepDTOWhereTimeFieldsAreIncompatible() {
         return new StepDTO(
-                null,
+                testUser,
                 10,
                 thirdMinuteOfYear,
                 secondMinuteOfYear,

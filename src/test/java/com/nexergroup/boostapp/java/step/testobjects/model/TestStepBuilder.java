@@ -1,6 +1,9 @@
-package com.nexergroup.boostapp.java.step.testobjects.model.step;
+package com.nexergroup.boostapp.java.step.testobjects.model;
 
+import com.nexergroup.boostapp.java.step.mapper.DateHelper;
+import com.nexergroup.boostapp.java.step.model.MonthStep;
 import com.nexergroup.boostapp.java.step.model.Step;
+import com.nexergroup.boostapp.java.step.model.WeekStep;
 
 import java.time.LocalDateTime;
 
@@ -47,5 +50,21 @@ public class TestStepBuilder {
                 thirdMinuteOfYear,
                 thirdMinuteOfYear.plusSeconds(10),
                 thirdMinuteOfYear.plusSeconds(20));
+    }
+
+    public WeekStep createWeekStepOfStep(Step step) {
+        return new WeekStep(testUser, DateHelper.getWeek(step.getEndTime()), step.getEndTime().getYear(), step.getStepCount());
+    }
+
+    public WeekStep createWeekStepOfFirstWeekOfYear() {
+        return new WeekStep(testUser, 1, thisYear, 10);
+    }
+
+    public MonthStep createMonthStepOfStep(Step step) {
+        return new MonthStep(testUser, step.getEndTime().getMonthValue(), step.getEndTime().getYear(), step.getStepCount());
+    }
+
+    public MonthStep createMonthStepOfFirstMonthOfYear() {
+        return new MonthStep(testUser, 1, thisYear, 10);
     }
 }
