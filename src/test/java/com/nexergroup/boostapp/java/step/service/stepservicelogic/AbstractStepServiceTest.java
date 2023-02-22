@@ -57,7 +57,7 @@ class AbstractStepServiceTest {
         @Test
         @DisplayName("Should return Exception when userId-input is null")
         public void testAddSingleStepForUser_ReturnsEmptyOptional_WhenUserIdIsNull() {
-            // Arrange
+            // Create a StepDTO where userId is null
             var testDto = dtoBuilder.createStepDTOWhereUserIdIsNull();
 
             // Act
@@ -127,22 +127,25 @@ class AbstractStepServiceTest {
         }
 
         @Test
-        @Disabled
-        @DisplayName("Should return StepDTO with updated stepCount if Step object in database is updated")
+        @DisplayName("Should return Step with updated stepCount if Step object in database is updated")
         public void testAddSingleStepForUser_UpdatesStepCount_IfStepIsFoundInDataBase() {
-/*            // Arrange
+            // Create test Step objects and save them to all tables of database. Step creation is dependent on data existing in all tables or no tables at all
             var existingStep = stepRepository.save(stepBuilder.createStepOfFirstMinuteOfYear());
+            weekStepRepository.save(stepBuilder.createWeekStepOfStep(existingStep));
+            monthStepRepository.save(stepBuilder.createMonthStepOfStep(existingStep));
+
+            // Create the new data to be added to the database and set the startTime to before the endTime of the stored Step object
             var testDto = dtoBuilder.createStepDTOOfSecondMinuteOfYear();
             testDto.setStartTime(existingStep.getEndTime().minusSeconds(10));
 
-            // Act
+            // Use the test data on the method to be tested
             var result = stepService.addSingleStepForUser(testUser, testDto);
 
-            // Expected values
+            // Expected values: stepCount of testDTO + stepCount of existing Step object
             var expectedStepCount = 20 + 10;
 
             // Assert
-            assertEquals(expectedStepCount, result.getStepCount(), "Expected step count to be '" + expectedStepCount + "' but was " + result.getStepCount());*/
+            assertEquals(expectedStepCount, result.getStepCount(), "Expected stepCount to be '" + expectedStepCount + "' but was " + result.getStepCount());
         }
 
         @Test
@@ -389,36 +392,37 @@ class AbstractStepServiceTest {
         }
 
         @Test
-        @Disabled
         @DisplayName("Should not create new Step object if startTime of StepDTO is before endTime of Step")
         public void testAddSingleStepForUser_DoesNotCreateNewStep_WhenStartTimeIsBeforeEndTime() {
-/*            // Arrange
+            // Create test Step objects and save them to all tables of database. Step creation is dependent on data existing in all tables or no tables at all
             var existingStep = stepBuilder.createStepOfFirstMinuteOfYear();
             stepRepository.save(existingStep);
+            weekStepRepository.save(stepBuilder.createWeekStepOfStep(existingStep));
+            monthStepRepository.save(stepBuilder.createMonthStepOfStep(existingStep));
 
+            // Create the new data to be added to the database and set the startTime to before the endTime of the stored Step object
             var testDto = dtoBuilder.createStepDTOOfThirdMinuteOfYear();
             testDto.setStartTime(existingStep.getEndTime().minusSeconds(10));
 
-            // Act
+            // Use the test data on the method to be tested
             stepService.addSingleStepForUser(testUser, testDto);
 
-            // Expected Values
+            // Expected Values: The correct userId,  total stepCount and the number of objects found in database
             var expectedUserId = testUser;
             var expectedStepCount = 40;
-            var expectedNumberOfSteps = 1;
+            var expectedNumberOfStepObjects = 1;
 
             // Actual values
-            var stepsInDataBase = stepRepository.findAll();
-            var actualUserId = stepsInDataBase.get(0).getUserId();
-            var actualStepCount = stepsInDataBase.get(0).getStepCount();
-            var actualNumberOfSteps = stepsInDataBase.size();
+            var objectsInDataBase = stepRepository.findAll();
+
+            var actualUserId = objectsInDataBase.get(0).getUserId();
+            var actualStepCount = objectsInDataBase.get(0).getStepCount();
+            var actualNumberOfStepObjects = objectsInDataBase.size();
 
             // Assert
-            assertAll(
-                    () -> assertEquals(expectedUserId, actualUserId, "Expected userId to be '" + expectedUserId + "' but was " + actualUserId),
-                    () -> assertEquals(expectedStepCount, actualStepCount, "Expected stepCount to be '" + expectedStepCount + "' but was " + actualStepCount),
-                    () -> assertEquals(expectedNumberOfSteps, actualNumberOfSteps, "Expected numberOfSteps to be '" + expectedUserId + "' but was " + actualUserId)
-            );*/
+            assertEquals(expectedUserId, actualUserId, "Expected userId to be '" + expectedUserId + "' but was " + actualUserId);
+            assertEquals(expectedStepCount, actualStepCount, "Expected stepCount to be '" + expectedStepCount + "' but was " + actualStepCount);
+            assertEquals(expectedNumberOfStepObjects, actualNumberOfStepObjects, "Expected numberOfSteps to be '" + expectedUserId + "' but was " + actualUserId);
         }
     }
 

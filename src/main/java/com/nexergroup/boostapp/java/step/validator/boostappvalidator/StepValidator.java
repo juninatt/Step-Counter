@@ -8,7 +8,6 @@ import org.springframework.lang.NonNull;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
@@ -67,7 +66,7 @@ public class StepValidator {
         return of(stepData)
                 .map(StepDTO::getUserId)
                 .flatMap(repository::findFirstByUserIdOrderByEndTimeDesc)
-                .map(mostRecentStep -> firstTimeFieldIsAfterSecondTimeField(stepData.getStartTime(), mostRecentStep.getEndTime()))
+                .map(mostRecentStep -> firstTimeFieldIsAfterSecondTimeField(mostRecentStep.getEndTime(), stepData.getStartTime()))
                 .orElse(false);
     }
 
