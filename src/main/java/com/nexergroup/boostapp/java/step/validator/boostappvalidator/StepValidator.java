@@ -224,8 +224,7 @@ public class StepValidator {
     }
 
     /**
-     * Compares two LocalDateTime objects to determine if the first is after the second,
-     * after wrapping them in an Optional to avoid nullPointer exceptions.
+     * Compares two LocalDateTime objects to determine if the first is after the second
      *
      * @param field1 the first LocalDateTime object to compare
      * @param field2 the second LocalDateTime object to compare
@@ -236,15 +235,6 @@ public class StepValidator {
             return field1.isAfter(field2);
         }
         return false;
-    }
-
-    private boolean xfirstTimeFieldIsAfterSecondTimeField(LocalDateTime field1, LocalDateTime field2) {
-        return ofNullable(field1)
-                .flatMap(startTime ->
-                        ofNullable(field2)
-                                .map(endTime -> endTime.isAfter(startTime))
-                )
-                .orElse(false);
     }
 
     /**
