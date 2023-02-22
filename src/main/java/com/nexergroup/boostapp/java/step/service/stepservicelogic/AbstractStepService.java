@@ -5,6 +5,7 @@ import com.nexergroup.boostapp.java.step.dto.stepdto.BulkStepDateDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDateDTO;
 import com.nexergroup.boostapp.java.step.exception.NotFoundException;
+import com.nexergroup.boostapp.java.step.exception.ValidationFailedException;
 import com.nexergroup.boostapp.java.step.mapper.DateHelper;
 import com.nexergroup.boostapp.java.step.mapper.StepMapper;
 import com.nexergroup.boostapp.java.step.model.MonthStep;
@@ -83,7 +84,7 @@ public abstract class AbstractStepService {
      */
     public Step addSingleStepForUser(String userId, StepDTO stepData) {
         if (userId == null || !stepValidator.stepDataIsValid(stepData))
-            return getInvalidDataObject(); // throw exception from Validator ?
+            throw new ValidationFailedException("userId null. Validation for step failed");
         else if (stepValidator.stepShouldBeUpdatedWithNewData(stepData))
             return updateAndSaveStep(getLatestStepFromUser(userId), stepData);
         else {
@@ -106,7 +107,7 @@ public abstract class AbstractStepService {
      */
     public Step addMultipleStepsForUser(String userId, List<StepDTO> stepDtoList) {
         if (userId == null || !stepValidator.stepDataIsValid(stepDtoList)) {
-            return getInvalidDataObject();
+            throw new ValidationFailedException("UserId is null. Validation for step failed");
         }
         else {
             var gatheredData = gatherStepDataForUser(stepDtoList, userId);

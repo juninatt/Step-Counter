@@ -1,11 +1,14 @@
 package com.nexergroup.boostapp.java.step.validator.boostappvalidator;
 
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
+import com.nexergroup.boostapp.java.step.exception.DateTimeValueException;
+import com.nexergroup.boostapp.java.step.exception.ValidationFailedException;
 import com.nexergroup.boostapp.java.step.repository.StepRepository;
 import org.springframework.lang.NonNull;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
@@ -68,13 +71,12 @@ public class StepValidator {
                 .orElse(false);
     }
 
-
     /**
      * Checks if the fields of the {@link StepDTO} are null or not and if the time-fields are ok.
      * The time-fields are seen as ok if startTime is before endTime, and endTime is before uploadTime.
      *
      * @param stepDto the {@link StepDTO} object holding the data to validate
-     * @return true if no fields are null and the time-fields are ok, false otherwise
+     * @return true if no fields are null and the time-fields are ok, false and throws exception otherwise
      */
     private boolean stepDtoIsValid(StepDTO stepDto) {
         return stepDtoIsNotNull(stepDto) &&
@@ -82,86 +84,172 @@ public class StepValidator {
                 endTimeIsNotNull(stepDto) &&
                 uploadTimeIsNotNull(stepDto) &&
                 endTimeIsAfterStartTime(stepDto) &&
-                uploadTimeIsAfterEndTime(stepDto);
+                uploadTimeIsAfterEndTime(stepDto) &&
+                startTimeDoesNotEqualEndTime(stepDto) &&
+                startTimeDoesNotEqualUploadTime(stepDto) &&
+                endTimeDoesNotEqualUploadTime(stepDto);
     }
 
     /**
      * Checks if a given {@link StepDTO} object is null.
      *
      * @param stepDto the {@link StepDTO} object to check
-     * @return true if the object is not null, false otherwise
+     * @return true if the object is not null, false and throws exception otherwise
      */
     private boolean stepDtoIsNotNull(StepDTO stepDto) {
-        return ofNullable(stepDto).isPresent();
+        if (!ofNullable(stepDto).isPresent()){
+            throw new ValidationFailedException("Step object is empty");
+        } else {
+            return true;
+        }
     }
 
     /**
      * Checks if the startTime field of a given {@link StepDTO} object is null.
      *
      * @param stepDto the {@link StepDTO} object holding the data to check
-     * @return true if the startTime field is not null, false otherwise
+     * @return true if the startTime field is not null, false and throws exception otherwise
      */
     private boolean startTimeIsNotNull(StepDTO stepDto) {
-        return ofNullable(stepDto)
-                .map(StepDTO::getStartTime).isPresent();
+        if (!ofNullable(stepDto).map(StepDTO::getStartTime).isPresent()) {
+            throw new ValidationFailedException("Step start time was null\n" + notValidDTOString(stepDto));
+        } else {
+            return true;
+        }
     }
 
     /**
      * Checks if the endTime field of a given {@link StepDTO} object is null.
      *
      * @param stepDto the {@link StepDTO} object holding the data to check
-     * @return true if the endTime field is not null, false otherwise
+     * @return true if the endTime field is not null, false and throws exception otherwise
      */
     private boolean endTimeIsNotNull(StepDTO stepDto) {
-        return ofNullable(stepDto)
-                .map(StepDTO::getEndTime).isPresent();
+        if (!ofNullable(stepDto).map(StepDTO::getEndTime).isPresent()) {
+            throw new ValidationFailedException("End time was null\n" + notValidDTOString(stepDto));
+        } else {
+            return true;
+        }
     }
 
     /**
      * Checks if the uploadTime field of a given {@link StepDTO} object is null.
      *
      * @param stepDto the {@link StepDTO} object holding the data to check
-     * @return true if the uploadTime field is not null, false otherwise
+     * @return true if the uploadTime field is not null, false and throws exception otherwise
      */
     private boolean uploadTimeIsNotNull(StepDTO stepDto) {
-        return ofNullable(stepDto)
-                .map(StepDTO::getUploadTime).isPresent();
+        if (!ofNullable(stepDto).map(StepDTO::getUploadTime).isPresent()) {
+            throw new ValidationFailedException("Upload time is null\n" + notValidDTOString(stepDto));
+        } else {
+            return true;
+        }
     }
 
     /**
      * Checks whether the endTime of a {@link StepDTO} object is after its startTime or not.
      *
      * @param stepDto the {@link StepDTO} object holding the time-fields to check
-     * @return true is the endTime of the {@link StepDTO} object is after its startTime, false otherwise
+     * @return true is the endTime of the {@link StepDTO} object is after its startTime, false and throws exception otherwise
      */
     private boolean endTimeIsAfterStartTime(StepDTO stepDto) {
-        return firstTimeFieldIsAfterSecondTimeField(stepDto.getStartTime(), stepDto.getEndTime());
+        if (!firstTimeFieldIsAfterSecondTimeField(stepDto.getEndTime(), stepDto.getStartTime())){
+            throw new DateTimeValueException("Start time must be before end time\n" + notValidDTOString(stepDto));
+        } else {
+            return true;
+        }
     }
 
     /**
      * Checks whether the uploadTime of a {@link StepDTO} object is after its endTime or not.
      *
      * @param stepDto the {@link StepDTO} object holding the time-fields to check
-     * @return true is the uploadTime of the {@link StepDTO} object is after endTime, false otherwise
+     * @return true is the uploadTime of the {@link StepDTO} object is after endTime, false and throws exception otherwise
      */
     private boolean uploadTimeIsAfterEndTime(StepDTO stepDto) {
-        return firstTimeFieldIsAfterSecondTimeField(stepDto.getEndTime(), stepDto.getUploadTime());
+        if (!firstTimeFieldIsAfterSecondTimeField(stepDto.getUploadTime(), stepDto.getEndTime())) {
+            throw new DateTimeValueException("Upload time must be after end time\n" + notValidDTOString(stepDto));
+        } else {
+            return true;
+        }
     }
 
     /**
-     * Compares two LocalDateTime objects to determine if the first is after the second,
-     * after wrapping them in an Optional to avoid nullPointer exceptions.
+     * Checks whether startTime is equal to endTime of a {@link StepDTO} object
+     * @param stepDto the {@link StepDTO} object holding the time-fields to check
+     * @return true if the startTime of the {@link StepDTO} object does not equal endTime, false and throws exception otherwise
+     */
+    private boolean startTimeDoesNotEqualEndTime(StepDTO stepDto) {
+        if (!firstTimeFieldDoesNotEqualSecondTimeField(stepDto.getStartTime(), stepDto.getEndTime())) {
+            throw new DateTimeValueException("Start time needs to be before end time\n" + notValidDTOString(stepDto));
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * Checks whether startTime is equal to uploadTime of a {@link StepDTO} object
+     * @param stepDto the {@link StepDTO} object holding the time-fields to check
+     * @return true if the startTime of the {@link StepDTO} object does not equal uploadTime, false and throws exception otherwise
+     */
+    private boolean startTimeDoesNotEqualUploadTime(StepDTO stepDto) {
+        if (!firstTimeFieldDoesNotEqualSecondTimeField(stepDto.getStartTime(), stepDto.getUploadTime())) {
+            throw new DateTimeValueException("Start time needs to be before upload time\n" + notValidDTOString(stepDto));
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * Checks whether endTime is equal to uploadTime of a {@link StepDTO} object
+     * @param stepDto the {@link StepDTO} object holding the time-fields to check
+     * @return true if the endTime of the {@link StepDTO} object does not equal uploadTime, false and throws exception otherwise
+     */
+    private boolean endTimeDoesNotEqualUploadTime(StepDTO stepDto) {
+        if (!firstTimeFieldDoesNotEqualSecondTimeField(stepDto.getStartTime(), stepDto.getEndTime())) {
+            throw new DateTimeValueException("End time needs to be before upload time\n" + notValidDTOString(stepDto));
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * Compares two LocalDateTime objects to determine if they are equal or not.
+     * @param fieldOne the first LocalDateTime object to compare
+     * @param fieldTwo the second LocalDateTime object to compare
+     * @return true if the first LocalDateTime object does not equal the second, false otherwise
+     */
+    private boolean firstTimeFieldDoesNotEqualSecondTimeField(LocalDateTime fieldOne, LocalDateTime fieldTwo) {
+        return !fieldOne.isEqual(fieldTwo);
+    }
+
+    /**
+     * Compares two LocalDateTime objects to determine if the first is after the second
      *
      * @param field1 the first LocalDateTime object to compare
      * @param field2 the second LocalDateTime object to compare
      * @return true if the first LocalDateTime object is after the second, false otherwise
      */
     private boolean firstTimeFieldIsAfterSecondTimeField(LocalDateTime field1, LocalDateTime field2) {
-        return ofNullable(field1)
-                .flatMap(startTime ->
-                        ofNullable(field2)
-                                .map(endTime -> endTime.isAfter(startTime))
-                )
-                .orElse(false);
+        if (field1 != null && field2 != null){
+            return field1.isAfter(field2);
+        }
+        return false;
+    }
+
+    /**
+     * To print out DTO object to give further information if validation throws exception.
+     * @param stepDTO the {@link StepDTO} object holding the time-fields
+     * @return String of object whether if fields are null or not
+     */
+    public String notValidDTOString(StepDTO stepDTO) {
+
+        String defaultMessage = "No Data Available";
+
+        return String.format("stepCount= %s\nstartTime= %s\nendTime= %s\nuploadTime= %s",
+                stepDTO.getStepCount() <= 1 ? defaultMessage : stepDTO.getStepCount(),
+                stepDTO.getStartTime() == null ? defaultMessage : stepDTO.getStartTime(),
+                stepDTO.getEndTime() == null ? defaultMessage : stepDTO.getEndTime(),
+                stepDTO.getUploadTime() == null ? defaultMessage : stepDTO.getUploadTime());
     }
 }
