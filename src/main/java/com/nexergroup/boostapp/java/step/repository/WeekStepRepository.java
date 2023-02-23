@@ -1,11 +1,11 @@
 package com.nexergroup.boostapp.java.step.repository;
 
+import com.nexergroup.boostapp.java.step.model.WeekStep;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import com.nexergroup.boostapp.java.step.model.WeekStep;
 
 import javax.transaction.Transactional;
 import java.util.Optional;
@@ -54,5 +54,5 @@ public interface WeekStepRepository extends JpaRepository<WeekStep, Long> {
     @Query("UPDATE WeekStep ws SET ws.stepCount = ws.stepCount + :increment WHERE ws.id = :id")
     void incrementWeekStepCount(@Param("id") Long id, @Param("increment") int increment);
 
-
+    Optional<WeekStep> findTopByUserIdOrderByIdDesc(String userId);
 }

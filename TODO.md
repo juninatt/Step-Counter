@@ -7,8 +7,8 @@ Currently on project: Petter Bergström, David Urman, Oscar Nordgren.
 ### Replace hard code with queries
 Assigned to: Petter Bergström
 - [x] Research JPA queries
-- [ ] Decide on what logic to replace
-- [ ] Implement changes
+- [x] Decide on what logic to replace
+- [x] Implement changes
 - [ ] Add and adjust tests
 - [ ] Update README
 
@@ -30,9 +30,9 @@ Assigned to:
 Assigned to: Petter Bergström
 - [x] Make sure a Step object represents one day
 - Comment: It shouldn't
-- [ ] Make sure a WeekStep object represents one week
-- [ ] Make sure a MonthStep object represents a month
-- [ ] Decide which time field/fields (startTime/endTime/uploadTime) that is the deciding one when a Step is between two periods 
+- [x] Make sure a WeekStep object represents one week
+- [x] Make sure a MonthStep object represents a month
+- [x] Decide which time field/fields (startTime/endTime/uploadTime) that is the deciding one when a Step is between two periods 
 - [ ] Add and adjust tests
 - [ ] Update README 
 

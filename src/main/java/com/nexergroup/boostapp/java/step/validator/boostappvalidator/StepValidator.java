@@ -1,6 +1,9 @@
 package com.nexergroup.boostapp.java.step.validator.boostappvalidator;
 
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
+import com.nexergroup.boostapp.java.step.mapper.DateHelper;
+import com.nexergroup.boostapp.java.step.model.MonthStep;
+import com.nexergroup.boostapp.java.step.model.WeekStep;
 import com.nexergroup.boostapp.java.step.exception.DateTimeValueException;
 import com.nexergroup.boostapp.java.step.exception.ValidationFailedException;
 import com.nexergroup.boostapp.java.step.repository.StepRepository;
@@ -9,7 +12,6 @@ import org.springframework.lang.NonNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
 
 /**
@@ -56,18 +58,39 @@ public class StepValidator {
     }
 
     /**
-     * Finds the most recent Step object for the userId of the {@link StepDTO} passed as input.
-     * If the endTime of that Step objects is after the startTime of the {@link StepDTO} object, the Step object should be updated
+     * Checks if the {@link com.nexergroup.boostapp.java.step.model.Step} object should be updated or not
      *
      * @param stepData the {@link StepDTO} object holding the new data
      * @return true if the Step object should be updated, false otherwise
      */
-    public boolean stepShouldBeUpdatedWithNewData(@NonNull StepDTO stepData) {
-        return of(stepData)
-                .map(StepDTO::getUserId)
-                .flatMap(repository::findFirstByUserIdOrderByEndTimeDesc)
-                .map(mostRecentStep -> firstTimeFieldIsAfterSecondTimeField(mostRecentStep.getEndTime(), stepData.getStartTime()))
+    public boolean shouldUpdateStep(@NonNull StepDTO stepData) {
+        // Fetch the most recently stored Step object for the specified user
+        var existingStep = repository.findFirstByUserIdOrderByEndTimeDesc(stepData.getUserId());
+        // Returns true if a Step is found for the userId with an endTime that is after the startTime of the new data
+        return existingStep.map(step -> firstTimeFieldIsAfterSecondTimeField(step.getEndTime(), stepData.getStartTime()))
                 .orElse(false);
+    }
+
+    /**
+     * Checks if the given {@link  StepDTO} should update the provided {@link WeekStep} object.
+     *
+     * @param stepDTO  the {@link StepDTO} holding the data to be stored in the database
+     * @param weekStep  the {@link WeekStep} object to compare to.
+     * @return true if the stepDTO belongs to the same week as the WeekStep object, false otherwise.
+     */
+    public boolean shouldUpdateWeekStep(@NonNull StepDTO stepDTO, WeekStep weekStep) {
+        return DateHelper.getWeek(stepDTO.getStartTime()) == weekStep.getWeek();
+    }
+
+    /**
+     * Checks if the given {@link  StepDTO} should update the provided {@link  MonthStep}.
+     *
+     * @param stepDTO   the {@link StepDTO} holding the data to be stored in the database
+     * @param monthStep  the {@link MonthStep} object to compare to
+     * @return true if the stepDTO belongs to the same month as the MonthStep object, false otherwise.
+     */
+    public boolean shouldUpdateMonthStep(@NonNull StepDTO stepDTO, MonthStep monthStep) {
+        return monthStep.getMonth() == stepDTO.getMonth();
     }
 
     /**
