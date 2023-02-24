@@ -11,17 +11,14 @@ import com.nexergroup.boostapp.java.step.repository.WeekStepRepository;
 import com.nexergroup.boostapp.java.step.service.StepService;
 import com.nexergroup.boostapp.java.step.testobjects.dto.stepdto.TestStepDtoBuilder;
 import com.nexergroup.boostapp.java.step.testobjects.model.TestStepBuilder;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -37,9 +34,8 @@ class AbstractStepServiceTest {
     private MonthStepRepository monthStepRepository;
 
     String testUser = "testUser";
-    Duration errorMargin = Duration.ofSeconds(1);
 
-    TestStepDtoBuilder testDtoBuilder = new TestStepDtoBuilder();
+    TestStepDtoBuilder testDTOBuilder = new TestStepDtoBuilder();
     TestStepBuilder testStepBuilder = new TestStepBuilder();
 
     @AfterEach
@@ -53,493 +49,874 @@ class AbstractStepServiceTest {
     @DisplayName("addSingleStepForUser method:")
     public class AddSingleStepForUserTest {
 
+        @Nested
+        @DisplayName("Should throw exception: ")
+        public class AddSingleStepShouldThrowException {
 
-        @Test
-        @DisplayName("Should return Exception when userId-input is null")
-        public void testAddSingleStepForUser_ReturnsEmptyOptional_WhenUserIdIsNull() {
-            // Create a StepDTO where userId is null
-            var testDto = testDtoBuilder.createStepDTOWhereUserIdIsNull();
+            @Test
+            @DisplayName("Should throw 'ValidationFailedException' when userId-input is null")
+            public void testAddSingleStepForUser_ThrowsValidationFailedException_WhenUserIdIsNull() {
+                // Create a StepDTO where userId is null to serve as test data
+                var testStepDTO = testDTOBuilder.createStepDTOWhereUserIdIsNull();
 
-            // Act
-            Exception exception = assertThrows(ValidationFailedException.class, () -> {
-                stepService.addSingleStepForUser(null, testDto);
-            });
+                // Expected exception message
+                var expectedMessage = "userId null. Validation for Step failed";
 
-            // Expected values
-            String expectedMessage = "userId null. Validation for step failed";
+                // Assert that correct exception is thrown when test data is passed to method
+                var result = assertThrows(
+                        ValidationFailedException.class, () -> stepService.addSingleStepForUser(null, testStepDTO));
+                assertTrue(result.getMessage().contains(expectedMessage),
+                        "Expected exception message to be '" + expectedMessage + "' but was '" + result.getMessage() + "'");
+            }
 
-            // Actual values
-            String actualMessage = exception.getMessage();
+            @Test
+            @DisplayName("Should throw 'ValidationFailedException' when StepDTO passed to method is null")
+            public void testAddSingleStepForUser_ThrowsValidationFailedException_WhenStepDTOIsNull() {
+                // Expected exception message
+                var expectedMessage = "Step object is empty";
 
-            // Assert
-            assertTrue(actualMessage.contains(expectedMessage));
+                // Assert that correct exception is thrown when StepDTO passed to method is null
+                var result = assertThrows(
+                        ValidationFailedException.class, () -> stepService.addSingleStepForUser(testUser, null));
+                assertTrue(result.getMessage().contains(expectedMessage),
+                        "Expected exception message to be '" + expectedMessage + "' but was '" + result.getMessage() + "'");
+            }
+
+            @Test
+            @DisplayName("Should throw 'DateTimeValueException' when StepDTO passed to method has incompatible time-field values")
+            public void testAddSingleStepForUser_ThrowsDateTimeValueException_WhenTimeValueIsIncorrect() {
+                // Create a StepDTO where time-fields are incompatible as test data
+                var badTestDto = testDTOBuilder.createStepDTOWhereTimeFieldsAreIncompatible();
+
+                // Expected exception message
+                var expectedMessage = "Start time must be before end time";
+
+                // Assert that correct exception is thrown when test data is passed to method
+                var result = assertThrows(
+                        DateTimeValueException.class, () -> stepService.addSingleStepForUser(testUser, badTestDto));
+                assertTrue(result.getMessage().contains(expectedMessage),
+                        "Expected exception message to be '" + expectedMessage + "' but was '" + result.getMessage() + "'");
+            }
         }
 
-        @Test
-        @DisplayName("Should return Exception when stepDTO-input is null")
-        public void testAddSingleStepForUser_ReturnsEmptyOptional_WhenTestDtoIsNull() {
-            // Act
-            Exception exception = assertThrows(ValidationFailedException.class, () -> {
-                stepService.addSingleStepForUser(testUser, null);
-            });
+        @Nested
+        @DisplayName("Should return correct values")
+        public class AddSingleStepShouldReturnCorrectValues {
 
-            // Expected values
-            String expectedMessage = "Step object is empty";
+            @Nested
+            @DisplayName("With empty database")
+            public class AddSingleStepEmptyDataBase {
 
-            // Actual values
-            String actualMessage = exception.getMessage();
+                @BeforeEach
+                void setup() {
+                    dropAllTables();
+                    assertTrue(dataBaseIsEmpty());
+                }
 
-            // Assert
-            assertTrue(actualMessage.contains(expectedMessage));
+                @Test
+                @DisplayName("Should return Step of Step class when input is valid")
+                public void testAddSingleStepForUser_ReturnsStepOfStepDtoClass_WhenInputIsValid() {
+
+                    // Create a StepDTO to serve as test data
+                    var testDto = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
+
+                    // Pass the test data to the method to be tested
+                    var result = stepService.addSingleStepForUser(testUser, testDto);
+
+                    // Expected class of returned object
+                    var expectedClass = Step.class;
+
+                    // Actual class of returned object
+                    var actualClass = result.getClass();
+
+                    // Assert that the returned object is of the correct class
+                    assertEquals(expectedClass, actualClass,
+                            () -> "Expected class to be '" + expectedClass + "' but was " + result.getClass());
+                }
+
+                @Test
+                @DisplayName("Should return Step with correct userId when input is valid")
+                public void testAddSingleStepForUser_ReturnsStepWithCorrectUserId_WhenInputIsValid() {
+                    // Create a StepDTO to serve as test data
+                    var testDto = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
+
+                    // Pass the test data to the method to be tested
+                    var result = stepService.addSingleStepForUser(testUser, testDto);
+
+                    // Expected userId of the returned object
+                    var expectedUserId = testUser;
+
+                    // Actual userId of the returned object
+                    var actualUserId = result.getUserId();
+
+                    // Assert that the returned object has the correct userId
+                    assertEquals(expectedUserId, actualUserId,
+                            "Expected userId to be '" + expectedUserId + "'  but was '" + actualUserId + "'. " + result);
+                }
+
+                @Test
+                @DisplayName("Should return Step with correct stepCount when input is valid")
+                public void testAddSingleStepForUser_ReturnsStepWithCorrectStepCount_WhenInputIsValid() {
+                    // Create a StepDTO to serve as test data
+                    var testStepDTO = testDTOBuilder.createStepDTOOfSecondMinuteOfYear();
+
+                    // Pass the test data to the method to be tested
+                    var result = stepService.addSingleStepForUser(testUser, testStepDTO);
+
+                    // Expected stepCount of the returned Step
+                    var expectedStepCount = testStepDTO.getStepCount();
+
+                    // Actual stepCount of the returned Step
+                    var actualStepCount = result.getStepCount();
+
+                    // Assert that the returned Step has the correct endTime
+                    assertEquals(expectedStepCount, actualStepCount,
+                            "Expected stepCount to be '" + expectedStepCount + "'  but was '" + actualStepCount + "'. " + result);
+                }
+
+                @Test
+                @DisplayName("Should return Step with correct startTime when input is valid")
+                public void testAddSingleStepForUser_ReturnsStepWithCorrectStartTime_WhenInputIsValid() {
+                    // Create a StepDTO to serve as test data
+                    var testDto = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
+
+                    // Pass the test data to the method to be tested
+                    var result = stepService.addSingleStepForUser(testUser, testDto);
+
+                    // Expected startTime of the returned object
+                    var expectedStartTime = testDto.getStartTime();
+
+                    // Actual startTime of the returned object
+                    var actualStartTime = result.getStartTime();
+
+                    // Assert that the returned object has the correct startTime
+                    assertEquals(expectedStartTime, actualStartTime,
+                            "Expected startTime to be '" + expectedStartTime + "'  but was '" + actualStartTime + "'. " + result);
+                }
+
+                @Test
+                @DisplayName("Should return Step with correct endTime when input is valid")
+                public void testAddSingleStepForUser_ReturnsStepWithCorrectEndTime_WhenInputIsValid() {
+                    // Create a StepDTO to serve as test data
+                    var testDto = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
+
+                    // Pass the test data to the method to be tested
+                    var result = stepService.addSingleStepForUser(testUser, testDto);
+
+                    // Expected endTime of the returned object
+                    var expectedEndTime = testDto.getEndTime();
+
+                    // Actual endTime of the returned object
+                    var actualEndTime = result.getEndTime();
+
+                    // Assert that the returned object has the correct endTime
+                    assertEquals(expectedEndTime, actualEndTime,
+                            "Expected endTime to be '" + expectedEndTime + "'  but was '" + actualEndTime + "'. " + result);
+                }
+
+                @Test
+                @DisplayName("Should return Step with correct uploadTime when input is valid")
+                public void testAddSingleStepForUser_ReturnsStepWithCorrectUploadTime_WhenInputIsValid() {
+                    // Create a StepDTO to serve as test data
+                    var testDto = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
+
+                    // Pass the test data to the method to be tested
+                    var result = stepService.addSingleStepForUser(testUser, testDto);
+
+                    // Expected uploadTime of the returned object
+                    var expectedUploadTime = testDto.getUploadTime();
+
+                    // Actual uploadTime of the returned object
+                    var actualUploadTime = result.getUploadedTime();
+
+                    // Assert that the returned object has the correct endTime
+                    assertEquals(expectedUploadTime, actualUploadTime,
+                            "Expected endTime to be '" + expectedUploadTime + "'  but was '" + actualUploadTime + "'. " + result);
+                }
+            }
+
+            @Nested
+            @DisplayName("With data in database")
+            public class AddSingleStepWithDataInDataBase {
+
+                // Create a test Step object
+                Step testStep = testStepBuilder.createStepOfFirstMinuteOfYear();
+
+                @BeforeEach
+                void setup() {
+                    // Make sure database is empty
+                    assertTrue(dataBaseIsEmpty());
+                    // Save the created test Step object to all tables in database
+                    saveToAllTables(testStep);
+                }
+
+                @AfterEach
+                void cleanUp() {
+                    dropAllTables();
+                }
+
+                @Test
+                @DisplayName("Should return Step with correct userId when input is valid")
+                public void testAddSingleStepForUser_ReturnsStepWithCorrectUserId_WhenInputIsValid() {
+                    // Create a StepDTO to serve as test data
+                    var testStepDTO = testDTOBuilder.createStepDTOOfSecondMinuteOfYear();
+                    // Set time field so Step in database gets updated
+                    testStepDTO.setStartTime(testStep.getEndTime().minusSeconds(10));
+
+                    // Pass the test data to the method to be tested
+                    var result = stepService.addSingleStepForUser(testUser, testStepDTO);
+
+                    // Expected userId of the returned Step
+                    var expectedUserId = testUser;
+
+                    // Actual userId of the returned Step
+                    var actualUserId = result.getUserId();
+
+                    // Assert that the returned Step has the correct userId
+                    assertEquals(expectedUserId, actualUserId,
+                            "Expected userId to be '" + expectedUserId + "'  but was '" + actualUserId + "'. " + result);
+                }
+
+                @Test
+                @DisplayName("Should return Step with updated startTime when input is valid and new data starts before old Step ends")
+                public void testAddSingleStepForUser_ReturnsStepWithUpdatedStartTime_WhenInputIsValid() {
+                    // Create a StepDTO to serve as test data
+                    var testStepDTO = testDTOBuilder.createStepDTOOfSecondMinuteOfYear();
+                    // Set time field so Step in database gets updated
+                    testStepDTO.setStartTime(testStep.getEndTime().minusSeconds(10));
+
+                    // Pass the test data to the method to be tested
+                    var result = stepService.addSingleStepForUser(testUser, testStepDTO);
+
+                    // Expected startTime of the returned Step
+                    var expectedStartTime = testStepDTO.getStartTime();
+
+                    // Actual startTime of the returned Step
+                    var actualStartTime = result.getStartTime();
+
+                    // Assert that the returned Step has the correct startTime
+                    assertEquals(expectedStartTime, actualStartTime,
+                            "Expected startTime to be '" + expectedStartTime + "'  but was '" + actualStartTime + "'. " + result);
+                }
+
+                @Test
+                @DisplayName("Should return Step with updated endTime when input is valid and new data starts before old Step ends")
+                public void testAddSingleStepForUser_ReturnsStepWithUpdatedEndTime_WhenInputIsValid() {
+                    // Create a StepDTO to serve as test data
+                    var testStepDTO = testDTOBuilder.createStepDTOOfSecondMinuteOfYear();
+                    // Set time field so Step in database gets updated
+                    testStepDTO.setStartTime(testStep.getEndTime().minusSeconds(10));
+
+                    // Pass the test data to the method to be tested
+                    var result = stepService.addSingleStepForUser(testUser, testStepDTO);
+
+                    // Expected endTime of the returned Step
+                    var expectedEndTime = testStepDTO.getEndTime();
+
+                    // Actual endTime of the returned Step
+                    var actualEndTime = result.getEndTime();
+
+                    // Assert that the returned Step has the correct endTime
+                    assertEquals(expectedEndTime, actualEndTime,
+                            "Expected endTime to be '" + expectedEndTime + "'  but was '" + actualEndTime + "'. " + result);
+                }
+
+                @Test
+                @DisplayName("Should return Step with updated uploadTime when input is valid and new data starts before old Step ends")
+                public void testAddSingleStepForUser_ReturnsStepWithUpdatedUploadTime_WhenInputIsValid() {
+                    // Create a StepDTO to serve as test data
+                    var testStepDTO = testDTOBuilder.createStepDTOOfSecondMinuteOfYear();
+                    // Set time field so Step in database gets updated
+                    testStepDTO.setStartTime(testStep.getEndTime().minusSeconds(10));
+
+                    // Pass the test data to the method to be tested
+                    var result = stepService.addSingleStepForUser(testUser, testStepDTO);
+
+                    // Expected uploadTime of the returned Step
+                    var expectedUploadTime = testStepDTO.getUploadTime();
+
+                    // Actual uploadTime of the returned Step
+                    var actualUploadTime = result.getUploadedTime();
+
+                    // Assert that the returned Step has the correct uploadTime
+                    assertEquals(expectedUploadTime, actualUploadTime,
+                            "Expected uploadTime to be '" + expectedUploadTime + "'  but was '" + actualUploadTime + "'. " + result);
+                }
+
+                @Test
+                @DisplayName("Should return Step with updated stepCount when input is valid and new data starts before old Step ends")
+                public void testAddSingleStepForUser_ReturnsStepWithUpdatedStepCount_WhenInputIsValid() {
+                    // Create a StepDTO to serve as test data
+                    var testStepDTO = testDTOBuilder.createStepDTOOfSecondMinuteOfYear();
+                    // Set time field so Step in database gets updated
+                    testStepDTO.setStartTime(testStep.getEndTime().minusSeconds(10));
+
+                    // Pass the test data to the method to be tested
+                    var result = stepService.addSingleStepForUser(testUser, testStepDTO);
+
+                    // Expected stepCount of the returned Step
+                    var expectedStepCount = testStepDTO.getStepCount() + testStep.getStepCount();
+
+                    // Actual stepCount of the returned Step
+                    var actualStepCount = result.getStepCount();
+
+                    // Assert that the returned Step has the correct endTime
+                    assertEquals(expectedStepCount, actualStepCount,
+                            "Expected stepCount to be '" + expectedStepCount + "'  but was '" + actualStepCount + "'. " + result);
+                }
+
+                @Test
+                @DisplayName("Should return the updated Step object when input is valid and new data starts before old Step ends")
+                public void testAddSingleStepForUser_ReturnsUpdatedStep_WhenInputIsValid() {
+                    // Create a StepDTO to serve as test data
+                    var testStepDTO = testDTOBuilder.createStepDTOOfSecondMinuteOfYear();
+                    // Set time field so Step in database gets updated
+                    testStepDTO.setStartTime(testStep.getEndTime().minusSeconds(10));
+
+                    // Pass the test data to the method to be tested
+                    var result = stepService.addSingleStepForUser(testUser, testStepDTO);
+
+                    // Expected id of the returned Step
+                    var expectedStepId = testStep.getId();
+
+                    // Actual id of the returned Step
+                    var actualStepId = result.getId();
+
+                    // Assert that the returned Step has the correct id
+                    assertEquals(expectedStepId, actualStepId,
+                            "Expected id of Step object to be '" + expectedStepId + "'  but was '" + actualStepId + "'. " + result);
+                }
+            }
         }
 
-        @Test
-        @DisplayName("Should return object of StepDTO class when Step is used as input")
-        public void testAddSingleStepForUser_ReturnsObjectOfStepDtoClass() {
-            // Arrange
-            var testDto = testDtoBuilder.createStepDTOOfFirstMinuteOfYear();
+        @Nested
+        @DisplayName("Should update Step objects in database correctly")
+        public class AddSingleStepShouldUpdateStepObjectsCorrectly {
 
-            // Act
-            var actual = stepService.addSingleStepForUser(testUser, testDto);
+            // Create a test Step object
+            Step testStep = testStepBuilder.createStepOfFirstMinuteOfYear();
 
-            // Expected values
-            var expectedClass = Step.class;
+            @BeforeEach
+            void setup() {
+                // Make sure database is empty
+                assertTrue(dataBaseIsEmpty());
+                // Save the created test Step object to all tables in database
+                saveToAllTables(testStep);
+            }
 
-            // Assert
-            assertNotNull(actual);
-            assertEquals(expectedClass, actual.getClass(), () -> "Expected class to be '" + expectedClass + "' but got: " + actual.getClass());
+            @AfterEach
+            void cleanUp() {
+                dropAllTables();
+            }
+
+            @Test
+            @DisplayName("Should not create new Step object if startTime of StepDTO is before endTime of Step")
+            public void testAddSingleStepForUser_DoesNotCreateNewStep_WhenStartTimeIsBeforeEndTime() {
+                // Create a StepDTO to serve as test data
+                var testStepDTO = testDTOBuilder.createStepDTOOfSecondMinuteOfYear();
+                // Set time field so Step in database gets updated
+                testStepDTO.setStartTime(testStep.getEndTime().minusSeconds(10));
+
+                // Pass the test data to the method to be tested
+                stepService.addSingleStepForUser(testUser, testStepDTO);
+
+                // Expected number of objects in database
+                var expectedNumberOfObjects = 1;
+
+                // Actual number of objects in database
+                var actualNumberOfObjects = stepRepository.findAll().size();
+
+                // Assert that a new object was not added to the database
+                assertEquals(expectedNumberOfObjects, actualNumberOfObjects,
+                        "Expected number of objects to be '" + expectedNumberOfObjects + "'  but was '" + actualNumberOfObjects);
+            }
+
+            @Test
+            @DisplayName("Should update stepCount of Step in database if input is valid and new data starts before old Step ends")
+            public void testAddSingleStepForUser_UpdatesStepCountOfStep_IfStepIsFoundInDataBase() {
+                // Create a StepDTO to serve as test data
+                var testStepDTO = testDTOBuilder.createStepDTOOfSecondMinuteOfYear();
+                // Set time field so Step in database gets updated
+                testStepDTO.setStartTime(testStep.getEndTime().minusSeconds(10));
+
+                // Pass the test data to the method to be tested
+                stepService.addSingleStepForUser(testUser, testStepDTO);
+
+                // Expected stepCount after Step is updated
+                var expectedStepCount = testStepDTO.getStepCount() + testStep.getStepCount();
+
+                // Actual object in database and stepCount
+                var result = stepRepository.findFirstByUserIdOrderByEndTimeDesc(testUser);
+                var actualStepCount = result.orElseThrow().getStepCount();
+
+                // Assert that stepCount of Step has been updated correctly
+                assertEquals(expectedStepCount, actualStepCount,
+                        "Expected stepCount to be '" + expectedStepCount + "'  but was '" + actualStepCount + "'. " + result);
+            }
+
+            @Test
+            @DisplayName("Should update endTime of Step in database if input is valid and new data starts before old Step ends")
+            public void testAddSingleStepForUser_UpdatesEndTimeOfStep_IfStepIsFoundInDataBase() {
+                // Create a StepDTO to serve as test data
+                var testStepDTO = testDTOBuilder.createStepDTOOfSecondMinuteOfYear();
+                // Set time field so Step in database gets updated
+                testStepDTO.setStartTime(testStep.getEndTime().minusSeconds(10));
+
+                // Pass the test data to the method to be tested
+                stepService.addSingleStepForUser(testUser, testStepDTO);
+
+                // Expected endTime after Step is updated
+                var expectedEndTime = testStepDTO.getEndTime();
+
+                // Actual object in database and endTime
+                var result = stepRepository.findFirstByUserIdOrderByEndTimeDesc(testUser);
+                var actualEndTime = result.orElseThrow().getEndTime();
+
+                // Assert that endTime of Step has been updated correctly
+                assertEquals(expectedEndTime, actualEndTime,
+                        "Expected endTime to be '" + expectedEndTime + "'  but was '" + actualEndTime + "'. " + result);
+            }
+
+            @Test
+            @DisplayName("Should update uploadTime of Step in database if input is valid and new data starts before old Step ends")
+            public void testAddSingleStepForUser_UpdatesUploadTimeOfStep_IfStepIsFoundInDataBase() {
+                // Create a StepDTO to serve as test data
+                var testStepDTO = testDTOBuilder.createStepDTOOfSecondMinuteOfYear();
+                // Set time field so Step in database gets updated
+                testStepDTO.setStartTime(testStep.getEndTime().minusSeconds(10));
+
+                // Pass the test data to the method to be tested
+                stepService.addSingleStepForUser(testUser, testStepDTO);
+
+                // Expected uploadTime after Step is updated
+                var expectedUploadTime = testStepDTO.getUploadTime();
+
+                // Actual object in database and uploadTime
+                var result = stepRepository.findFirstByUserIdOrderByEndTimeDesc(testUser);
+                var actualUploadTime = result.orElseThrow().getUploadedTime();
+
+                // Assert that uploadTime of Step has been updated correctly
+                assertEquals(expectedUploadTime, actualUploadTime,
+                        "Expected uploadTime to be '" + expectedUploadTime + "'  but was '" + actualUploadTime + "'. " + result);
+            }
         }
 
-        @Test
-        @DisplayName("Should create new Step if no Step is found in database")
-        public void testAddSingleStepForUser_CreatesNewStep_IfNoStepIsFoundInDataBase() {
-            // Arrange
-            var testDto = testDtoBuilder.createStepDTOOfFirstMinuteOfYear();
+        @Nested
+        @DisplayName("Should update WeekStep objects in database correctly")
+        public class AddSingleStepShouldUpdateWeekStepObjectsCorrectly {
 
-            // Act
-            var result = stepService.addSingleStepForUser(testUser, testDto);
+            // Create a test Step object
+            Step testStep = testStepBuilder.createStepOfFirstMinuteOfYear();
 
-            // Expected values
-            int expectedStepCount = 10;
+            @BeforeEach
+            void setup() {
+                // Make sure database is empty
+                assertTrue(dataBaseIsEmpty());
+                // Save the created test Step object to all tables in database
+                saveToAllTables(testStep);
+            }
 
-            // Assert
-            assertEquals(expectedStepCount, result.getStepCount(), "Expected step count to be '" + expectedStepCount + "' but was " + result.getStepCount());
+            @AfterEach
+            void cleanUp() {
+                dropAllTables();
+            }
+
+            @Test
+            @DisplayName("Should update stepCount of WeekStep object if input is valid and new data starts before old Step ends")
+            public void testAddingSingleStepForUser_UpdatesStepCountInWeekStepTable_IfDataExistsInDataBase() {
+                // Create a StepDTO to serve as test data
+                var testStepDTO = testDTOBuilder.createStepDTOOfSecondMinuteOfYear();
+                // Set time field so Step in database gets updated
+                testStepDTO.setStartTime(testStep.getEndTime().minusSeconds(10));
+
+                // Pass the test data to the method to be tested
+                stepService.addSingleStepForUser(testUser, testStepDTO);
+
+                // Expected stepCount of WeekStep object in database
+                var expectedStepCount = testStepDTO.getStepCount() + testStep.getStepCount();
+
+                // Actual object in database and stepCount
+                // TODO: Use new query
+                var result = weekStepRepository.findByUserIdAndYearAndWeek(testUser, 2023, 1);
+                var actualStepCount = result.orElseThrow().getStepCount();
+
+                // Assert that the stepCount of the WeekStep has been updated correctly
+                assertEquals(expectedStepCount, actualStepCount,
+                        () -> "Expected stepCount to be '" + expectedStepCount + "' but was '" + actualStepCount + "'. " + result);
+            }
         }
 
-        @Test
-        @DisplayName("Should return Step with updated stepCount if Step object in database is updated")
-        public void testAddSingleStepForUser_UpdatesStepCount_IfStepIsFoundInDataBase() {
-            // Create test Step objects and save them to all tables of database. Step creation is dependent on data existing in all tables or no tables at all
-            var existingStep = stepRepository.save(testStepBuilder.createStepOfFirstMinuteOfYear());
-            weekStepRepository.save(testStepBuilder.createWeekStepOfStep(existingStep));
-            monthStepRepository.save(testStepBuilder.createMonthStepOfStep(existingStep));
+        @Nested
+        @DisplayName("Should create new records in database correctly")
+        public class AddSingleStepShouldCreateNewObjects {
+                @BeforeEach
+                void setup() {
+                    // Delete database and assert that it is empty
+                    dropAllTables();
+                }
 
-            // Create the new data to be added to the database and set the startTime to before the endTime of the stored Step object
-            var testDto = testDtoBuilder.createStepDTOOfSecondMinuteOfYear();
-            testDto.setStartTime(existingStep.getEndTime().minusSeconds(10));
+                @Test
+                @DisplayName("Should create new Step if no Step is found in database")
+                public void testAddSingleStepForUser_CreatesNewStep_IfNoStepIsFoundInDataBase() {
+                    // Make sure database is empty and create a StepDTO to serve as test data
+                    assertTrue(dataBaseIsEmpty());
+                    var testStepDTO = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
 
-            // Use the test data on the method to be tested
-            var result = stepService.addSingleStepForUser(testUser, testDto);
+                    // Pass the test data to the method to be tested
+                    stepService.addSingleStepForUser(testUser, testStepDTO);
 
-            // Expected values: stepCount of testDTO + stepCount of existing Step object
-            var expectedStepCount = 20 + 10;
+                    // Assert that Step table is not empty
+                    assertFalse(stepRepository.findAll().isEmpty());
+                }
 
-            // Assert
-            assertEquals(expectedStepCount, result.getStepCount(), "Expected stepCount to be '" + expectedStepCount + "' but was " + result.getStepCount());
+                @Test
+                @DisplayName("Should create new WeekStep if no Step is found in database")
+                public void testAddSingleStepForUser_CreatesNewWeekStep_IfNoStepIsFoundInDataBase() {
+                    // Make sure database is empty and create a StepDTO to serve as test data
+                    assertTrue(dataBaseIsEmpty());
+                    var testStepDTO = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
+
+                    // Pass the test data to the method to be tested
+                    stepService.addSingleStepForUser(testUser, testStepDTO);
+
+                    // Assert that WeekStep table is not empty
+                    assertFalse(weekStepRepository.findAll().isEmpty());
+                }
+
+                @Test
+                @DisplayName("Should create new MonthStep if no Step is found in database")
+                public void testAddSingleStepForUser_CreatesNewMonthStep_IfNoStepIsFoundInDataBase() {
+                    // Make sure database is empty and create a StepDTO to serve as test data
+                    assertTrue(dataBaseIsEmpty());
+                    var testStepDTO = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
+
+                    // Pass the test data to the method to be tested
+                    stepService.addSingleStepForUser(testUser, testStepDTO);
+
+                    // Assert that MonthStep is not empty
+                    assertFalse(monthStepRepository.findAll().isEmpty());
+                }
+
+            @Test
+            @DisplayName("Should create new Step with correct stepCount if no Step is found in database")
+            public void testAddSingleStepForUser_CreatesStepWithCorrectStepCount_IfNoStepIsFoundInDataBase() {
+                // Make sure database is empty and create a StepDTO to serve as test data
+                assertTrue(dataBaseIsEmpty());
+                var testStepDTO = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
+
+                // Pass the test data to the method to be tested
+                stepService.addSingleStepForUser(testUser, testStepDTO);
+
+                // Expected stepCount
+                var expectedStepCount = testStepDTO.getStepCount();
+
+                // Actual object in database and stepCount
+                var result = stepRepository.findFirstByUserIdOrderByEndTimeDesc(testUser);
+                var actualStepCount = result.orElseThrow().getStepCount();
+
+                // Assert that object saved to the database has the correct stepCount
+                assertEquals(expectedStepCount, actualStepCount,
+                        () -> "Expected stepCount to be '" + expectedStepCount + "' but was '" + actualStepCount + "'. " + result);
+            }
+
+            @Test
+            @DisplayName("Should create new WeekStep with correct stepCount if no Step is found in database")
+            public void testAddSingleStepForUser_CreatesWeekStepWithCorrectStepCount_IfNoStepIsFoundInDataBase() {
+                // Make sure database is empty and create a StepDTO to serve as test data
+                assertTrue(dataBaseIsEmpty());
+                var testStepDTO = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
+
+                // Pass the test data to the method to be tested
+                stepService.addSingleStepForUser(testUser, testStepDTO);
+
+                // Expected stepCount
+                var expectedStepCount = testStepDTO.getStepCount();
+
+                // Actual object in database and its stepCount
+                // TODO: Use new query
+                var result = weekStepRepository.findByUserIdAndYearAndWeek(testUser, 2023, 1);
+                var actualStepCount = result.orElseThrow().getStepCount();
+
+                // Assert that object saved to the database has the correct stepCount
+                assertEquals(expectedStepCount, actualStepCount,
+                        () -> "Expected stepCount to be '" + expectedStepCount + "' but was '" + actualStepCount + "'. " + result);
+                }
+                @Test
+                @DisplayName("Should create new MonthStep with correct stepCount if no Step is found in database")
+                public void testAddSingleStepForUser_CreatesMonthStepWithCorrectStepCount_IfNoStepIsFoundInDataBase() {
+                    // Make sure database is empty and create a StepDTO to serve as test data
+                    assertTrue(dataBaseIsEmpty());
+                    var testStepDTO = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
+
+                    // Pass the test data to the method to be tested
+                    stepService.addSingleStepForUser(testUser, testStepDTO);
+
+                    // Expected stepCount
+                    var expectedStepCount = testStepDTO.getStepCount();
+
+                    // Actual object in database and its stepCount
+                    // TODO: Use new query
+                    var result = monthStepRepository.findByUserIdAndYearAndMonth(testUser, 2023, 1);
+                    var actualStepCount = result.orElseThrow().getStepCount();
+
+                    // Assert that object saved to the database has the correct stepCount
+                    assertEquals(expectedStepCount, actualStepCount,
+                            () -> "Expected stepCount to be '" + expectedStepCount + "' but was '" + actualStepCount + "'. " + result);
+                }
+                @Test
+                @DisplayName("Should create objects for all tables with equal stepCount when no step exists for user in database")
+                public void testAddingSingleStepForUser_AddsStepCountToAllTables()  {
+                    // Make sure database is empty and create a StepDTO to serve as test data
+                    assertTrue(dataBaseIsEmpty());
+                    var testStepDTO = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
+
+                    // Pass the test data to the method to be tested
+                    stepService.addSingleStepForUser(testUser, testStepDTO);
+
+                    // Expected stepCount
+                    var expectedStepCount = testStepDTO.getStepCount();
+
+                    // Actual objects in database and their stepCount
+                    var storedStep = stepRepository.findFirstByUserIdOrderByEndTimeDesc(testUser);
+                    var actualStepCount = storedStep.orElseThrow().getStepCount();
+                    // TODO: Use new query
+                    var storedWeekStep = weekStepRepository.findByUserIdAndYearAndWeek(testUser, 2023, 1);
+                    var actualWeekStepCount = storedWeekStep.orElseThrow().getStepCount();
+                    var storedMonthStep = monthStepRepository.findByUserIdAndYearAndMonth(testUser, 2023, 1);
+                    var actualMonthStepCount = storedMonthStep.orElseThrow().getStepCount();
+
+                    // Assert that a Step object with the correct stepCount was added to the database
+                    assertEquals(expectedStepCount, actualStepCount,
+                            () -> "Expected stepCount to be '" + expectedStepCount + "' but was '" + actualStepCount + "'. " + storedStep);
+                    // Assert that a WeekStep object with the correct stepCount was added to the database
+                    assertEquals(expectedStepCount, actualWeekStepCount,
+                            () -> "Expected stepCount in WeekStep table to be '" + expectedStepCount + "' but was '" + actualWeekStepCount + "'. " + storedWeekStep);
+                    // Assert that a MonthStep object with the correct stepCount was added to the database
+                    assertEquals(expectedStepCount, actualMonthStepCount,
+                            () -> "Expected stepCount in MonthStep table to be '" + expectedStepCount + "' but was '" + actualMonthStepCount + "'. " + storedMonthStep);
+                }
+
+                @Test
+                @DisplayName("Should add all fields of the Step object to the database correctly")
+                public void testAddSingleStepForUser_AddsAllFieldsCorrectlyTStepTable() {
+                    // Make sure database is empty and create a StepDTO to serve as test data
+                    assertTrue(dataBaseIsEmpty());
+                    var testDto = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
+
+                    // Pass the test data to the method to be tested
+                    stepService.addSingleStepForUser(testUser, testDto);
+
+                    // Expected values of object fields
+                    var expectedUserId = testUser;
+                    var expectedStepCount = testDto.getStepCount();
+                    var expectedStartTime = testDto.getStartTime();
+                    var expectedEndTime = testDto.getEndTime();
+                    var expectedUploadTime = testDto.getUploadTime();
+
+                    // Actual values of object stored in database
+                    var result = stepRepository.findFirstByUserIdOrderByEndTimeDesc(testUser).orElseThrow();
+                    var actualUserId = result.getUserId();
+                    var actualStepCount = result.getStepCount();
+                    var actualStartTime = result.getStartTime();
+                    var actualEndTime = result.getEndTime();
+                    var actualUploadTime = result.getUploadedTime();
+
+                    // Assert that all field values got saved correctly
+                    assertEquals(expectedUserId, actualUserId, "Expected userId to be '" + expectedUserId + "' but was " + actualUserId);
+                    assertEquals(expectedStepCount, actualStepCount, "Expected stepCount to be '" + expectedStepCount + "' but was " + actualStepCount);
+                    assertEquals(expectedStartTime, actualStartTime, "Expected startTime to be '" + expectedStartTime + "' but was " + actualStartTime);
+                    assertEquals(expectedEndTime, actualEndTime, "Expected endTime to be '" + expectedEndTime + "' but was " + actualEndTime);
+                    assertEquals(expectedUploadTime, actualUploadTime, "Expected uploadTime to be '" + expectedUploadTime + "' but was " + actualUploadTime);
+                }
+
+                @Test
+                @DisplayName("Should store all WeekStep-fields in database correctly when database is empty")
+                public void testAddSingleStepForUser_AddsAllFieldsCorrectlyToWeekStepTable() {
+                    // Make sure database is empty and create a StepDTO to serve as test data
+                    assertTrue(dataBaseIsEmpty());
+                    var testDto = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
+
+                    // Pass the test data to the method to be tested
+                    stepService.addSingleStepForUser(testUser, testDto);
+
+                    // Expected values of object stored in database
+                    var expectedUserId = testUser;
+                    var expectedStepCount = testDto.getStepCount();
+                    var expectedYear = testDto.getYear();
+                    var expectedWeek = DateHelper.getWeek(testDto.getEndTime());
+
+                    // Actual values of the object stored in the database
+                    var result = weekStepRepository.findByUserIdAndYearAndWeek(testUser, 2023, 1).orElseThrow();
+                    var actualUserId = result.getUserId();
+                    var actualYear = result.getYear();
+                    var actualWeek = result.getWeek();
+                    var actualStepCount = result.getStepCount();
+
+                    // Assert that all field values got saved correctly
+                    assertEquals(expectedUserId, actualUserId, "Expected userId to be '" + expectedUserId + "' but was " + actualUserId);
+                    assertEquals(expectedYear, actualYear, "Expected year to be '" + expectedYear + "' but was " + actualYear);
+                    assertEquals(expectedWeek, actualWeek, "Expected week value to be '" + expectedWeek + "' but was " + actualWeek);
+                    assertEquals(expectedStepCount, actualStepCount, "Expected stepCount to be '" + expectedStepCount + "' but was " + actualStepCount);
+                }
+
+            @Test
+            @DisplayName("Should store all MonthStep-fields in database correctly when database is empty")
+            public void testAddSingleStepForUser_AddsAllFieldsCorrectlyToMonthStepTable() {
+                // Make sure database is empty and create a StepDTO to serve as test data
+                assertTrue(dataBaseIsEmpty());
+                var testDto = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
+
+                // Pass the test data to the method to be tested
+                stepService.addSingleStepForUser(testUser, testDto);
+
+                // Expected values of object stored in database
+                var expectedUserId = testUser;
+                var expectedStepCount = testDto.getStepCount();
+                var expectedYear = testDto.getYear();
+                var expectedMonth = testDto.getEndTime().getMonthValue();
+
+                // Actual values of the object stored in the database
+                var result = weekStepRepository.findByUserIdAndYearAndWeek(testUser, 2023, 1).orElseThrow();
+                var actualUserId = result.getUserId();
+                var actualStepCount = result.getStepCount();
+                var actualYear = result.getYear();
+                var actualMonth = result.getWeek();
+
+                // Assert that all field values got saved correctly
+                assertEquals(expectedUserId, actualUserId, "Expected userId to be '" + expectedUserId + "' but was " + actualUserId);
+                assertEquals(expectedYear, actualYear, "Expected year to be '" + expectedYear + "' but was " + actualYear);
+                assertEquals(expectedMonth, actualMonth, "Expected month value to be '" + expectedMonth + "' but was " + actualMonth);
+                assertEquals(expectedStepCount, actualStepCount, "Expected stepCount to be '" + expectedStepCount + "' but was " + actualStepCount);
+            }
+            }
         }
 
-        @Test
-        @DisplayName("Should update endTime of Step passed as input if active Step is found in database")
-        public void testAddSingleStepForUser_UpdatesStepEndTime_IfStepIsFoundInDataBase() {
-            // Create test Step objects and save them to all tables of database. Step creation is dependent on data existing in all tables or no tables at all
-            var existingStep = stepRepository.save(testStepBuilder.createStepOfFirstMinuteOfYear());
-            weekStepRepository.save(testStepBuilder.createWeekStepOfStep(existingStep));
-            monthStepRepository.save(testStepBuilder.createMonthStepOfStep(existingStep));
-
-            // Create the new data to be added to the database and set the startTime to before the endTime of the stored Step object
-            var testDto = testDtoBuilder.createStepDTOOfSecondMinuteOfYear();
-            testDto.setStartTime(existingStep.getEndTime().minusSeconds(10));
-
-            // Use the test data on the method to be tested
-            var result = stepService.addSingleStepForUser(testUser, testDto);
-
-            // Expected values
-            var expectedEndTime = testDto.getEndTime();
-
-            // Assert
-            assertTrue(Duration.between(expectedEndTime, result.getEndTime()).abs().compareTo(errorMargin) <= 0,
-                    "Expected endTime to be within " + errorMargin + " second of '" + expectedEndTime + "' but was " + result.getEndTime());
-        }
-
-        @Test
-        @DisplayName("Should update Step uploadTime of Step passed as input if active Step is found in database")
-        public void testAddSingleStepForUser_UpdatesStepUploadTime_IfStepIsFoundInDataBase() {
-            // Create test Step objects and save them to all tables of database. Step creation is dependent on data existing in all tables or no tables at all
-            var existingStep = stepRepository.save(testStepBuilder.createStepOfFirstMinuteOfYear());
-            weekStepRepository.save(testStepBuilder.createWeekStepOfStep(existingStep));
-            monthStepRepository.save(testStepBuilder.createMonthStepOfStep(existingStep));
-
-            // Create the new data to be added to the database and set the startTime to before the endTime of the stored Step object
-            var testDto = testDtoBuilder.createStepDTOOfSecondMinuteOfYear();
-            testDto.setStartTime(existingStep.getEndTime().minusSeconds(10));
-            // Act
-            var result = stepService.addSingleStepForUser(testUser, testDto);
-
-            // Expected values
-            var expectedUploadTime = testDto.getUploadTime();
-
-            // Assert
-            assertTrue(Duration.between(expectedUploadTime, result.getUploadedTime()).abs().compareTo(errorMargin) <= 0,
-                    "Expected uploadTime to be within " + errorMargin + " second of '" + expectedUploadTime + "' but was " + result.getUploadedTime());
-        }
-
-        @Test
-        @DisplayName("Should return object with correct userID when creating new Step")
-        public void testAddSingleStepForUser_ReturnsObjectWithCorrectValues_WhenCreatingNewStep() {
-            // Arrange
-            var testDto = testDtoBuilder.createStepDTOOfFirstMinuteOfYear();
-
-            // Act
-            var result = stepService.addSingleStepForUser(testUser, testDto);
-
-            // Expected values
-            var expectedUserId = testUser;
-
-            // Assert
-            assertEquals(expectedUserId, result.getUserId(), "Expected userId to be '" + expectedUserId + "'  but was " + result.getUserId());
-        }
-
-        @Test
-        @DisplayName("Should return object with correct userId when updating current Step")
-        public void testAddSingleStepForUser_ReturnsObjectWithUpdatedValues_WhenUpdatingStep() {
-// Create test Step objects and save them to all tables of database. Step creation is dependent on data existing in all tables or no tables at all
-            var existingStep = stepRepository.save(testStepBuilder.createStepOfFirstMinuteOfYear());
-            weekStepRepository.save(testStepBuilder.createWeekStepOfStep(existingStep));
-            monthStepRepository.save(testStepBuilder.createMonthStepOfStep(existingStep));
-
-            var testDto = testDtoBuilder.createStepDTOOfSecondMinuteOfYear();
-            testDto.setStartTime(existingStep.getEndTime().minusSeconds(10));
-
-            // Act
-            var result = stepService.addSingleStepForUser(testUser, testDto);
-
-            // Expected values
-            var expectedUserId = testUser;
-
-            // Assert
-            assertEquals(expectedUserId, result.getUserId(), "Expected userId to be '" + expectedUserId + "' but was " + result.getUserId());
-        }
-
-        @Test
-        @DisplayName("Should add Step stepCount to WeekStep-table")
-        public void testAddSingleStepForUser_AddsStepCountToWeekStepTable() {
-            // Arrange
-            var testDto = testDtoBuilder.createStepDTOOfFirstMinuteOfYear();
-            stepService.addSingleStepForUser(testUser, testDto);
-
-            // Act
-            var actualStepCount = weekStepRepository.getStepCountByUserIdYearAndWeek(testUser, testDto.getEndTime().getYear(), DateHelper.getWeek(testDto.getEndTime()));
-
-            // Expected values
-            var expectedStepCount = 10;
-
-            // Assert
-            assertTrue(actualStepCount.isPresent(), "Expected step count to be returned but it was empty");
-            assertEquals(Optional.of(expectedStepCount), actualStepCount, "Expected step count to be '" + expectedStepCount + "'  but got " + actualStepCount.get());
-        }
-
-        @Test
-        @DisplayName("Should store all WeekStep-fields in database correctly")
-        public void testAddSingleStepForUser_AddsAllFieldsCorrectlyToWeekStepTable() {
-            // Arrange
-            var testDto = testDtoBuilder.createStepDTOOfFirstMinuteOfYear();
-            stepService.addSingleStepForUser(testUser, testDto);
-
-            // Act
-            var result = weekStepRepository.findByUserIdAndYearAndWeek(testUser, testDto.getEndTime().getYear(), DateHelper.getWeek(testDto.getEndTime()));
-
-            // Expected values
-            var expectedUserId = testUser;
-            var expectedYear = testDto.getYear();
-            var expectedWeek = DateHelper.getWeek(testDto.getEndTime());
-            var expectedStepCount = testDto.getStepCount();
-
-            // Actual values
-            var actualUserId = result.orElseThrow().getUserId();
-            var actualYear = result.orElseThrow().getYear();
-            var actualWeek = result.orElseThrow().getWeek();
-            var actualStepCount = result.orElseThrow().getStepCount();
-
-            // Assert
-            assertAll(
-                    () -> assertEquals(expectedUserId, actualUserId, "Expected userId to be '" + expectedUserId + "' but got " + actualUserId),
-                    () -> assertEquals(expectedYear, actualYear, "Expected year to be '" + expectedYear + "' but got " + actualYear),
-                    () -> assertEquals(expectedWeek, actualWeek, "Expected week to be '" + expectedWeek + "' but got " + actualWeek),
-                    () -> assertEquals(expectedStepCount, actualStepCount, "Expected steps to be '" + expectedStepCount + "' but got " + actualStepCount)
-            );
-        }
-
-        @Test
-        @DisplayName("Should add Step stepCount to MonthStep-table")
-        public void testAddSingleStepForUser_AddsStepCountToMonthStepTable() {
-            // Arrange
-            var testDto = testDtoBuilder.createStepDTOOfFirstMinuteOfYear();
-            stepService.addSingleStepForUser(testUser, testDto);
-
-            // Act
-            var result = monthStepRepository.findByUserIdAndYearAndMonth(testUser, testDto.getEndTime().getYear(), testDto.getEndTime().getMonthValue());
-
-            // Expected values
-            var expectedStepCount = 10;
-
-            // Assert
-            assertTrue(result.isPresent(), "Expected step count to be returned but it was empty");
-            assertEquals(expectedStepCount, result.get().getStepCount(), "Expected step count to be '" + expectedStepCount + "' but got " + result.get());
-        }
-
-        @Test
-        @DisplayName("Should store all MonthStep-fields in database correctly")
-        public void testAddSingleStepForUser_AddsAllFieldsCorrectlyToMonthStepTable() {
-            // Arrange
-            var testDto = testDtoBuilder.createStepDTOOfFirstMinuteOfYear();
-            stepService.addSingleStepForUser(testUser, testDto);
-
-            // Act
-            var result = monthStepRepository.findByUserIdAndYearAndMonth(testUser, testDto.getEndTime().getYear(), testDto.getEndTime().getMonthValue());
-
-            // Expected values
-            var expectedUserId = testUser;
-            var expectedYear = testDto.getYear();
-            var expectedMonth = testDto.getEndTime().getMonthValue();
-            var expectedStepCount = testDto.getStepCount();
-
-            // Actual values
-            var actualUserId = result.orElseThrow().getUserId();
-            var actualYear = result.orElseThrow().getYear();
-            var actualMonth = result.orElseThrow().getMonth();
-            var actualStepCount = result.orElseThrow().getStepCount();
-
-            // Assert
-            assertAll(
-                    () -> assertEquals(expectedUserId, actualUserId, "Expected userId to be '" + expectedUserId + "' but got " + actualUserId),
-                    () -> assertEquals(expectedStepCount, actualStepCount, "Expected stepCount to be '" + expectedStepCount + "' but got" + actualStepCount),
-                    () -> assertEquals(expectedYear, actualYear, "Expected year to be '" + expectedYear + "' but got" + actualYear),
-                    () -> assertEquals(expectedMonth, actualMonth, "Expected month to be '" + expectedMonth + "' but got" + actualMonth)
-            );
-        }
-
-        @Test
-        @DisplayName("Throws exception when DTO with invalid time fields is used as input")
-        public void testAddSingleStepForUser_ReturnsOptionalEmpty_WhenTimeValueIsIncorrect() {
-            // Arrange
-            var badTestDto = testDtoBuilder.createStepDTOWhereTimeFieldsAreIncompatible();
-
-            // Act
-            Exception exception = assertThrows(DateTimeValueException.class, () -> {
-                stepService.addSingleStepForUser(testUser, badTestDto);
-            });
-
-            // Expected values
-            String expectedMessage = "Start time must be before end time";
-
-            // Actual values
-            String actualMessage = exception.getMessage();
-
-            // Assert
-            assertTrue(actualMessage.contains(expectedMessage));
-        }
-
-        @Test
-        @DisplayName("Should add stepCount to all tables when no step exists for user in database")
-        public void testAddingSingleStepForUser_AddsStepCountToAllTables() {
-            // Arrange
-            var stepDTO = testDtoBuilder.createStepDTOOfFirstMinuteOfYear();
-
-            // Act
-            stepService.addSingleStepForUser(testUser, stepDTO);
-
-            // Expected Values
-            var expectedStepCount = 10;
-
-            // Actual values
-            var actualSingleStepCount = stepRepository.getStepCountByUserIdAndDateRange(testUser, stepDTO.getStartTime().minusMinutes(1), stepDTO.getUploadTime().plusMinutes(1));
-            var actualWeekStepCount = weekStepRepository.getStepCountByUserIdYearAndWeek(testUser, stepDTO.getEndTime().getYear(), DateHelper.getWeek(stepDTO.getEndTime()));
-            var actualMonthStepCount = monthStepRepository.getStepCountByUserIdYearAndMonth(testUser, stepDTO.getEndTime().getYear(), stepDTO.getEndTime().getMonthValue());
-
-            // Assert
-            assertAll(
-                    () -> assertTrue(actualSingleStepCount.isPresent()),
-                    () -> assertTrue(actualWeekStepCount.isPresent()),
-                    () -> assertTrue(actualMonthStepCount.isPresent()),
-                    () -> assertEquals(Optional.of(expectedStepCount), actualSingleStepCount, "Expected Step stepCount to be '" + expectedStepCount + "' but was " + actualSingleStepCount),
-                    () -> assertEquals(Optional.of(expectedStepCount), actualWeekStepCount, "Expected WeekStep stepCount to be '" + expectedStepCount + "' but was " + actualWeekStepCount),
-                    () -> assertEquals(Optional.of(expectedStepCount), actualMonthStepCount, "Expected MonthStep stepCount to be '" + expectedStepCount + "' but was " + actualMonthStepCount)
-            );
-        }
-
-        @Test
-        @DisplayName("Should update stepCount of all tables when step exists for user in database")
-        public void testAddingSingleStepForUser_UpdatesStepCountOfAllTables() {
-            // Arrange
-            var existingStep = testStepBuilder.createStepOfFirstMinuteOfYear();
-            var existingWeekStep = testStepBuilder.createWeekStepOfStep(existingStep);
-            var existingMonthStep = testStepBuilder.createMonthStepOfStep(existingStep);
-
-            stepRepository.save(existingStep);
-            weekStepRepository.save(existingWeekStep);
-            monthStepRepository.save(existingMonthStep);
-
-            var testDto = testDtoBuilder.createStepDTOOfSecondMinuteOfYear();
-            testDto.setStartTime(existingStep.getEndTime().minusSeconds(10));
-
-            // Act
-            stepService.addSingleStepForUser(testUser, testDto);
-
-            // Expected Values
-            var expectedStepCount = 30;
-
-            // Actual values
-            var actualStepStepCount = stepRepository.findById(existingStep.getId()).orElseThrow().getStepCount();
-            var actualWeekStepCount = weekStepRepository.findById(existingWeekStep.getId()).orElseThrow().getStepCount();
-            var actualMonthStepCount = monthStepRepository.findById(existingMonthStep.getId()).orElseThrow().getStepCount();
-
-            assertEquals(expectedStepCount, actualStepStepCount, "Expected Step stepCount to be '" + expectedStepCount + "' but was " + actualStepStepCount);
-            assertEquals(expectedStepCount, actualWeekStepCount, "Expected WeekStep stepCount to be '" + expectedStepCount + "' but was " + actualWeekStepCount);
-            assertEquals(expectedStepCount, actualMonthStepCount, "Expected MonthStep stepCount to be '" + expectedStepCount + "' but was " + actualMonthStepCount);
-
-        }
-
-        @Test
-        @DisplayName("Should update stepCount of Step object in database when adding new step data if timeFields overlap")
-        public void testAddSingleStepForUser_UpdatesStepInDateBase() {
-            // Create test Step objects and save them to all tables of database. Step creation is dependent on data existing in all tables or no tables at all
-            var existingStep = testStepBuilder.createStepOfFirstMinuteOfYear();
-            weekStepRepository.save(testStepBuilder.createWeekStepOfStep(existingStep));
-            monthStepRepository.save(testStepBuilder.createMonthStepOfStep(existingStep));
-
-            // Create the new data to be added to the database and set the startTime to before the endTime of the stored Step object
-            var testDTO = testDtoBuilder.createStepDTOOfSecondMinuteOfYear();
-            testDTO.setStartTime(existingStep.getEndTime().minusSeconds(10));
-
-            // Use the test data on the method to be tested
-            stepService.addSingleStepForUser(testUser, testDTO);
-
-            // Expected Values
-            var result = stepRepository.findFirstByUserIdOrderByEndTimeDesc(testUser).orElseThrow();
-            int expectedStepCount = result.getStepCount();
-
-            // Actual values
-            var actualStepCount = result.getStepCount();
-
-            // Assert
-            assertEquals(expectedStepCount, actualStepCount, "Expected stepCount to be " + expectedStepCount + " but was " + actualStepCount);
-        }
-
-        @Test
-        @DisplayName("Should not create new Step object if startTime of StepDTO is before endTime of Step")
-        public void testAddSingleStepForUser_DoesNotCreateNewStep_WhenStartTimeIsBeforeEndTime() {
-            // Create test Step objects and save them to all tables of database. Step creation is dependent on data existing in all tables or no tables at all
-            var existingStep = testStepBuilder.createStepOfFirstMinuteOfYear();
-            stepRepository.save(existingStep);
-            weekStepRepository.save(testStepBuilder.createWeekStepOfStep(existingStep));
-            monthStepRepository.save(testStepBuilder.createMonthStepOfStep(existingStep));
-
-            // Create the new data to be added to the database and set the startTime to before the endTime of the stored Step object
-            var testDto = testDtoBuilder.createStepDTOOfThirdMinuteOfYear();
-            testDto.setStartTime(existingStep.getEndTime().minusSeconds(10));
-
-            // Use the test data on the method to be tested
-            stepService.addSingleStepForUser(testUser, testDto);
-
-            // Expected Values: The correct userId,  total stepCount and the number of objects found in database
-            var expectedUserId = testUser;
-            var expectedStepCount = 40;
-            var expectedNumberOfStepObjects = 1;
-
-            // Actual values
-            var objectsInDataBase = stepRepository.findAll();
-
-            var actualUserId = objectsInDataBase.get(0).getUserId();
-            var actualStepCount = objectsInDataBase.get(0).getStepCount();
-            var actualNumberOfStepObjects = objectsInDataBase.size();
-
-            // Assert
-            assertEquals(expectedUserId, actualUserId, "Expected userId to be '" + expectedUserId + "' but was " + actualUserId);
-            assertEquals(expectedStepCount, actualStepCount, "Expected stepCount to be '" + expectedStepCount + "' but was " + actualStepCount);
-            assertEquals(expectedNumberOfStepObjects, actualNumberOfStepObjects, "Expected numberOfSteps to be '" + expectedUserId + "' but was " + actualUserId);
-        }
-    }
 
     @Nested
     @DisplayName("addMultipleStepsForUser method: ")
     public class AddMultipleStepsForUserTest {
 
+        // Create a list to hold the test data
+        List<StepDTO> testStepDTOList = new ArrayList<>();
 
-        @Test
-        @DisplayName("Should return a StepDTO object with the total stepCount of the StepDTO:s in the list passed as input")
-        public void testAddMultipleStepsForUser_ReturnsObjectWithCorrectStepCount_WhenNoUserExistsInDatabase() {
-            // Arrange
-            List<StepDTO> testList = new ArrayList<>(List.of(
-                    testDtoBuilder.createStepDTOOfFirstMinuteOfYear(),
-                    testDtoBuilder.createStepDTOOfSecondMinuteOfYear(),
-                    testDtoBuilder.createStepDTOOfThirdMinuteOfYear()
-            ));
-
-            // Act
-            var result = stepService.addMultipleStepsForUser(testUser, testList);
-
-            // Expected values
-            int expectedStepCount = 10 + 20 + 30;
-
-            // Actual values
-            int actualStepCount = result.getStepCount();
-
-            // Assert
-            assertNotNull(result, "Expected result not to be null but it was.");
-            assertEquals(expectedStepCount, actualStepCount,"Expected stepCount to be '" + expectedStepCount + "' but got " + actualStepCount);
+        @BeforeEach
+        public void setUp() {
+            // Create and add StepDTO:s to the test list
+            testStepDTOList.add(testDTOBuilder.createStepDTOOfFirstMinuteOfYear());
+            testStepDTOList.add(testDTOBuilder.createStepDTOOfSecondMinuteOfYear());
+            testStepDTOList.add(testDTOBuilder.createStepDTOOfThirdMinuteOfYear());
         }
 
-        @Test
-        @DisplayName("Throws exception when input userId is null")
-        public void testAddMultipleStepsForUser_ThrowsException_WhenUserIdInputIsNull() {
-            // Arrange
-            List<StepDTO> testList = new ArrayList<>(List.of(
-                    testDtoBuilder.createStepDTOOfFirstMinuteOfYear(),
-                    testDtoBuilder.createStepDTOOfSecondMinuteOfYear(),
-                    testDtoBuilder.createStepDTOOfThirdMinuteOfYear()
-            ));
+        @Nested
+        @DisplayName("Should throw exception")
+        public class AddMultipleStepsShouldThrowException {
 
-            // Act
-            Exception exception = assertThrows(ValidationFailedException.class, () -> {
-                stepService.addMultipleStepsForUser(null, testList);
-            });
+            @Test
+            @DisplayName("Should throw 'ValidationFailedException'' when userId passed to method is null")
+            public void testAddMultipleStepsForUser_ThrowsValidationFailedException_WhenUserIdInputIsNull() {
+                // Expected exception message
+                var expectedMessage = "Validation of new data failed";
 
-            // Expected values
-            String expectedMessage = "UserId is null. Validation for step failed";
+                // Assert that correct exception is thrown when test data is passed to method
+                var result = assertThrows(
+                        ValidationFailedException.class, () -> stepService.addMultipleStepsForUser(null, testStepDTOList));
+                assertTrue(result.getMessage().contains(expectedMessage),
+                        "Expected exception message to be '" + expectedMessage + "' but was '" + result.getMessage() + "'");
+            }
 
-            // Actual values
-            String actualMessage = exception.getMessage();
+            @Test
+            @DisplayName("Should throw 'ValidationFailedException'' when list passed to method is null")
+            public void  testAddMultipleStepsForUser_ThrowsValidationFailedException_WhenListIsNull() {
+                // Expected exception message
+                var expectedMessage = "Validation of new data failed";
+                // Assert that correct exception is thrown when the list passed to the method is null
+                var result = assertThrows(
+                        ValidationFailedException.class, () -> stepService.addMultipleStepsForUser(testUser, null));
+                assertTrue(result.getMessage().contains(expectedMessage),
+                        "Expected exception message to be '" + expectedMessage + "' but was '" + result.getMessage() + "'");
+            }
 
-            // Assert
-            assertTrue(actualMessage.contains(expectedMessage));
+            @Test
+            @DisplayName("Should throw 'DateTimeValueException' when list passed to method contains StepDTO with incompatible time fields")
+            public void testAddMultipleStepsForUser_ThrowsDateTimeValueException_WhenListContainsBadTimeFields() {
+                // Create StepDTO with incompatible time fields and add to test list
+                var badTimeFieldsDTO = testDTOBuilder.createStepDTOWhereTimeFieldsAreIncompatible();
+                testStepDTOList.add(badTimeFieldsDTO);
+
+                // Expected exception message
+                var expectedMessage = "Start time must be before end time";
+
+                // Assert that correct exception is thrown when the list passed to the method is null
+                var result = assertThrows(
+                        DateTimeValueException.class, () -> stepService.addMultipleStepsForUser(testUser, testStepDTOList));
+                assertTrue(result.getMessage().contains(expectedMessage),
+                        "Expected exception message to be '" + expectedMessage + "' but was '"+ result.getMessage() + "'");
+                testStepDTOList.remove(badTimeFieldsDTO);
+            }
         }
 
-        @Test
-        @DisplayName("Should throw exception when stepDTO-input is null")
-        public void testAddMultipleStepsForUser_ReturnsEmptyOptional_WhenTestDtoIsNull() {
-            // Act
-            Exception exception = assertThrows(ValidationFailedException.class, () -> {
-                stepService.addMultipleStepsForUser(testUser, null);
-            });
+        @Nested
+        @DisplayName("Should return correct values")
+        public class AddMultipleStepsShouldReturnCorrectValues {
+            @BeforeEach
+            void setUp() {
+                dropAllTables();
+            }
 
-            // Expected values
-            String expectedMessage = "UserId is null. Validation for step failed";
+            @Test
+            @DisplayName("Should return a Step object with the total stepCount of the StepDTO:s in the list passed as input")
+            public void testAddMultipleStepsForUser_ReturnsStepWithTotalStepCount_WhenNoUserExistsInDatabase() {
+                // Make sure the database is empty and pass the list holding the test data to the method to be tested
+                assertTrue(dataBaseIsEmpty());
+                var result = stepService.addMultipleStepsForUser(testUser, testStepDTOList);
 
-            // Actual values
-            String actualMessage = exception.getMessage();
+                // Expected total sum of the stepCount of the test data
+                int expectedStepCount = testStepDTOList.stream()
+                        .mapToInt(StepDTO::getStepCount)
+                        .sum();
 
-            // Assert
-            assertTrue(actualMessage.contains(expectedMessage));
+                // Actual sum of the stepCount from the test data
+                int actualStepCount = result.getStepCount();
+
+                // Assert that the Step object returned by the tested method has the correct stepCount
+                assertEquals(expectedStepCount, actualStepCount,"Expected stepCount to be '" + expectedStepCount + "' but was '" + actualStepCount + "'. " + result);
+            }
         }
+    }
+
+    @Nested
+    @DisplayName("Parameterized tests: ")
+    public class ParameterizedTests {
+
+        @DisplayName("Add Single Step For User Validation Tests")
+        @ParameterizedTest(name = "When adding a step with userId={0}, ValidationFailedException is thrown: {1}")
+        @CsvSource({
+                "'', true",
+                "1, false",
+        })
+        public void testAddSingleStepForUser_ThrowsValidationFailedException(String userId, boolean shouldThrow) {
+            StepDTO testStepDTO = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
+            if (shouldThrow) {
+                assertThrows(ValidationFailedException.class, () -> stepService.addSingleStepForUser(userId.isEmpty() ? null : userId, testStepDTO));
+            } else {
+                assertDoesNotThrow(() -> stepService.addSingleStepForUser(userId.isEmpty() ? null : userId, testStepDTO));
+            }
+        }
+    }
+
+    private void saveToAllTables(Step step) {
+        stepRepository.save(step);
+        weekStepRepository.save(testStepBuilder.createWeekStepOfStep(step));
+        monthStepRepository.save(testStepBuilder.createMonthStepOfStep(step));
+    }
+    private boolean dataBaseIsEmpty() {
+        return stepRepository.findAll().isEmpty()
+                && weekStepRepository.findAll().isEmpty()
+                && monthStepRepository.findAll().isEmpty();
+    }
+    private void dropAllTables() {
+        stepRepository.deleteAllFromStep();
+        weekStepRepository.deleteAll();
+        monthStepRepository.deleteAll();
     }
 }

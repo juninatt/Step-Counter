@@ -83,8 +83,8 @@ public abstract class AbstractStepService {
      */
     public Step addSingleStepForUser(String userId, StepDTO stepData) {
         if (userId == null || !stepValidator.stepDataIsValid(stepData))
-            throw new ValidationFailedException("userId null. Validation for step failed");
-        else if (stepValidator.shouldUpdateStep(stepData))
+            throw new ValidationFailedException("userId null. Validation for Step failed");
+        else if (stepValidator.stepShouldBeUpdatedWithNewData(stepData))
             return updateAndSaveStep(getLatestStepFromUser(userId), stepData);
         else {
             return saveToAllTables(stepData);
@@ -106,7 +106,7 @@ public abstract class AbstractStepService {
      */
     public Step addMultipleStepsForUser(String userId, List<StepDTO> stepDtoList) {
         if (userId == null || !stepValidator.stepDataIsValid(stepDtoList)) {
-            throw new ValidationFailedException("UserId is null. Validation for step failed");
+            throw new ValidationFailedException("Validation of new data failed");
         }
         else {
             var gatheredData = gatherStepDataForUser(stepDtoList, userId);
@@ -256,60 +256,56 @@ public abstract class AbstractStepService {
     }
 
     /**
-     * Updates and saves the {@link Step} object used as input with the data from the {@link StepDTO} object used as input
+     * Updates the given {@link Step} object with the stepCount, endTime and uploadTime from the {@link StepDTO} object.
+     * Saves the updated {@link Step} object and creates new {@link WeekStep} and {@link MonthStep} objects if necessary.
      *
      * @param step the {@link Step} object to be updated
-     * @param stepData the {@link StepDTO} holding the new data
-     * @return the updated {@link Step} object
+     * @param stepData the {@link StepDTO} object containing the data to update the {@link Step} object with
+     * @return a {@link StepDTO} object holding the data of the latest {@link Step} object for the user
      */
     private Step updateAndSaveStep(Step step, StepDTO stepData) {
-        // Update relevant fields of last Step object stored in the database
         stepRepository.incrementStepCountAndUpdateTimes(step, stepData.getStepCount(), stepData.getEndTime(), stepData.getUploadTime());
-        // Update or save WeekStep and MonthStep depending on if it is a new week or month
-        updateOrSaveNewMonthStep(stepData);
         updateOrSaveNewWeekStep(stepData);
+        updateOrSaveNewMonthStep(stepData);
         return getLatestStepFromUser(step.getUserId());
     }
 
+
     /**
-     * Updates or creates and saves a new {@link WeekStep} object to the database with the data from the {@link StepDTO} object.
+     * Updates or saves a new {@link WeekStep} object in the database,
+     * if a {@link WeekStep} with the corresponding user ID, year, and week as the {@link StepDTO} passed as input.
+     * If it does not exist, a new {@link WeekStep} object is saved.
      *
-     * @param stepDTO a {@link StepDTO} object holding the new data
+     * @param stepDto the {@link StepDTO} object containing the step data
+     *
+     * @see DateHelper#getWeek(LocalDateTime)
+     * @see WeekStepRepository#findByUserIdAndYearAndWeek(String, int, int)
+     * @see StepMapper#stepDtoToWeekStep(StepDTO)
      */
-    private void updateOrSaveNewWeekStep(StepDTO stepDTO) {
-        // Fetches the most recently stored WeekStep object in the database for the specified user
-        weekStepRepository.findTopByUserIdOrderByIdDesc(stepDTO.getUserId())
-                .ifPresent(weekStep -> {
-                    // Updates the WeekStep found in the database if the requirements in the StepValidator are met
-                    if (stepValidator.shouldUpdateWeekStep(stepDTO, weekStep))
-                        weekStepRepository.incrementWeekStepCount(weekStep.getId(), stepDTO.getStepCount());
-                    else {
-                        // Otherwise creates and saves new WeekStep
-                        weekStepRepository.save(StepMapper.mapper.stepDtoToWeekStep(stepDTO));
-                    }
-                });
+    private void updateOrSaveNewWeekStep(StepDTO stepDto) {
+        var week = DateHelper.getWeek(stepDto.getEndTime());
+            weekStepRepository.findByUserIdAndYearAndWeek(stepDto.getUserId(), stepDto.getEndTime().getYear(), week)
+                    .ifPresentOrElse(weekStep -> weekStepRepository.incrementWeekStepCount(weekStep.getId(), stepDto.getStepCount()),
+                            () -> weekStepRepository.save(StepMapper.mapper.stepDtoToWeekStep(stepDto)));
     }
 
     /**
-     * Updates or creates and saves a new {@link MonthStep} object to the database with the data from the {@link StepDTO} object.
+     * Updates or saves a new {@link MonthStep} object in the database,
+     * if a {@link MonthStep} with the corresponding user ID, year, and month as the {@link StepDTO} passed as input.
+     * If it does not exist, a new {@link MonthStep} object is saved.
      *
-     * @param stepDTO a {@link StepDTO} object holding the new data
+     * @param stepDto the {@link StepDTO} object containing the step data
+     *
+     * @see MonthStepRepository#findByUserIdAndYearAndMonth(String, int, int)
+     * @see StepMapper#stepDtoToMonthStep(StepDTO)
      */
-    private void updateOrSaveNewMonthStep(StepDTO stepDTO) {
-        // Fetches the most recently stored MonthStep object in the database for the specified user
-        monthStepRepository.findTopByUserIdOrderByIdDesc(stepDTO.getUserId())
-                .ifPresent(monthStep -> {
-                    // Updates the MonthStep if the requirements in the StepValidator are met
-                    if (stepValidator.shouldUpdateMonthStep(stepDTO, monthStep))
-                        monthStepRepository.incrementMonthStepCount(monthStep.getId(), stepDTO.getStepCount());
-                    else {
-                        // Otherwise creates and saves new MonthStep
-                        monthStepRepository.save(StepMapper.mapper.stepDtoToMonthStep(stepDTO));
-                    }
-                });
-        }
+    private void updateOrSaveNewMonthStep(StepDTO stepDto) {
+        monthStepRepository.findByUserIdAndYearAndMonth(stepDto.getUserId(), stepDto.getYear(), stepDto.getMonth())
+                    .ifPresentOrElse(monthStep -> monthStepRepository.incrementMonthStepCount(monthStep.getId(), stepDto.getStepCount()),
+                            () -> monthStepRepository.save(StepMapper.mapper.stepDtoToMonthStep(stepDto)));
+    }
 
-        /**
+    /**
      * Saves a {@link StepDTO} object to all relevant tables in the database.
      *
      * @param stepDto the {@link StepDTO} object to save
@@ -319,11 +315,20 @@ public abstract class AbstractStepService {
      * @see StepMapper#stepDtoToWeekStep(StepDTO)
      * @see StepMapper#stepDtoToWeekStep(StepDTO)
      */
-        private Step saveToAllTables(StepDTO stepDto) {
-        var newStep = StepMapper.mapper.stepDtoToStep(stepDto);
-        stepRepository.save(newStep);
+    private Step saveToAllTables(StepDTO stepDto) {
+        stepRepository.save(StepMapper.mapper.stepDtoToStep(stepDto));
         weekStepRepository.save(StepMapper.mapper.stepDtoToWeekStep(stepDto));
         monthStepRepository.save(StepMapper.mapper.stepDtoToMonthStep(stepDto));
-        return newStep;
+        return StepMapper.mapper.stepDtoToStep(stepDto);
+    }
+
+    /**
+     * This method creates a default {@link Step} object indicating something went wrong
+     *
+     * @return a {@link Step} object with userId 'Invalid Data' and uploadTime of current moment
+     */
+    private Step getInvalidDataObject() {
+        return new Step("Invalid Data", 0, LocalDateTime.now());
+        // stepCount 0 is a placeholder, throw exception in getInvalidDataObject instead ?
     }
 }

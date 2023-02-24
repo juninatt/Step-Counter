@@ -119,11 +119,10 @@ public class StepValidator {
      * @return true if the object is not null, false and throws exception otherwise
      */
     private boolean stepDtoIsNotNull(StepDTO stepDto) {
-        if (!ofNullable(stepDto).isPresent()){
+        if (stepDto == null)
             throw new ValidationFailedException("Step object is empty");
-        } else {
+         else
             return true;
-        }
     }
 
     /**
