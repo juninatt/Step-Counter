@@ -13,4 +13,8 @@ public class StepCountValueException extends RuntimeException{
     public StepCountValueException(String message) {
         super(message);
     }
+
+    public HttpStatus getStatus() {
+        return HttpStatus.NO_CONTENT;
+    }
 }

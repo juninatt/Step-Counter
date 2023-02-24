@@ -14,4 +14,8 @@ public class UnhandledException extends RuntimeException{
     public UnhandledException(String message) {
         super(message);
     }
+
+    public HttpStatus getStatus() {
+        return HttpStatus.I_AM_A_TEAPOT;
+    }
 }

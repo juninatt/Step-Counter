@@ -12,4 +12,8 @@ public class DateTimeValueException extends RuntimeException{
     public DateTimeValueException(String message) {
         super(message);
     }
+
+    public HttpStatus getStatus() {
+        return HttpStatus.CONFLICT;
+    }
 }

@@ -12,4 +12,8 @@ public class UserIdValueException extends RuntimeException {
     public UserIdValueException(String message) {
         super(message);
     }
+
+    public HttpStatus getStatus() {
+        return HttpStatus.NO_CONTENT;
+    }
 }

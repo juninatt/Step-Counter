@@ -24,7 +24,7 @@ import java.util.Map;
 public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	/**
-	 * Handle the NotFoundException by returning a HTTP 404 Not Found status to the client.
+	 * Handle the NotFoundException by returning an HTTP 404 Not Found status to the client.
 	 *
 	 * @param response HttpServletResponse - an object to represent the HTTP response sent to the client
 	 * @throws IOException if an input or output error is detected when the servlet handles the request
@@ -35,7 +35,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 	}
 
 	/**
-	 * Handle the MethodArgumentNotValidException by returning a HTTP 400 Bad Request status to the client
+	 * Handle the MethodArgumentNotValidException by returning an HTTP 400 Bad Request status to the client
 	 * along with a map of field errors.
 	 *
 	 * @param notValidException The exception MethodArgumentNotValidException thrown when argument annotated with @Valid failed validation
@@ -56,4 +56,6 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
 		});
 		return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 	}
+
+
 }
