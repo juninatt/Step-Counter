@@ -84,7 +84,7 @@ public abstract class AbstractStepService {
     public Step addSingleStepForUser(String userId, StepDTO stepData) {
         if (userId == null || !stepValidator.stepDataIsValid(stepData))
             throw new ValidationFailedException("userId null. Validation for Step failed");
-        else if (stepValidator.stepShouldBeUpdatedWithNewData(stepData))
+        else if (stepValidator.shouldUpdateStep(stepData))
             return updateAndSaveStep(getLatestStepFromUser(userId), stepData);
         else {
             return saveToAllTables(stepData);
@@ -320,15 +320,5 @@ public abstract class AbstractStepService {
         weekStepRepository.save(StepMapper.mapper.stepDtoToWeekStep(stepDto));
         monthStepRepository.save(StepMapper.mapper.stepDtoToMonthStep(stepDto));
         return StepMapper.mapper.stepDtoToStep(stepDto);
-    }
-
-    /**
-     * This method creates a default {@link Step} object indicating something went wrong
-     *
-     * @return a {@link Step} object with userId 'Invalid Data' and uploadTime of current moment
-     */
-    private Step getInvalidDataObject() {
-        return new Step("Invalid Data", 0, LocalDateTime.now());
-        // stepCount 0 is a placeholder, throw exception in getInvalidDataObject instead ?
     }
 }
