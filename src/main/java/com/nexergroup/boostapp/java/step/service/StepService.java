@@ -28,8 +28,8 @@ public class StepService extends AbstractStepService {
     }
 
     @Override
-    public Step addSingleStepForUser(String userId, StepDTO stepData) {
-        return super.addSingleStepForUser(userId, stepData);
+    public Step addSingleStepForUser(String userId, StepDTO stepDTO) {
+        return super.addSingleStepForUser(userId, stepDTO);
     }
 
     @Override
@@ -38,8 +38,8 @@ public class StepService extends AbstractStepService {
     }
 
     @Override
-    public Step addMultipleStepsForUser(String userId, List<StepDTO> stepDtoList) {
-        return super.addMultipleStepsForUser(userId, stepDtoList);
+    public Step addMultipleStepsForUser(String userId, List<StepDTO> stepDTOList) {
+        return super.addMultipleStepsForUser(userId, stepDTOList);
     }
 
     @Override

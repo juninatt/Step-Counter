@@ -46,10 +46,6 @@ public abstract class AbstractStepService {
 
     /**
      * Constructor for AbstractStepService class.
-     *
-     * @param stepRepository instance of {@link StepRepository}
-     * @param monthStepRepository instance of {@link MonthStepRepository}.
-     * @param weekStepRepository instance of {@link WeekStepRepository}
      */
     public AbstractStepService(final StepRepository stepRepository,
                        final MonthStepRepository monthStepRepository,
@@ -62,8 +58,6 @@ public abstract class AbstractStepService {
 
     /**
      * Deletes all records from the step table.
-     *
-     * @see StepRepository#deleteAllFromStep()
      */
     public void deleteStepTable() {
         stepRepository.deleteAllFromStep();
@@ -73,19 +67,19 @@ public abstract class AbstractStepService {
      * Adds Step-data to a specified user and stores it in the database, after checking the data for bad values.
      *
      * @param userId the ID of the user
-     * @param stepData a {@link StepDTO} object containing the new data
+     * @param stepDTO a {@link StepDTO} object containing the new data
      * @return the users most recently stored {@link Step} object
      */
-    public Step addSingleStepForUser(String userId, StepDTO stepData) {
+    public Step addSingleStepForUser(String userId, StepDTO stepDTO) {
         // Checks all fields for null or bad data
-        if (userId == null || !stepValidator.stepDataIsValid(stepData))
+        if (userId == null || !stepValidator.stepDataIsValid(stepDTO))
             throw new ValidationFailedException("userId null. Validation for Step failed");
         // If new data should be added to users most recent Step object, Step is updated
-        else if (stepValidator.shouldUpdateStep(stepData))
-            return updateAndSaveStep(getLatestStepFromUser(userId), stepData);
+        else if (stepValidator.shouldUpdateStep(stepDTO))
+            return updateAndSaveStep(getLatestStepFromUser(userId), stepDTO);
         // Otherwise new Step objects are created and saved to each table in database
         else {
-            return saveToAllTables(stepData);
+            return saveToAllTables(stepDTO);
         }
     }
 
@@ -93,41 +87,41 @@ public abstract class AbstractStepService {
      * Add Step-data to a specified user in form of a list, and stores it in the database after checking for bad values
      *
      * @param userId the ID of the user
-     * @param stepDtoList a list of {@link StepDTO} objects containing the new data
+     * @param stepDTOList a list of {@link StepDTO} objects containing the new data
      * @return the users most recently stored {@link Step} object
      */
-    public Step addMultipleStepsForUser(String userId, List<StepDTO> stepDtoList) {
+    public Step addMultipleStepsForUser(String userId, List<StepDTO> stepDTOList) {
         // Checks all fields for null or bad data
-        if (userId == null || !stepValidator.stepDataIsValid(stepDtoList)) {
+        if (userId == null || !stepValidator.stepDataIsValid(stepDTOList)) {
             throw new ValidationFailedException("Validation of new data failed");
         }
         else {
             // If valid, gathers the data into a single StepDTO object that gets added to database
-            var gatheredData = gatherStepDataForUser(stepDtoList, userId);
+            var gatheredData = gatherStepDataForUser(stepDTOList, userId);
             return addSingleStepForUser(userId, gatheredData);
         }
     }
 
     /**
-     * This method takes in a list of {@link StepDTO} and a userId and returns a new {@link StepDTO} object with the
-     * aggregated step data for that user. The method sorts the input list of {@link StepDTO} objects by end time,
-     * calculates the total step count, and sets the start-, end-, and upload-times of the returned {@link StepDTO} object
-     * to the earliest, latest, and latest start times in the input list respectively.
+     * This method takes in a list of {@link StepDTO} objects and a userId and returns a new {@link StepDTO} object with the
+     * aggregated step data for that user.
      *
      * @param stepDTOList a list containing {@link StepDTO} objects a particular user
-     * @param userId the user id of the user
+     * @param userId the id of the user
      * @return a {@link StepDTO} object containing the users aggregated step data
-     *
-     * @see StepDTOBuilder
      */
     private StepDTO gatherStepDataForUser(List<StepDTO> stepDTOList, String userId) {
+        // Sorts the list by endTime and collects to a list. 'Oldest' endTime at index 0
         var sortedList =sortDTOListByEndTime(stepDTOList);
+        // Gets the total sum of the stepCount of the objects in the list
         var totalStepCount = sortedList.stream()
                 .mapToInt(StepDTO::getStepCount)
                 .sum();
         var startTime = sortedList.get(0).getStartTime();
         var endTime = sortedList.get(sortedList.size() - 1 ).getEndTime();
         var uploadTime = sortedList.get(sortedList.size() -1 ).getUploadTime();
+        // Creates and returns new StepCTO with startTime of the oldest object and endTime of the newest object
+        // and sum of all objects stepCount
         return new StepDTOBuilder()
                 .withUserId(userId)
                 .withStepCount(totalStepCount)
@@ -140,110 +134,104 @@ public abstract class AbstractStepService {
     /**
      * Sorts a list of {@link StepDTO} objects by the value of their endTime field.
      *
-     * @param stepDtoList a list of {@link StepDTO} objects to sort
+     * @param stepDTOList a list of {@link StepDTO} objects to sort
      * @return a sorted list of {@link StepDTO} objects
      */
-    public List<StepDTO> sortDTOListByEndTime(List<StepDTO> stepDtoList) {
-        stepDtoList.sort(Comparator.comparing(StepDTO::getEndTime));
-        return stepDtoList;
+    public List<StepDTO> sortDTOListByEndTime(List<StepDTO> stepDTOList) {
+        stepDTOList.sort(Comparator.comparing(StepDTO::getEndTime));
+        return stepDTOList;
     }
 
     /**
-     * Retrieve the latest {@link Step} from a specified user wrapped in an Optional object.
+     * Retrieve the most recently stored {@link Step} object for the specified user from the database
      *
      * @param userId the ID of the user
-     * @return an Optional containing the latest {@link Step} object of the user, if found, otherwise empty Optional
-     *
-     * @see StepRepository#findFirstByUserIdOrderByEndTimeDesc(String)
+     * @return the users most recently stored {@link Step} object
      */
     public Step getLatestStepFromUser(String userId) {
         return stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).orElseThrow();
     }
 
     /**
-     * This method retrieves the stepCount for a given user, year and month.
+     * Retrieve the stepCount for a given user, year and month.
      *
-     * @param userId the ID of the user to retrieve stepCount for
-     * @param year the year to retrieve step count for
-     * @param month the month to retrieve step count for
-     * @return an Optional containing the stepCount for the user in the specified year and month,
-     * or an empty Optional if no data found
-     *
-     * @see MonthStepRepository#getStepCountByUserIdYearAndMonth(String, int, int)
+     * @param userId the id of the user
+     * @param year the requested year
+     * @param month the requested month
+     * @return the users total stepCount for the requested month
      */
     public Integer getStepCountForUserYearAndMonth(String userId, int year, int month) {
         return monthStepRepository.getStepCountByUserIdYearAndMonth(userId, year, month).orElseThrow();
     }
 
     /**
-     * This method retrieves the stepCount for a given user, year and month.
+     * Retrieve the stepCount for a given user, year and week.
      *
-     * @param userId the ID of the user to retrieve stepCount for
-     * @param year the year to retrieve step count for
-     * @param week the week to retrieve step count for
-     * @return an Optional containing the stepCount for the user in the specified year and week,
-     * or an empty Optional if no data found
-     *
-     * @see WeekStepRepository#getStepCountByUserIdYearAndWeek(String, int, int)
+     * @param userId the ID of the user
+     * @param year the requested year
+     * @param week the requested week
+     * @return the users total stepCount for the requested week
      */
     public Integer getStepCountForUserYearAndWeek(String userId, int year, int week) {
         return weekStepRepository.getStepCountByUserIdYearAndWeek(userId, year, week).orElseThrow();
     }
 
     /**
-     * Filters a list of user IDs, finds the matching ones and creates a list of {@link BulkStepDateDTO} objects for each user
+     * Filters a list of userId:s as strings, finds the matching ones and creates {@link BulkStepDateDTO} for each user
      *
-     * @param users a list of user IDs
+     * @param users a list of userId:s
      * @param startDate the start date in string format (yyyy-MM-dd)
      * @param endDate the end date in string format (yyyy-MM-dd)
-     * @return an Optional object containing a list of {@link BulkStepDateDTO} objects
-     *
-     * @see StringToTimeStampConverter#convert(String)
-     * @see StringComparator#getMatching(List, List)
-     * @see StepRepository#getListOfAllDistinctUserId()
+     * @return a list of {@link BulkStepDateDTO} objects
      */
     public List<BulkStepDateDTO> filterUsersAndCreateListOfBulkStepDateDtoWithRange(List<String> users, String startDate, String endDate) {
         var stringConverter = new StringToTimeStampConverter();
+        // Convert the string to a time format supported by the database
+        var sqlStartDate = stringConverter.convert(startDate);
+        var sqlEndDate = stringConverter.convert(endDate);
+        // Collect the matching string to a list (removing requested users not found in database)
         var matchingUsers = StringComparator.getMatching(users, stepRepository.getListOfAllDistinctUserId());
+        // Create a BulkStepDateDTO object for each user, collect them to a list and return it to the caller
         return matchingUsers.stream()
-                .map(user -> createBulkStepDateDtoForUser(user, stringConverter.convert(startDate), stringConverter.convert(endDate)))
+                .map(user -> createBulkStepDateDtoForUser(user, sqlStartDate, sqlEndDate))
                 .collect(Collectors.toList());
     }
 
     /**
      * Creates a {@link BulkStepDateDTO} for the given user and current week's step data.
      *
-     * @param userId the id of the user for whom the step data is retrieved
-     * @return an Optional {@link BulkStepDateDTO} object containing the step data for the given user and current week
-     *
-     * @see DateHelper#getWeek(LocalDateTime)
-     * @see StepRepository#getStepDataByUserIdAndDateRange(String, Timestamp, Timestamp)
+     * @param userId the id of the user
+     * @return a {@link BulkStepDateDTO} object containing the step data for the given user and current week
      */
     public Optional<BulkStepDateDTO> createBulkStepDateDtoForUserForCurrentWeek(String userId) {
+        // Get the start and end of the week as ZonedDateTime objects
         var weekStart = DateHelper.getWeekStart(LocalDateTime.now(), ZoneId.systemDefault());
         var weekEnd = DateHelper.getWeekEnd(LocalDateTime.now(), ZoneId.systemDefault());
+        // Retrieve a list of StepDateDTO:s for the specified user and period
         var listOfUserStepDateDto = stepRepository.getStepDataByUserIdAndDateRange(
                 userId, Timestamp.valueOf(weekStart.toLocalDateTime()), Timestamp.valueOf(weekEnd.toLocalDateTime()));
+        // Create a BulkStepDateDTO object for the user from the list of StepDateDTO:s and return it to the caller
         return Optional.of(new BulkStepDateDTO(userId, listOfUserStepDateDto));
     }
 
     /**
      * Creates a {@link BulkStepDateDTO} for the given user and the step data within the specified date range.
      *
-     * @param userId the id of the user for whom the step data is retrieved
-     * @param startTime the starting time for the date range
-     * @param endTime the ending time for the date range
-     * @return an Optional {@link BulkStepDateDTO} object containing the step data for the given user within the specified date range
-     *
-     * @see StepRepository#getStepDataByUserIdAndDateRange(String, Timestamp, Timestamp)
+     * @param userId the id of the user
+     * @param startTime the starting time of time period
+     * @param endTime the ending time of time period
+     * @return an {@link BulkStepDateDTO} object containing the step data for the given user within the specified date range
      */
     public BulkStepDateDTO createBulkStepDateDtoForUser(String userId, Timestamp startTime, Timestamp endTime) {
         List<StepDateDTO> listOfStepsDateDtoForUser;
+        // Retrieve a list of StepDateDTO:s for the specified user and time period
         try {
             listOfStepsDateDtoForUser = stepRepository.getStepDataByUserIdAndDateRange(userId, startTime, endTime);
-        } catch (Exception e) {
+        }
+        catch (Exception exception) {
             throw new NotFoundException();
         }
+        // Create a BulkStepDateDTO object and add the retrieved StepDateDTO:s to it
         var bulkStepDateDTO = new BulkStepDateDTO();
         listOfStepsDateDtoForUser.forEach(stepDateDTO -> bulkStepDateDTO.getStepList().add(stepDateDTO));
         return bulkStepDateDTO;
@@ -254,14 +242,14 @@ public abstract class AbstractStepService {
      * and creates new {@link WeekStep} and {@link MonthStep} objects if necessary based on whether a new week/month has started.
      *
      * @param step the {@link Step} object to be updated
-     * @param stepData the {@link StepDTO} object containing the new step data
+     * @param stepDTO the {@link StepDTO} object containing the new step data
      * @return the updated {@link Step} object
      */
-    private Step updateAndSaveStep(Step step, StepDTO stepData) {
+    private Step updateAndSaveStep(Step step, StepDTO stepDTO) {
         // Updates all relevant fields of the Step object in the database
-        stepRepository.incrementStepCountAndUpdateTimes(step, stepData.getStepCount(), stepData.getEndTime(), stepData.getUploadTime());
-        updateOrSaveNewWeekStep(stepData);
-        updateOrSaveNewMonthStep(stepData);
+        stepRepository.incrementStepCountAndUpdateTimes(step, stepDTO.getStepCount(), stepDTO.getEndTime(), stepDTO.getUploadTime());
+        updateOrSaveNewWeekStep(stepDTO);
+        updateOrSaveNewMonthStep(stepDTO);
         return getLatestStepFromUser(step.getUserId());
     }
 
@@ -303,16 +291,13 @@ public abstract class AbstractStepService {
     }
 
     /**
-     * Saves a {@link StepDTO} object to all relevant tables in the database.
+     * Converts a StepDTO object to Step, WeekStep, and MonthStep objects and saves them in the database
      *
-     * @param stepDTO the {@link StepDTO} object to save
-     * @return the saved {@link StepDTO} object
-     *
-     * @see StepMapper#stepDtoToStep(StepDTO)
-     * @see StepMapper#stepDtoToWeekStep(StepDTO)
-     * @see StepMapper#stepDtoToWeekStep(StepDTO)
+     * @param stepDTO the {@link StepDTO} object to convert, holding the new data
+     * @return the users most recently stored {@link Step} object
      */
     private Step saveToAllTables(StepDTO stepDTO) {
+        // Uses the StepMapper interface to convert the StepDTO to the necessary objects and saves them in the database
         var newStep = StepMapper.mapper.stepDtoToStep(stepDTO);
         stepRepository.save(newStep);
         weekStepRepository.save(StepMapper.mapper.stepDtoToWeekStep(stepDTO));
