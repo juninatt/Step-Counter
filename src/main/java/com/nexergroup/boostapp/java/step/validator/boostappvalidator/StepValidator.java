@@ -1,18 +1,17 @@
 package com.nexergroup.boostapp.java.step.validator.boostappvalidator;
 
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
+import com.nexergroup.boostapp.java.step.exception.DateTimeValueException;
+import com.nexergroup.boostapp.java.step.exception.ValidationFailedException;
 import com.nexergroup.boostapp.java.step.mapper.DateHelper;
 import com.nexergroup.boostapp.java.step.model.MonthStep;
 import com.nexergroup.boostapp.java.step.model.WeekStep;
-import com.nexergroup.boostapp.java.step.exception.DateTimeValueException;
-import com.nexergroup.boostapp.java.step.exception.ValidationFailedException;
 import com.nexergroup.boostapp.java.step.repository.StepRepository;
 import org.springframework.lang.NonNull;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
-
-import static java.util.Optional.ofNullable;
 
 /**
  * A utility class that validates the data in {@link StepDTO} objects.
@@ -131,8 +130,8 @@ public class StepValidator {
      * @param stepDto the {@link StepDTO} object holding the data to check
      * @return true if the startTime field is not null, false and throws exception otherwise
      */
-    private boolean startTimeIsNotNull(StepDTO stepDto) {
-        if (!ofNullable(stepDto).map(StepDTO::getStartTime).isPresent()) {
+    private boolean startTimeIsNotNull(@NotNull StepDTO stepDto) {
+        if (stepDto.getStartTime() == null) {
             throw new ValidationFailedException("Step start time was null\n" + notValidDTOString(stepDto));
         } else {
             return true;
@@ -145,8 +144,8 @@ public class StepValidator {
      * @param stepDto the {@link StepDTO} object holding the data to check
      * @return true if the endTime field is not null, false and throws exception otherwise
      */
-    private boolean endTimeIsNotNull(StepDTO stepDto) {
-        if (!ofNullable(stepDto).map(StepDTO::getEndTime).isPresent()) {
+    private boolean endTimeIsNotNull(@NotNull StepDTO stepDto) {
+        if (stepDto.getEndTime() == null) {
             throw new ValidationFailedException("End time was null\n" + notValidDTOString(stepDto));
         } else {
             return true;
@@ -159,8 +158,8 @@ public class StepValidator {
      * @param stepDto the {@link StepDTO} object holding the data to check
      * @return true if the uploadTime field is not null, false and throws exception otherwise
      */
-    private boolean uploadTimeIsNotNull(StepDTO stepDto) {
-        if (!ofNullable(stepDto).map(StepDTO::getUploadTime).isPresent()) {
+    private boolean uploadTimeIsNotNull(@NotNull StepDTO stepDto) {
+        if (stepDto.getUploadTime() == null) {
             throw new ValidationFailedException("Upload time is null\n" + notValidDTOString(stepDto));
         } else {
             return true;
