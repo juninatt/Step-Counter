@@ -1,102 +1,133 @@
 package com.nexergroup.boostapp.java.step.repository;
 
 import com.nexergroup.boostapp.java.step.model.Step;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import com.nexergroup.boostapp.java.step.testobjects.model.TestStepBuilder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(SpringRunner.class)
 @DataJpaTest
 public class StepRepositoryTest {
 
     @Autowired
     private StepRepository stepRepository;
 
-    @Before
-    public void setUp() {
-        Step step = new Step("userA", 400,
-                LocalDateTime.parse("2020-01-01T00:00:00"),
-                LocalDateTime.parse("2020-01-01T01:00:00"),
-                LocalDateTime.parse("2020-01-01T02:00:00"));
-        Step step2 = new Step("userA", 600,
-                LocalDateTime.parse("2020-01-02T00:00:00"),
-                LocalDateTime.parse("2020-01-02T01:00:00"),
-                LocalDateTime.parse("2020-01-02T02:00:00"));
-        Step step5 = new Step("userA", 1000,
-                LocalDateTime.parse("2020-01-05T00:00:00"),
-                LocalDateTime.parse("2020-01-05T01:00:00"),
-                LocalDateTime.parse("2020-01-05T02:00:00"));
-        Step step3 = new Step("userB", 200,
-                LocalDateTime.parse("2020-01-03T00:00:00"),
-                LocalDateTime.parse("2020-01-03T01:00:00"),
-                LocalDateTime.parse("2020-01-03T02:00:00"));
-        Step step4 = new Step("userC", 800,
-                LocalDateTime.parse("2020-01-04T00:00:00"),
-                LocalDateTime.parse("2020-01-04T01:00:00"),
-                LocalDateTime.parse("2020-01-04T02:00:00"));
 
-        stepRepository.save(step);
+    TestStepBuilder testStepBuilder = new TestStepBuilder();
+
+    Step step1 = testStepBuilder.createStepOfFirstMinuteOfYear();
+    Step step2 = testStepBuilder.createStepOfSecondMinuteOfYear();
+    Step step3 = testStepBuilder.createStepOfThirdMinuteOfYear();
+    Step nullUserIdStep = testStepBuilder.createStepWhereUserIdIsNull();
+
+    String testUser = "testUser";
+
+    @BeforeEach
+    public void setUp() {
+        stepRepository.save(step1);
         stepRepository.save(step2);
         stepRepository.save(step3);
-        stepRepository.save(step4);
-        stepRepository.save(step5);
+        stepRepository.save(nullUserIdStep);
     }
 
     @Test
-    public void findLatestStepById_Test() {
-        Optional<Step> step = stepRepository.findFirstByUserIdOrderByEndTimeDesc("userA");
-        assertThat(step.isPresent()).isEqualTo(true);
-        assertThat(step.get().getStepCount()).isEqualTo(1000);
+    @DisplayName("ok")
+    public void testFindFirstMethod_ShouldReturnLatestStep() {
+        // Use the method to be tested to retrieve a step from the default test userId
+        var step = stepRepository.findFirstByUserIdOrderByEndTimeDesc(testUser);
+
+        // Expected id of returned Step object
+        var expectedId = step3.getId();
+
+        // Actual id of returned object
+        var actualId = step.orElseThrow().getId();
+
+        // Assert that the id retrieved Step object is correct
+        assertEquals(expectedId, actualId);
     }
 
     @Test
-    public void getAllUsers_Test() {
-        List<String> userList = stepRepository.getListOfAllDistinctUserId();
-        assertThat(userList.size()).isEqualTo(3);
+    @DisplayName("Should return list of same length as number of stored user id objects")
+    public void testGetListOfAllDistinctUserId_ReturnsListOfCorrectLength() {
+        // Call the method to be tested
+        var result = stepRepository.getListOfAllDistinctUserId();
+
+        // Expected number of retrieved objects
+        var expectedLength = 2;
+
+        // Actual number of retrieved objects
+        var actualLength = result.size();
+
+        assertEquals(expectedLength, actualLength);
     }
 
-
     @Test
-    public void findByUserId_test(){
-        List<Step> testlist = stepRepository.getListOfStepsByUserId("userA").get();
-        assertEquals(3, testlist.size());
+    @DisplayName("Should return list of correct length")
+    public void testGetListOfSteps_ReturnsCorrectSize(){
+        // Use the method to be tested to fetch Step objects som the default test userId
+        var result = stepRepository.getListOfStepsByUserId(testUser).orElseThrow();
+
+        // Expected number of objects
+        var expectedLength = 3;
+
+        // Actual number of returned objects
+        var actualLength = result.size();
+
+        // Assert length of returned list is equal to number of expected objects
+        assertEquals(expectedLength, actualLength);
     }
 
     @Test
-    public void deleteAllFromStep_test(){
+    @DisplayName("Should delete all objects from Step table")
+    public void testDeleteAllFromStep_DeletesAll(){
+        // Call the method to be tested
         stepRepository.deleteAllFromStep();
-        var test = stepRepository.getListOfAllDistinctUserId();
 
-        assertEquals(0, test.size());
-
+        // Assert database is empty
+        assertTrue(stepRepository.findAll().isEmpty());
     }
 
     @Test
-    public void  getStepCount_test_ReturnsListSizeThree(){
-        var stepList = stepRepository.getStepDataByUserIdAndDateRange("userA",  Timestamp.valueOf("2020-01-01 01:01:01"), Timestamp.valueOf("2020-01-06 01:01:01"));
-        assertEquals(3, stepList.size());
+    @DisplayName("Method returns list of correct size")
+    public void  testGetStepDataByUserId_ReturnsCorrectLength(){
+        // Call the method to be tested to retrieve data from the default test user
+        var startTime = Timestamp.valueOf(step1.getEndTime().minusDays(1));
+        var endTime = Timestamp.valueOf(step1.getEndTime().plusDays(1));
+        var result = stepRepository.getStepDataByUserIdAndDateRange(
+                testUser,  startTime, endTime);
+
+        // Expected number of objects retrieved
+        var expectedSize = 1;
+
+        // Actual number of retrieved objects
+        var actualSize = result.size();
+
+        // Assert that the number of retrieved objects are correct
+        assertEquals(expectedSize, actualSize);
     }
 
     @Test
-    public void  getStepCount_test_ReturnsListSizeOne(){
-        var stepList = stepRepository.getStepDataByUserIdAndDateRange("userA",  Timestamp.valueOf("2020-01-01 01:01:01"), Timestamp.valueOf("2020-01-01 01:01:01"));
-        assertEquals(1, stepList.size());
-    }
+    @DisplayName("Should return correct stepCount")
+    public void testGetStepCountSum_ReturnsCorrectStepCount(){
+        // Call the method to be tested to retrieve data from the default test user
+        var startTime = step1.getEndTime().minusDays(1);
+        var endTime = step1.getEndTime().plusDays(1);
+        var result = stepRepository.getStepCountByUserIdAndDateRange(
+                testUser, startTime, endTime);
 
-    @Test
-    public void getStepCountSum_test(){
-        var stepSum = stepRepository.getStepCountByUserIdAndDateRange("userA",  LocalDateTime.parse("2020-01-01T00:00:00"), LocalDateTime.parse("2020-01-06T01:00:00"));
-        assertEquals(Optional.of(2000), stepSum);
+        // Expected stepCount
+        var expectedStepCount = 60;
+
+        // Actual stepCount
+        var actualStepCount = (int)result.orElseThrow();
+
+        assertEquals(expectedStepCount, actualStepCount);
     }
 }
