@@ -1,0 +1,51 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-table-step
+      author: boostapp
+      changes:
+        - createTable:
+            tableName: step
+            columns:
+              - column:
+                  name: id
+                  type: long
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: varchar
+                  constraints:
+                    nullable: false
+              - column:
+                  name: step_count
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: start_time
+                  type: datetime
+                  constraints:
+                    nullable: false
+              - column:
+                  name: end_time
+                  type: datetime
+                  constraints:
+                    nullable: false
+              - column:
+                  name: uploaded
+                  type: datetime
+                  constraints:
+                    nullable: false
+
+
+
+  - changeSet:
+      id: change-userIdTyp2
+      author: NexerGroup
+      changes:
+        - modifyDataType:
+            columnName: user_id
+            newDataType: varchar(255)
+            tableName:  step
