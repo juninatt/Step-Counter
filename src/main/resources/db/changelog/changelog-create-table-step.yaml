@@ -1,14 +1,14 @@
 databaseChangeLog:
   - changeSet:
       id: create-table-step
-      author: boostapp
+      author: svallingson
       changes:
         - createTable:
             tableName: step
             columns:
               - column:
                   name: id
-                  type: long
+                  type: int
                   autoIncrement: true
                   constraints:
                     primaryKey: true
@@ -41,9 +41,10 @@ databaseChangeLog:
 
   - changeSet:
       id: change-userIdTyp2
-      author: NexerGroup
+      author: Sigma
       changes:
         - modifyDataType:
             columnName: user_id
             newDataType: varchar(255)
             tableName:  step
+
