@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,21 +36,21 @@ public interface StepRepository extends JpaRepository<Step, Long> {
     void deleteAllFromStep();
 
     /**
-     * Update the stepCount-, endTime- and uploadedTime- fields of a {@link Step} object in the database.
+     * Update the stepCount-, endTime- and uploadTime- fields of a {@link Step} object in the database.
      *
      * @param step The {@link Step} object to update.
      * @param increment The number to add to the stepCount field.
      * @param endTime The new endTime value of the object.
-     * @param uploadedTime The new uploadedTime value of the object.
+     * @param uploadTime The new uploadTime value of the object.
      */
     @Transactional
     @Modifying
-    @Query("UPDATE Step s SET s.stepCount = s.stepCount + :increment, s.endTime = :endTime, s.uploadedTime = :uploadedTime WHERE s = :step")
+    @Query("UPDATE Step s SET s.stepCount = s.stepCount + :increment, s.endTime = :endTime, s.uploadTime = :uploadTime WHERE s = :step")
     void incrementStepCountAndUpdateTimes(
             @Param("step") Step step,
             @Param("increment") int increment,
-            @Param("endTime") LocalDateTime endTime,
-            @Param("uploadedTime") LocalDateTime uploadedTime);
+            @Param("endTime") ZonedDateTime endTime,
+            @Param("uploadTime") ZonedDateTime uploadTime);
 
 
     /**
@@ -82,12 +82,12 @@ public interface StepRepository extends JpaRepository<Step, Long> {
      * The sum of the steps from step table using userId, start,end and uploaded time
      *
      @param userId A user ID to search for
-     * @param startTime From start time
+      * @param startTime From start time
      * @param endTime   To end time
      * @return An optional containing sum of the steps from step table using userId, start,end and uploaded time.
      */
     @Query(QueryHelper.SELECT_STEP_COUNT_WITHIN_TIME_RANGE)
-    Optional<Integer> getStepCountByUserIdAndDateRange(@Param("userId") String userId, @Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
+    Optional<Integer> getStepCountByUserIdAndDateRange(@Param("userId") String userId, @Param("startTime") ZonedDateTime startTime, @Param("endTime") ZonedDateTime endTime);
 
     /**
      * retrieves the latest registered step entity for a user with the given user id.

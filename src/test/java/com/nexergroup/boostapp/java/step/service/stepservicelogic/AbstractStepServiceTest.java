@@ -275,7 +275,7 @@ class AbstractStepServiceTest {
                     var expectedUploadTime = testDto.getUploadTime();
 
                     // Actual uploadTime of the returned object
-                    var actualUploadTime = result.getUploadedTime();
+                    var actualUploadTime = result.getUploadTime();
 
                     // Assert that the returned object has the correct endTime
                     assertEquals(expectedUploadTime, actualUploadTime,
@@ -384,7 +384,7 @@ class AbstractStepServiceTest {
                     var expectedUploadTime = testStepDTO.getUploadTime();
 
                     // Actual uploadTime of the returned Step
-                    var actualUploadTime = result.getUploadedTime();
+                    var actualUploadTime = result.getUploadTime();
 
                     // Assert that the returned Step has the correct uploadTime
                     assertEquals(expectedUploadTime, actualUploadTime,
@@ -541,7 +541,7 @@ class AbstractStepServiceTest {
 
                 // Actual object in database and uploadTime
                 var result = stepRepository.findFirstByUserIdOrderByEndTimeDesc(testUser);
-                var actualUploadTime = result.orElseThrow().getUploadedTime();
+                var actualUploadTime = result.orElseThrow().getUploadTime();
 
                 // Assert that uploadTime of Step has been updated correctly
                 assertEquals(expectedUploadTime, actualUploadTime,
@@ -767,7 +767,7 @@ class AbstractStepServiceTest {
                     var actualStepCount = result.getStepCount();
                     var actualStartTime = result.getStartTime();
                     var actualEndTime = result.getEndTime();
-                    var actualUploadTime = result.getUploadedTime();
+                    var actualUploadTime = result.getUploadTime();
 
                     // Assert that all field values got saved correctly
                     assertEquals(expectedUserId, actualUserId, "Expected userId to be '" + expectedUserId + "' but was " + actualUserId);

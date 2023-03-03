@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-@DisplayName(" <== StringToTimeStampParser ==>")
+@DisplayName("StringToTimeStampConverter should correctly convert date as a String to a Timestamp")
 public class StringToTimeStampConverterTest {
 
     private final StringToTimeStampConverter parser = new StringToTimeStampConverter();

@@ -17,7 +17,7 @@ public class DateHelper {
      * @param time a LocalDateTime object representing the date for which to find the week number
      * @return the week number of the year in which the date falls
      */
-    public static int getWeek(LocalDateTime time) {
+    public static int getWeek(ZonedDateTime time) {
         if (time == null) {
             return 0;
         }

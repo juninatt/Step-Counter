@@ -3,7 +3,7 @@ package com.nexergroup.boostapp.java.step.model;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 
 @Entity
@@ -30,31 +30,31 @@ public class Step implements BoostAppStep {
 
     @Schema(description = "Start time")
     @Column(name = "start_time", nullable = false)
-    private LocalDateTime startTime;
+    private ZonedDateTime startTime;
 
     @Schema(description = "End time")
     @Column(name = "end_time", nullable = false)
-    private LocalDateTime endTime;
+    private ZonedDateTime endTime;
 
     @Schema(description = "Uploaded")
     @Column(name = "uploaded", nullable = false)
-    private LocalDateTime uploadedTime;
+    private ZonedDateTime uploadTime;
 
     public Step() {
     }
 
-    public Step(String userId, int stepCount, LocalDateTime start, LocalDateTime end, LocalDateTime uploadedTime) {
+    public Step(String userId, int stepCount, ZonedDateTime start, ZonedDateTime end, ZonedDateTime uploadTime) {
         this.userId = userId;
         this.stepCount = stepCount;
         this.startTime = start;
         this.endTime = end;
-        this.uploadedTime = uploadedTime;
+        this.uploadTime = uploadTime;
     }
 
-    public Step(String userId, int stepCount, LocalDateTime uploadedTime) {
+    public Step(String userId, int stepCount, ZonedDateTime uploadTime) {
         this.userId = userId;
         this.stepCount = stepCount;
-        this.uploadedTime = uploadedTime;
+        this.uploadTime = uploadTime;
     }
 
 
@@ -66,28 +66,28 @@ public class Step implements BoostAppStep {
         this.id = id;
     }
 
-    public LocalDateTime getStartTime() {
+    public ZonedDateTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(LocalDateTime start) {
-        this.startTime = start;
+    public void setStartTime(ZonedDateTime startTime) {
+        this.startTime = startTime;
     }
 
-    public LocalDateTime getEndTime() {
+    public ZonedDateTime getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(LocalDateTime end) {
-        this.endTime = end;
+    public void setEndTime(ZonedDateTime endTime) {
+        this.endTime = endTime;
     }
 
-    public LocalDateTime getUploadedTime() {
-        return uploadedTime;
+    public ZonedDateTime getUploadTime() {
+        return uploadTime;
     }
 
-    public void setUploadedTime(LocalDateTime uploadedSteps) {
-        this.uploadedTime = uploadedSteps;
+    public void setUploadTime(ZonedDateTime uploadTime) {
+        this.uploadTime = uploadTime;
     }
 
     @Override
@@ -118,7 +118,7 @@ public class Step implements BoostAppStep {
                 ", stepCount=" + stepCount +
                 ", startTime=" + startTime +
                 ", endTime=" + endTime +
-                ", uploadedTime=" + uploadedTime +
+                ", uploadedTime=" + uploadTime +
                 '}';
     }
 }

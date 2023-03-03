@@ -2,7 +2,15 @@ package com.nexergroup.boostapp.java.step.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.nexergroup.boostapp.java.step.builder.StepDTOBuilder;
+import com.nexergroup.boostapp.java.step.builder.BulkStepDateDTOBuilder;
+import com.nexergroup.boostapp.java.step.dto.stepdto.BulkStepDateDTO;
+import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
+import com.nexergroup.boostapp.java.step.dto.stepdto.StepDateDTO;
+import com.nexergroup.boostapp.java.step.exception.ValidationFailedException;
+import com.nexergroup.boostapp.java.step.model.Step;
+import com.nexergroup.boostapp.java.step.service.StepService;
+import com.nexergroup.boostapp.java.step.testobjects.dto.stepdto.TestStepDtoBuilder;
+import com.nexergroup.boostapp.java.step.testobjects.model.TestStepBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Disabled;
@@ -18,21 +26,15 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import com.nexergroup.boostapp.java.step.builder.BulkStepDateDTOBuilder;
-import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
-import com.nexergroup.boostapp.java.step.dto.stepdto.StepDateDTO;
-import com.nexergroup.boostapp.java.step.dto.stepdto.BulkStepDateDTO;
-import com.nexergroup.boostapp.java.step.model.Step;
-import com.nexergroup.boostapp.java.step.service.StepService;
+import org.springframework.web.util.NestedServletException;
 
 import java.sql.Date;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -52,39 +54,31 @@ public class StepControllerDevTest {
 
     List<Step> mockedStepList = new ArrayList<>();
 
-    private final String userId = "testId";
+    TestStepBuilder testStepBuilder = new TestStepBuilder();
+
+    TestStepDtoBuilder testDTOBuilder = new TestStepDtoBuilder();
+
+    private final String testUserId = "testUser";
     private final String invalidUserId = "invalidId";
 
     @Before
     public void setUp() {
         mvc = MockMvcBuilders.standaloneSetup(new StepControllerDev(service)).build();
-        mockedStepList.add(new Step("testId", 10,
-                LocalDateTime.parse("2020-08-21T00:01:00"),
-                LocalDateTime.parse("2020-08-21T01:01:10"),
-                LocalDateTime.parse("2020-08-21T02:01:20")));
-        mockedStepList.add(new Step("testId", 20,
-                LocalDateTime.parse("2020-08-22T00:01:00"),
-                LocalDateTime.parse("2020-08-22T01:01:10"),
-                LocalDateTime.parse("2020-08-22T02:01:20")));
-        mockedStepList.add(new Step("testId", 30,
-                LocalDateTime.parse("2020-08-22T00:01:00"),
-                LocalDateTime.parse("2020-08-22T01:01:10"),
-                LocalDateTime.parse("2020-08-22T02:01:20")));
+        mockedStepList.add(testStepBuilder.createStepOfFirstMinuteOfYear());
+        mockedStepList.add(testStepBuilder.createStepOfSecondMinuteOfYear());
+        mockedStepList.add(testStepBuilder.createStepOfThirdMinuteOfYear());
     }
 
     //Test get latest step by user with valid input
     @Test
     public void shouldReturnLatestEntryWithUserId() throws Exception {
-        Step step = new Step("testId", 300,
-                LocalDateTime.parse("2020-01-01T00:00:00"),
-                LocalDateTime.parse("2020-01-01T01:00:00"),
-                LocalDateTime.parse("2020-01-01T02:00:00"));
+        var step = testStepBuilder.createStepOfFirstMinuteOfYear();
 
-        when(service.getLatestStepFromUser("testId")).thenReturn(step);
+        when(service.getLatestStepFromUser(testUserId)).thenReturn(step);
 
-        mvc.perform(get("/steps/latest/{userId}", "testId"))
+        mvc.perform(get("/steps/latest/{userId}", testUserId))
                 .andDo(print())
-                .andExpect(jsonPath("$.userId").value("testId"))
+                .andExpect(jsonPath("$.userId").value(testUserId))
                 .andExpect(status().isOk());
     }
 
@@ -93,14 +87,10 @@ public class StepControllerDevTest {
     public void shouldReturnBadRequestWhenStepCount0() throws Exception {
         objectMapper.registerModule(new JavaTimeModule());
 
-        StepDTO stepDTO = new StepDTO(
-                "testId",
-                0,
-                LocalDateTime.parse("2020-01-01T00:00:00"),
-                LocalDateTime.parse("2020-01-01T01:00:00"),
-                LocalDateTime.parse("2020-01-01T02:00:00"));
+        var stepDTO = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
+        stepDTO.setStepCount(0);
 
-        mvc.perform(MockMvcRequestBuilders.post("/steps/{userId}", "testId")
+        mvc.perform(MockMvcRequestBuilders.post("/steps/{userId}", testUserId)
                         .accept(MediaType.APPLICATION_JSON)
                         .characterEncoding("utf-8")
                         .content(objectMapper.writeValueAsString(stepDTO)).contentType(MediaType.APPLICATION_JSON))
@@ -112,76 +102,60 @@ public class StepControllerDevTest {
     @Test
     public void registerStepsTest() throws Exception {
         objectMapper.registerModule(new JavaTimeModule());
-        Step mockStep = new Step("testId",
-                100,
-                LocalDateTime.parse("2020-01-01T00:00:00"),
-                LocalDateTime.parse("2020-01-01T00:00:00"),
-                LocalDateTime.parse("2020-01-01T00:00:00"));
-        StepDTO stepDTO = new StepDTO(
-                "testId",
-                300,
-                LocalDateTime.parse("2020-01-01T00:00:00"),
-                LocalDateTime.parse("2020-01-01T01:00:00"),
-                LocalDateTime.parse("2020-01-01T02:00:00"));
+        var mockStep = testStepBuilder.createStepOfFirstMinuteOfYear();
+        var stepDTO = testDTOBuilder.createStepDTOOfSecondMinuteOfYear();
+
         when(service.addSingleStepForUser(Mockito.anyString(),
                 Mockito.any(StepDTO.class))).thenReturn(mockStep);
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/steps/{userId}", "testId")
+                .post("/steps/{userId}", testUserId)
                 .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(stepDTO))
                 .contentType(MediaType.APPLICATION_JSON);
         MvcResult result = mvc.perform(requestBuilder).andReturn();
         MockHttpServletResponse response = result.getResponse();
         assertEquals(HttpStatus.OK.value(), response.getStatus());
-        assertTrue(response.getContentAsString().contains("testId"));
+        assertTrue(response.getContentAsString().contains(testUserId));
     }
 
-    @Test
-    @Disabled
-    public void getLatestStep_withInvalidUsername_test() throws Exception {
+//    @Test
+//    public void getLatestStep_withInvalidUsername_test() throws Exception {
+//
+//        when(service.getLatestStepFromUser(Mockito.anyString())).thenThrow(NoSuchElementException.class);
+//
+//        RequestBuilder requestBuilder = MockMvcRequestBuilders
+//                .get("/steps/latest/{userId}", "inValidUserID")
+//                .accept(MediaType.APPLICATION_JSON);
+//
+//        MvcResult result = mvc.perform(requestBuilder)
+//                .andExpect(status().isNoContent())
+//                .andReturn();
+//
+//        assertThrows(NoSuchElementException.class, () -> {
+//            throw Objects.requireNonNull(result.getResolvedException());
+//        });
+//    }
 
-        /*when(service.getLatestStepFromUser(Mockito.anyString())).thenReturn(Optional.empty());
 
-        RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get("/steps/latest/{userId}", "inValidUserID")
-                .accept(MediaType.APPLICATION_JSON);
-
-        MvcResult result = mvc.perform(requestBuilder).andReturn();
-
-        MockHttpServletResponse response = result.getResponse();
-
-        assertEquals(HttpStatus.NO_CONTENT.value(), response.getStatus());*/
-    }
 
     @Test
     public void registerMultipleSteps_withValidInput_test() throws Exception {
         List<StepDTO> stepDTOList = new ArrayList<>();
         objectMapper.registerModule(new JavaTimeModule());
 
-        StepDTO stepDTO1 = new StepDTO("testId",
-                10, LocalDateTime.parse("2020-08-21T00:01:00"),
-                LocalDateTime.parse("2020-08-21T01:01:10"),
-                LocalDateTime.parse("2020-08-21T02:01:20"));
+        var dto1 = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
+        var dto2 = testDTOBuilder.createStepDTOOfSecondMinuteOfYear();
+        var dto3 = testDTOBuilder.createStepDTOOfThirdMinuteOfYear();
 
-        StepDTO stepDTO2 = new StepDTO("testId",
-                10, LocalDateTime.parse("2020-08-22T00:01:00"),
-                LocalDateTime.parse("2020-08-22T01:01:10"),
-                LocalDateTime.parse("2020-08-22T02:01:20"));
-
-        StepDTO stepDTO3 = new StepDTO("testId",
-                10, LocalDateTime.parse("2020-08-22T00:01:00"),
-                LocalDateTime.parse("2020-08-22T01:01:10"),
-                LocalDateTime.parse("2020-08-22T02:01:20"));
-
-        stepDTOList.add(stepDTO1);
-        stepDTOList.add(stepDTO2);
-        stepDTOList.add(stepDTO3);
+        stepDTOList.add(dto1);
+        stepDTOList.add(dto2);
+        stepDTOList.add(dto3);
 
         when(service.addMultipleStepsForUser(Mockito.anyString(), Mockito.anyList())).thenReturn(
-                new Step("testId", 30, stepDTO1.getStartTime(), stepDTO1.getEndTime(), stepDTO1.getUploadTime()));
+                new Step(testUserId, 60, dto1.getStartTime(), dto3.getEndTime(), dto3.getUploadTime()));
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/steps/multiple/{userId}", "testId")
+                .post("/steps/multiple/{userId}", testUserId)
                 .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(stepDTOList)).characterEncoding("utf-8")
                 .contentType(MediaType.APPLICATION_JSON);
 
@@ -239,8 +213,8 @@ public class StepControllerDevTest {
         int month = 1;
         int expectedSteps = 1200;
 
-        when(service.getStepCountForUserYearAndMonth(userId, year, month)).thenReturn(expectedSteps);
-        MvcResult result = mvc.perform(get(url, userId, year, month))
+        when(service.getStepCountForUserYearAndMonth(testUserId, year, month)).thenReturn(expectedSteps);
+        MvcResult result = mvc.perform(get(url, testUserId, year, month))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .andReturn();
@@ -254,16 +228,16 @@ public class StepControllerDevTest {
     @Test
     @Disabled
     public void getUserMonthSteps_withInValidInput_ReturnsStatusNoContent() throws Exception {
-        /*String url = "/steps/stepcount/{userId}/year/{year}/month/{month}";
+        String url = "/steps/stepcount/{userId}/year/{year}/month/{month}";
         int year = 2021;
         int month = 1;
 
         when(service.getStepCountForUserYearAndMonth(invalidUserId, year, month))
-                .thenReturn(Optional.empty());
+                .thenThrow(ValidationFailedException.class);
 
         mvc.perform(get(url, invalidUserId, year, month))
-                .andExpect(status().isNoContent())
-                .andReturn();*/
+                .andExpect(status().isConflict())
+                .andReturn();
     }
 
     @Test
@@ -273,10 +247,10 @@ public class StepControllerDevTest {
         int week = 30;
         int expectedSteps = 500;
 
-        when(service.getStepCountForUserYearAndWeek(userId, year, week))
+        when(service.getStepCountForUserYearAndWeek(testUserId, year, week))
                 .thenReturn(expectedSteps);
 
-        MvcResult result = mvc.perform(get(url, userId, year, week))
+        MvcResult result = mvc.perform(get(url, testUserId, year, week))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .andReturn();
@@ -290,16 +264,16 @@ public class StepControllerDevTest {
     @Test
     @Disabled
     public void getUserWeekStepSteps_withInValidInput_ReturnsStatusNoContent() throws Exception {
-        /*String url = "/steps/stepcount/{userId}/year/{year}/week/{week}";
+        String url = "/steps/stepcount/{userId}/year/{year}/week/{week}";
         int year = 2021;
         int week = 30;
 
         when(service.getStepCountForUserYearAndWeek(invalidUserId, year, week))
-                .thenReturn(Optional.empty());
+                .thenThrow(ValidationFailedException.class);
 
         mvc.perform(get(url, invalidUserId, year, week))
-                .andExpect(status().isNoContent())
-                .andReturn();*/
+                .andExpect(status().isConflict())
+                .andReturn();
     }
 
     @Test
@@ -307,18 +281,18 @@ public class StepControllerDevTest {
         String url = "/steps/stepcount/{userId}/currentweek";
 
         List<StepDateDTO> stepDateDTOList = new ArrayList<>();
-        stepDateDTOList.add(new StepDateDTO(userId, Date.valueOf("2020-06-06"), 1, 200L));
-        stepDateDTOList.add(new StepDateDTO(userId, Date.valueOf("2020-06-07"), 2, 100L));
-        stepDateDTOList.add(new StepDateDTO(userId, Date.valueOf("2020-06-08"), 3, 300L));
+        stepDateDTOList.add(new StepDateDTO(testUserId, Date.valueOf("2020-06-06"), 1, 200L));
+        stepDateDTOList.add(new StepDateDTO(testUserId, Date.valueOf("2020-06-07"), 2, 100L));
+        stepDateDTOList.add(new StepDateDTO(testUserId, Date.valueOf("2020-06-08"), 3, 300L));
 
         var bulkSteps = new BulkStepDateDTOBuilder()
                 .withStepList(stepDateDTOList)
-                .withUserId(userId)
+                .withUserId(testUserId)
                 .build();
 
         when(service.createBulkStepDateDtoForUserForCurrentWeek(any(String.class))).thenReturn(Optional.of(bulkSteps));
 
-        MvcResult result = mvc.perform(get(url, userId))
+        MvcResult result = mvc.perform(get(url, testUserId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .andDo(print())

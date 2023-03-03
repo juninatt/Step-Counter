@@ -32,7 +32,7 @@ public interface StepMapper {
     @Mapping(target = "stepCount", source = "stepCount")
     @Mapping(target = "startTime", source = "startTime")
     @Mapping(target = "endTime", source = "endTime")
-    @Mapping(target = "uploadedTime", source = "uploadTime")
+    @Mapping(target = "uploadTime", source = "uploadTime")
     Step stepDtoToStep(StepDTO stepDto);
 
 
@@ -75,6 +75,6 @@ public interface StepMapper {
     @Mapping(target = "stepCount", source = "stepCount")
     @Mapping(target = "startTime", source = "startTime")
     @Mapping(target = "endTime", source = "endTime")
-    @Mapping(target = "uploadTime", source = "uploadedTime")
+    @Mapping(target = "uploadTime", source = "uploadTime")
     StepDTO stepToStepDTO(Step step);
 }

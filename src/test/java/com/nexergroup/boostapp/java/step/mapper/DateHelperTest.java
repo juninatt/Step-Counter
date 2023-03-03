@@ -5,20 +5,23 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-@DisplayName(" <== DateHelper Tests ==>")
+@DisplayName("DateHelper should help orient the current day of the week")
 public class DateHelperTest {
 
-    LocalDateTime firstMinuteOfYear;
-    LocalDateTime lastMinuteOfYear;
+    private ZonedDateTime firstMinuteOfYear;
+    private ZonedDateTime lastMinuteOfYear;
     int weekNumber;
+
     @BeforeEach
     void init() {
-        firstMinuteOfYear = LocalDateTime.of(2022, 1, 1, 1, 1);
-        lastMinuteOfYear = LocalDateTime.of(2022, 12, 31, 23, 59);
+        firstMinuteOfYear = LocalDateTime.of(2022, 1, 1, 1, 1).atZone(ZoneId.systemDefault());
+        lastMinuteOfYear = LocalDateTime.of(2022, 12, 31, 23, 59).atZone(ZoneId.systemDefault());
     }
 
     @Test
@@ -45,7 +48,7 @@ public class DateHelperTest {
     @Test
     @DisplayName("getWeek should handle leap year correctly")
     public void testGetWeek_leapYear() {
-        LocalDateTime time = LocalDateTime.of(2020, 2, 29, 12, 0);
+        var time = LocalDateTime.of(2020, 2, 29, 12, 0).atZone(ZoneId.systemDefault());
         int weekNumber = DateHelper.getWeek(time);
         assertThat(weekNumber, is(9));
     }

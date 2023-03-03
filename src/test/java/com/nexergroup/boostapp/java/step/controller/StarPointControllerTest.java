@@ -18,6 +18,7 @@ import com.nexergroup.boostapp.java.step.dto.starpointdto.StarPointDateDTO;
 import com.nexergroup.boostapp.java.step.service.StarPointService;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,8 +50,8 @@ public class StarPointControllerTest {
         objectMapper.registerModule(new JavaTimeModule());
         String url = "/starpoints/";
         List<String> users = new ArrayList<>(List.of("User1", "User2"));
-        LocalDateTime startTime = LocalDateTime.parse("2020-08-21T00:01:00");
-        LocalDateTime endTime = LocalDateTime.parse("2021-08-21T00:01:00");
+        var startTime = LocalDateTime.parse("2020-08-21T00:01:00").atZone(ZoneId.systemDefault());
+        var endTime = LocalDateTime.parse("2021-08-21T00:01:00").atZone(ZoneId.systemDefault());
 
         RequestStarPointsDTO requestStarPointsDTO = new RequestStarPointsDTO(users, startTime, endTime);
 

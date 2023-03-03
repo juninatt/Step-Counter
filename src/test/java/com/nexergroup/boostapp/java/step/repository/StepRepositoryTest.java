@@ -98,8 +98,8 @@ public class StepRepositoryTest {
     @DisplayName("Method returns list of correct size")
     public void  testGetStepDataByUserId_ReturnsCorrectLength(){
         // Call the method to be tested to retrieve data from the default test user
-        var startTime = Timestamp.valueOf(step1.getEndTime().minusDays(1));
-        var endTime = Timestamp.valueOf(step1.getEndTime().plusDays(1));
+        var startTime = Timestamp.valueOf(step1.getEndTime().minusDays(1).toLocalDateTime());
+        var endTime = Timestamp.valueOf(step1.getEndTime().plusDays(1).toLocalDateTime());
         var result = stepRepository.getStepDataByUserIdAndDateRange(
                 testUser,  startTime, endTime);
 

@@ -11,6 +11,7 @@ import org.springframework.lang.NonNull;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 /**
@@ -234,23 +235,23 @@ public class StepValidator {
     }
 
     /**
-     * Compares two LocalDateTime objects to determine if they are equal or not.
-     * @param fieldOne the first LocalDateTime object to compare
-     * @param fieldTwo the second LocalDateTime object to compare
-     * @return true if the first LocalDateTime object does not equal the second, false otherwise
+     * Compares two ZonedDateTime objects to determine if they are equal or not.
+     * @param fieldOne the first ZonedDateTime object to compare
+     * @param fieldTwo the second ZonedDateTime object to compare
+     * @return true if the first ZonedDateTime object does not equal the second, false otherwise
      */
-    private boolean firstTimeFieldDoesNotEqualSecondTimeField(LocalDateTime fieldOne, LocalDateTime fieldTwo) {
+    private boolean firstTimeFieldDoesNotEqualSecondTimeField(ZonedDateTime fieldOne, ZonedDateTime fieldTwo) {
         return !fieldOne.isEqual(fieldTwo);
     }
 
     /**
-     * Compares two LocalDateTime objects to determine if the first is after the second
+     * Compares two ZonedDateTime objects to determine if the first is after the second
      *
-     * @param field1 the first LocalDateTime object to compare
-     * @param field2 the second LocalDateTime object to compare
-     * @return true if the first LocalDateTime object is after the second, false otherwise
+     * @param field1 the first ZonedDateTime object to compare
+     * @param field2 the second ZonedDateTime object to compare
+     * @return true if the first ZonedDateTime object is after the second, false otherwise
      */
-    private boolean firstTimeFieldIsAfterSecondTimeField(LocalDateTime field1, LocalDateTime field2) {
+    private boolean firstTimeFieldIsAfterSecondTimeField(ZonedDateTime field1, ZonedDateTime field2) {
         if (field1 != null && field2 != null){
             return field1.isAfter(field2);
         }

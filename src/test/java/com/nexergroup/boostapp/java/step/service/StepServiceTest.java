@@ -1,11 +1,10 @@
 package com.nexergroup.boostapp.java.step.service;
 
 import com.nexergroup.boostapp.java.step.dto.stepdto.BulkStepDateDTO;
-import com.nexergroup.boostapp.java.step.model.MonthStep;
-import com.nexergroup.boostapp.java.step.model.Step;
 import com.nexergroup.boostapp.java.step.repository.MonthStepRepository;
 import com.nexergroup.boostapp.java.step.repository.StepRepository;
 import com.nexergroup.boostapp.java.step.repository.WeekStepRepository;
+import com.nexergroup.boostapp.java.step.testobjects.model.TestStepBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -15,12 +14,12 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -38,7 +37,9 @@ public class StepServiceTest {
     @InjectMocks
     private StepService stepService;
 
-    private final String USERID = "StepTest";
+    private final String testUserId = "testUser";
+
+    private final TestStepBuilder testStepBuilder = new TestStepBuilder();
 
     @Before
     public void initMocks() {
@@ -47,36 +48,32 @@ public class StepServiceTest {
     }
 
     @Test
-    public void getLatestStepTest() {
-
-        final String userID = "userId";
-        final int expectedStep = 100;
+    @DisplayName("Should return a Step object the correct stepCount")
+    public void shouldReturnStepWithCorrectStepCount() {
+        // Arrange
+        var userID = "testUser";
+        var mockStep = Optional.of(testStepBuilder.createStepOfFirstMinuteOfYear());
 
         when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(any(String.class)))
-                .thenReturn(Optional.of(new Step("userTest3", 100, LocalDateTime.parse("2020-01-02T00:00:00"),
-                        LocalDateTime.parse("2020-01-02T00:00:00"), LocalDateTime.parse("2020-01-02T00:00:00"))));
+                .thenReturn(mockStep);
 
-        var step = stepService.getLatestStepFromUser(userID);
-        assertEquals(LocalDateTime.parse("2020-01-02T00:00:00"), step.getEndTime());
-        assertEquals(step.getStepCount(), expectedStep);
+        // Act
+        var result = stepService.getLatestStepFromUser(userID);
+
+        // Expected stepCount
+        final int expectedStep = 10;
+
+        // Actual stepCount
+        final int actualStepCount = result.getStepCount();
+
+        // Assert
+        assertEquals(mockStep.orElseThrow().getEndTime(), result.getEndTime());
+        assertEquals(expectedStep, actualStepCount);
     }
 
     @Test
-    public void addStepsToMonthTable_test() {
-        var mockMonth = new MonthStep(USERID, 10, 2020, 800);
-
-        when(mockedMonthStepRepository.findByUserIdAndYearAndMonth(USERID, 2020, 10))
-                .thenReturn(Optional.of(mockMonth));
-        var optionalStep = mockedMonthStepRepository.findByUserIdAndYearAndMonth(USERID, 2020, 10);
-        if (optionalStep.isPresent()) {
-            assertEquals(1600, mockMonth.getStepCount() + optionalStep.get().getStepCount());
-        } else {
-            fail();
-        }
-    }
-
-    @Test
-    public void deleteAllFromStep_test() {
+    @DisplayName("Should call delete-method in repository class")
+    public void whenMethodIsCalled_ShouldExecuteRepositoryMethod() {
         stepService.deleteStepTable();
         verify(mockedStepRepository).deleteAllFromStep();
     }
@@ -84,10 +81,10 @@ public class StepServiceTest {
     public void getStepCountWeek_ReturnsCorrectSteps() {
         var mockedStepsInWeek = 200;
 
-        when(mockedWeekStepRepository.getStepCountByUserIdYearAndWeek(USERID, 2020, 43))
+        when(mockedWeekStepRepository.getStepCountByUserIdYearAndWeek(testUserId, 2020, 43))
                 .thenReturn(Optional.of(mockedStepsInWeek));
 
-        var optionalStep = stepService.getStepCountForUserYearAndWeek(USERID, 2020, 43);
+        var optionalStep = stepService.getStepCountForUserYearAndWeek(testUserId, 2020, 43);
         assertEquals(Optional.of(mockedStepsInWeek), Optional.of(optionalStep));
     }
 
@@ -105,31 +102,10 @@ public class StepServiceTest {
     }
 
     @Test
-    public void testCreateBulkStepDateDtoForUserForCurrentWeek_ReturnsZero(){
-        // Arrange
-        var testStep = new Step(
-                USERID,
-                100,
-                LocalDateTime.of(2021, 9, 21, 14, 56),
-                LocalDateTime.of(2021, 9, 21, 15, 56),
-                LocalDateTime.of(2021, 9, 21, 15, 56));
-
-        // Act
-        var result = stepService.createBulkStepDateDtoForUserForCurrentWeek(USERID);
-
-        // Expected values
-        var expectedResult = 0;
-
-        // Assert
-        assertTrue(result.isPresent());
-        assertEquals(expectedResult, result.get().getStepList().size());
-    }
-
-    @Test
-    @DisplayName("Method should return list of size 0 when no data is found in database for userr")
+    @DisplayName("Method should return list of size 0 when no data is found in database for user")
     public void testCreateBulkStepDateDtoForUser_ReturnsListWithSizeZero(){
         // Act
-        var result = stepService.createBulkStepDateDtoForUserForCurrentWeek(USERID);
+        var result = stepService.createBulkStepDateDtoForUserForCurrentWeek(testUserId);
 
         // Expected values
         var expected = 0;

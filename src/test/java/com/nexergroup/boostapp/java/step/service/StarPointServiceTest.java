@@ -11,6 +11,8 @@ import com.nexergroup.boostapp.java.step.dto.starpointdto.RequestStarPointsDTO;
 import com.nexergroup.boostapp.java.step.repository.StepRepository;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +31,8 @@ public class StarPointServiceTest {
     @InjectMocks
     private StarPointService starPointServiceTest;
 
-    private final LocalDateTime STARTTIME = LocalDateTime.parse("2021-08-21T01:00:00");
-    private final LocalDateTime ENDTIME = LocalDateTime.parse("2021-08-22T01:00:00");
+    private final ZonedDateTime STARTTIME = LocalDateTime.parse("2021-08-21T01:00:00").atZone(ZoneId.systemDefault());
+    private final ZonedDateTime ENDTIME = LocalDateTime.parse("2021-08-22T01:00:00").atZone(ZoneId.systemDefault());
 
     @Before
     public void initMocks() {
@@ -55,7 +57,7 @@ public class StarPointServiceTest {
     @Test(expected = DateTimeParseException.class)
     public void testEmptyStartAndEndLDT_throwsParseExc() {
         List<String> users = List.of("1", "2");
-        starPointServiceTest.getStarPointsByMultipleUsers(new RequestStarPointsDTO(users, LocalDateTime.parse(""), LocalDateTime.parse("")));
+        starPointServiceTest.getStarPointsByMultipleUsers(new RequestStarPointsDTO(users, ZonedDateTime.parse(""), ZonedDateTime.parse("")));
     }
 
     @Test
@@ -90,8 +92,10 @@ public class StarPointServiceTest {
         List<String> users = new ArrayList<>(List.of("1", "2"));
         RequestStarPointsDTO correctData = new RequestStarPointsDTO(users, STARTTIME, ENDTIME);
 
-        when(mockedStepRepository.getStepCountByUserIdAndDateRange("1", STARTTIME, ENDTIME)).thenReturn(Optional.of(10));
-        when(mockedStepRepository.getStepCountByUserIdAndDateRange("2", STARTTIME, ENDTIME)).thenReturn(Optional.of(20));
+        when(mockedStepRepository.getStepCountByUserIdAndDateRange(
+                "1", STARTTIME, ENDTIME)).thenReturn(Optional.of(10));
+        when(mockedStepRepository.getStepCountByUserIdAndDateRange(
+                "2", STARTTIME, ENDTIME)).thenReturn(Optional.of(20));
 
         var bulkUsers = starPointServiceTest.getStarPointsByMultipleUsers(correctData);
         assertEquals(2, bulkUsers.size());

@@ -7,6 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Schema(description = "All details about the step entity. ")
 @DateTimeRange
@@ -26,27 +27,27 @@ public class StepDTO {
     @Schema(description = "Start time")
     @NotNull(message = "Start time must not be null")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private LocalDateTime startTime;
+    private ZonedDateTime startTime;
 
     @Schema(description = "End time")
     @NotNull(message = "End time must not be null")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private LocalDateTime endTime;
+    private ZonedDateTime endTime;
 
     @Schema(description = "Upload time")
     @NotNull(message = "Upload time must not be null")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private LocalDateTime uploadTime;
+    private ZonedDateTime uploadTime;
 
     public StepDTO() {
     }
 
-    public StepDTO(String userId, LocalDateTime uploadTime) {
+    public StepDTO(String userId, ZonedDateTime uploadTime) {
         this.userId = userId;
         this.uploadTime = uploadTime;
     }
 
-    public StepDTO(String userId, int stepCount, LocalDateTime startTime, LocalDateTime endTime, LocalDateTime uploadTime) {
+    public StepDTO(String userId, int stepCount, ZonedDateTime startTime, ZonedDateTime endTime, ZonedDateTime uploadTime) {
         this.userId = userId;
         this.stepCount = stepCount;
         this.startTime = startTime;
@@ -70,27 +71,27 @@ public class StepDTO {
         this.stepCount = stepCount;
     }
 
-    public void setStartTime(LocalDateTime startTime) {
+    public void setStartTime(ZonedDateTime startTime) {
         this.startTime = startTime;
     }
 
-    public void setUploadTime(LocalDateTime uploadTime) {
+    public void setUploadTime(ZonedDateTime uploadTime) {
         this.uploadTime = uploadTime;
     }
 
-    public LocalDateTime getStartTime() {
+    public ZonedDateTime getStartTime() {
         return startTime;
     }
 
-    public LocalDateTime getEndTime() {
+    public ZonedDateTime getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(LocalDateTime endTime) {
+    public void setEndTime(ZonedDateTime endTime) {
         this.endTime = endTime;
     }
 
-    public LocalDateTime getUploadTime() {
+    public ZonedDateTime getUploadTime() {
         return uploadTime;
     }
 

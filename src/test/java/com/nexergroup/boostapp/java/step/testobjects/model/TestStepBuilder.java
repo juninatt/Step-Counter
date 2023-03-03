@@ -6,14 +6,19 @@ import com.nexergroup.boostapp.java.step.model.Step;
 import com.nexergroup.boostapp.java.step.model.WeekStep;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 public class TestStepBuilder {
 
     private final String testUser = "testUser";
     private final int thisYear = LocalDateTime.now().getYear();
-    private final LocalDateTime firstMinuteOfYear = LocalDateTime.of(thisYear, 1, 1, 1, 1, 1);
-    private final LocalDateTime secondMinuteOfYear = LocalDateTime.of(thisYear, 1, 1, 1, 2, 2);
-    private final LocalDateTime thirdMinuteOfYear = LocalDateTime.of(thisYear, 1, 1, 1, 3, 3);
+    private final ZonedDateTime firstMinuteOfYear =
+            LocalDateTime.of(thisYear, 1, 1, 1, 1, 1).atZone(ZoneId.systemDefault());
+    private final ZonedDateTime secondMinuteOfYear =
+            LocalDateTime.of(thisYear, 1, 1, 1, 2, 2).atZone(ZoneId.systemDefault());
+    private final ZonedDateTime thirdMinuteOfYear =
+            LocalDateTime.of(thisYear, 1, 1, 1, 3, 3).atZone(ZoneId.systemDefault());
 
     public Step createStepWhereUserIdIsNull() {
         return new Step(

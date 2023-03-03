@@ -14,7 +14,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.core.Is.is;
 
-@DisplayName(" <== StringComparator Tests ==>")
+@DisplayName("Should correctly return filtered list o Strings")
 public class StringComparatorTest {
 
     private Set<String> matchingStrings;

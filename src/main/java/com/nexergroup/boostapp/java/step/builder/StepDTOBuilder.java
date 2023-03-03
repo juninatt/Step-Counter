@@ -2,15 +2,15 @@ package com.nexergroup.boostapp.java.step.builder;
 
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 public class StepDTOBuilder extends BaseDTOBuilder<StepDTO> {
 
     private String userId;
     private int stepCount;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
-    private LocalDateTime uploadTime;
+    private ZonedDateTime startTime;
+    private ZonedDateTime endTime;
+    private ZonedDateTime uploadTime;
 
     public StepDTOBuilder withUserId(String userId) {
         this.userId = userId;
@@ -22,17 +22,17 @@ public class StepDTOBuilder extends BaseDTOBuilder<StepDTO> {
         return this;
     }
 
-    public StepDTOBuilder withStartTime(LocalDateTime startTime) {
+    public StepDTOBuilder withStartTime(ZonedDateTime startTime) {
         this.startTime = startTime;
         return this;
     }
 
-    public StepDTOBuilder withEndTime(LocalDateTime endTime) {
+    public StepDTOBuilder withEndTime(ZonedDateTime endTime) {
         this.endTime = endTime;
         return this;
     }
 
-    public StepDTOBuilder withUploadTime(LocalDateTime uploadTime) {
+    public StepDTOBuilder withUploadTime(ZonedDateTime uploadTime) {
         this.uploadTime = uploadTime;
         return this;
     }

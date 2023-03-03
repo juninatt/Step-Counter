@@ -3,14 +3,19 @@ package com.nexergroup.boostapp.java.step.testobjects.dto.stepdto;
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 public class TestStepDtoBuilder {
 
     private final String testUser = "testUser";
     private final int thisYear = LocalDateTime.now().getYear();
-    private final LocalDateTime firstMinuteOfYear = LocalDateTime.of(thisYear, 1, 1, 1, 1, 1);
-    private final LocalDateTime secondMinuteOfYear = LocalDateTime.of(thisYear, 1, 1, 1, 2, 2);
-    private final LocalDateTime thirdMinuteOfYear = LocalDateTime.of(thisYear, 1, 1, 1, 3, 3);
+    private final ZonedDateTime firstMinuteOfYear =
+            LocalDateTime.of(thisYear, 1, 1, 1, 1, 1).atZone(ZoneId.systemDefault());
+    private final ZonedDateTime secondMinuteOfYear =
+            LocalDateTime.of(thisYear, 1, 1, 1, 2, 2).atZone(ZoneId.systemDefault());
+    private final ZonedDateTime thirdMinuteOfYear =
+            LocalDateTime.of(thisYear, 1, 1, 1, 3, 3).atZone(ZoneId.systemDefault());
 
     public StepDTO createStepDTOWhereUserIdIsNull() {
         return new StepDTO(

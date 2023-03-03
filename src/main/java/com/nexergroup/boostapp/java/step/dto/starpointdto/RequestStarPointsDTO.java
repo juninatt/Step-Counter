@@ -2,7 +2,7 @@ package com.nexergroup.boostapp.java.step.dto.starpointdto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Schema(description = "Used to request star points for multiple users with start time and end time")
@@ -12,14 +12,14 @@ public class RequestStarPointsDTO {
     private List<String> users;
 
     @Schema(description = "Start time")
-    private LocalDateTime startTime;
+    private ZonedDateTime startTime;
 
     @Schema(description = "End time")
-    private LocalDateTime endTime;
+    private ZonedDateTime endTime;
 
     public RequestStarPointsDTO() {}
 
-    public RequestStarPointsDTO(List<String> users, LocalDateTime startTime, LocalDateTime endTime) {
+    public RequestStarPointsDTO(List<String> users, ZonedDateTime startTime, ZonedDateTime endTime) {
         this.users = users;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -33,19 +33,19 @@ public class RequestStarPointsDTO {
         this.users = users;
     }
 
-    public LocalDateTime getStartTime() {
+    public ZonedDateTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(LocalDateTime startTime) {
+    public void setStartTime(ZonedDateTime startTime) {
         this.startTime = startTime;
     }
 
-    public LocalDateTime getEndTime() {
+    public ZonedDateTime getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(LocalDateTime endTime) {
+    public void setEndTime(ZonedDateTime endTime) {
         this.endTime = endTime;
     }
 }

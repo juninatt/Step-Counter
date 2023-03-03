@@ -1,10 +1,10 @@
 package com.nexergroup.boostapp.java.step.service;
 
-import com.nexergroup.boostapp.java.step.repository.StepRepository;
-import org.springframework.stereotype.Service;
 import com.nexergroup.boostapp.java.step.dto.starpointdto.BulkUserStarPointsDTO;
 import com.nexergroup.boostapp.java.step.dto.starpointdto.RequestStarPointsDTO;
 import com.nexergroup.boostapp.java.step.dto.starpointdto.StarPointDateDTO;
+import com.nexergroup.boostapp.java.step.repository.StepRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +46,8 @@ public class StarPointService {
         for(String user: users) {
             var startTime = requestStarPointsDTO.getStartTime();
             var endTime = requestStarPointsDTO.getEndTime();
-            var optionalSum = stepRepository.getStepCountByUserIdAndDateRange(user, startTime, endTime);
+            var optionalSum = stepRepository.getStepCountByUserIdAndDateRange
+                    (user, startTime, endTime);
             optionalSum.ifPresent(integer -> starPointsDTO.add(new BulkUserStarPointsDTO(user, new StarPointDateDTO("Steps", "Walking", startTime.toString(), endTime.toString(),
                     (int) Math.ceil(integer * starPointFactor)))));
         }

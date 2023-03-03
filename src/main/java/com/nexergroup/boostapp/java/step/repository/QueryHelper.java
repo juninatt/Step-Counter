@@ -33,17 +33,6 @@ class QueryHelper {
             "SELECT DISTINCT s.userId FROM Step s";
 
 
-    /**
-     * SELECT_STEP_COUNT_WITHIN_TIME_RANGE is a query that selects the total stepCount in the {@link Step} table a specific time range for a given user ID,
-     * and returns it in form af an Integer.
-     */
-    public static final String SELECT_STEP_COUNT_WITHIN_TIME_RANGE =
-            "SELECT sum(s.stepCount) " +
-                    "FROM Step s " +
-                    "WHERE s.userId = :userId " +
-                    "AND s.uploadedTime >= :startTime " +
-                    "AND s.uploadedTime <= :endTime";
-
 
     /**
      * SELECT_STEP_COUNT_YEAR_AND_WEEK is a query that selects the total stepCount for a given user ID for a specific year and week,
@@ -68,6 +57,17 @@ class QueryHelper {
                     "WHERE m.userId = :userId " +
                     "AND m.year = :year " +
                     "AND m.month = :month";
+
+    /**
+     * SELECT_STEP_COUNT_WITHIN_TIME_RANGE is a query that selects the total stepCount in the {@link Step} table a specific time range for a given user ID,
+     * and returns it in form af an Integer.
+     */
+    public static final String SELECT_STEP_COUNT_WITHIN_TIME_RANGE =
+            "SELECT sum(s.stepCount) " +
+                    "FROM Step s " +
+                    "WHERE s.userId = :userId " +
+                    "AND s.uploadTime >= :startTime " +
+                    "AND s.uploadTime <= :endTime";
 
 
 

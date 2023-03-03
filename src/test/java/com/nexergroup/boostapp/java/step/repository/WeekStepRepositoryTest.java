@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.assertEquals;
-
 @RunWith(SpringRunner.class)
 @DataJpaTest
 public class WeekStepRepositoryTest {
@@ -35,7 +33,7 @@ public class WeekStepRepositoryTest {
     @Test
     public void shouldReturnWeekStepForWeek1Year2020() {
 
-        var test = weekStepRepository.findByUserIdAndYearAndWeek("johanna", 2020, 1).get();
+        var test = weekStepRepository.findByUserIdAndYearAndWeek("johanna", 2020, 1).orElseThrow();
         Assert.assertEquals(300, test.getStepCount());
 
     }

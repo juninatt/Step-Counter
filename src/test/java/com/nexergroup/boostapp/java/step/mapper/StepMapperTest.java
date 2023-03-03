@@ -1,16 +1,16 @@
 package com.nexergroup.boostapp.java.step.mapper;
 
+import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
+import com.nexergroup.boostapp.java.step.model.MonthStep;
+import com.nexergroup.boostapp.java.step.model.WeekStep;
+import com.nexergroup.boostapp.java.step.testobjects.dto.stepdto.TestStepDtoBuilder;
+import com.nexergroup.boostapp.java.step.testobjects.model.TestStepBuilder;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.boot.test.context.SpringBootTest;
-import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
-import com.nexergroup.boostapp.java.step.model.MonthStep;
-import com.nexergroup.boostapp.java.step.model.Step;
-import com.nexergroup.boostapp.java.step.model.WeekStep;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,48 +19,54 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class StepMapperTest {
 
     private final StepMapper stepMapper = StepMapper.mapper;
-    private final LocalDateTime now = LocalDateTime.now();
-    StepDTO testStepDto = new StepDTO("userId", 69, now, now, now);
+
+    TestStepDtoBuilder testDTOBuilder = new TestStepDtoBuilder();
+
+    StepDTO testStepDTO;
 
     @Test
     @DisplayName("Test StepDTO to Step mapping")
     public void testStepDtoToStep() {
-        var step = stepMapper.stepDtoToStep(testStepDto);
+        testStepDTO = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
+        var step = stepMapper.stepDtoToStep(testStepDTO);
 
-        assertThat(testStepDto.getStepCount()).isEqualTo(step.getStepCount());
-        assertThat(testStepDto.getStartTime()).isEqualTo(step.getStartTime());
-        assertThat(testStepDto.getEndTime()).isEqualTo(step.getEndTime());
-        assertThat(testStepDto.getUploadTime()).isEqualTo(step.getUploadedTime());
+        assertThat(testStepDTO.getStepCount()).isEqualTo(step.getStepCount());
+        assertThat(testStepDTO.getStartTime()).isEqualTo(step.getStartTime());
+        assertThat(testStepDTO.getEndTime()).isEqualTo(step.getEndTime());
+        assertThat(testStepDTO.getUploadTime()).isEqualTo(step.getUploadTime());
     }
 
     @Test
     @DisplayName("Test StepDTO to WeekStep mapping")
     public void testStepDtoToWeekStep() {
-        WeekStep weekStep = stepMapper.stepDtoToWeekStep(testStepDto);
+        testStepDTO = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
+        WeekStep weekStep = stepMapper.stepDtoToWeekStep(testStepDTO);
 
-        assertThat(testStepDto.getYear()).isEqualTo(weekStep.getYear());
-        assertThat(DateHelper.getWeek(testStepDto.getEndTime())).isEqualTo(weekStep.getWeek());
-        assertThat(testStepDto.getStepCount()).isEqualTo(weekStep.getStepCount());
+        assertThat(testStepDTO.getYear()).isEqualTo(weekStep.getYear());
+        assertThat(DateHelper.getWeek(testStepDTO.getEndTime())).isEqualTo(weekStep.getWeek());
+        assertThat(testStepDTO.getStepCount()).isEqualTo(weekStep.getStepCount());
     }
 
     @Test
     @DisplayName("Test StepDTO to MonthStep mapping")
     public void testStepDtoToMonthStep() {
-        MonthStep monthStep = stepMapper.stepDtoToMonthStep(testStepDto);
+        testStepDTO = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
+        MonthStep monthStep = stepMapper.stepDtoToMonthStep(testStepDTO);
 
-        assertThat(testStepDto.getYear()).isEqualTo(monthStep.getYear());
-        assertThat(testStepDto.getMonth()).isEqualTo(monthStep.getMonth());
-        assertThat(testStepDto.getStepCount()).isEqualTo(monthStep.getStepCount());
+        assertThat(testStepDTO.getYear()).isEqualTo(monthStep.getYear());
+        assertThat(testStepDTO.getMonth()).isEqualTo(monthStep.getMonth());
+        assertThat(testStepDTO.getStepCount()).isEqualTo(monthStep.getStepCount());
     }
 
     @Test
     @DisplayName("Test Step to StepDateDTO mapping")
     public void testStepToStepDateDto() {
-        var step = new Step("userId", 13, now, now, now);
+        var testStepBuilder = new TestStepBuilder();
+        var step = testStepBuilder.createStepOfFirstMinuteOfYear();
 
         var stepDateDto = stepMapper.stepToStepDateDto(step);
 
-        Instant stepDate = step.getEndTime().toInstant(ZoneOffset.UTC);
+        Instant stepDate = step.getEndTime().toInstant();
 
         assertThat(Date.from(stepDate)).isEqualTo(stepDateDto.getDate());
         assertThat(step.getStepCount()).isEqualTo(stepDateDto.getSteps());
