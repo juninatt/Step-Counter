@@ -9,6 +9,7 @@ import com.nexergroup.boostapp.java.step.dto.starpointdto.StarPointDateDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.BulkStepDateDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDateDTO;
+import com.nexergroup.boostapp.java.step.dto.stepdto.WeekStepDTO;
 import com.nexergroup.boostapp.java.step.exception.ValidationFailedException;
 import com.nexergroup.boostapp.java.step.model.Step;
 import com.nexergroup.boostapp.java.step.repository.StepRepository;
@@ -30,6 +31,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -37,6 +39,7 @@ import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -302,6 +305,37 @@ public class StepApiControllerTest {
         }
 
         @Test
+        @DisplayName("Test getStepCountByDayForUserAndDate")
+        public void testGetStepCountByDayForUserAndDate() throws Exception {
+            String userId = "123";
+
+            WeekStepDTO weekStepDTO = new WeekStepDTO(userId, 1, new ArrayList<>(Collections.nCopies(7, 0)));
+
+            // Mock the stepService and set the expected return value
+            when(stepService.getStepsPerDayForWeek(userId)).thenReturn(weekStepDTO);
+
+            // Build the request with the correct path variable and request body
+            MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/steps/stepcount/{userId}/currentweekdaily", userId)
+                    .contentType(MediaType.APPLICATION_JSON);
+
+
+            // Perform the request and assert the status code and response body
+            mockMvc.perform(requestBuilder)
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                    .andExpect(jsonPath("$.userId").exists())
+                    .andExpect(jsonPath("$.weekNumber").exists())
+                    .andExpect(jsonPath("$.mondayStepCount").exists())
+                    .andExpect(jsonPath("$.tuesdayStepCount").exists())
+                    .andExpect(jsonPath("$.wednesdayStepCount").exists())
+                    .andExpect(jsonPath("$.thursdayStepCount").exists())
+                    .andExpect(jsonPath("$.fridayStepCount").exists())
+                    .andExpect(jsonPath("$.saturdayStepCount").exists())
+                    .andExpect(jsonPath("$.sundayStepCount").exists());
+        }
+
+
+        @Test
         @DisplayName("getUserWeekStepSteps with invalid input returns HTTP status code 409")
         public void getUserWeekStepSteps_WithInvalidInput_ReturnsStatusConflict() throws Exception {
             // Arrange
@@ -374,6 +408,7 @@ public class StepApiControllerTest {
             int expectedSteps = 1200;
 
             when(stepService.getStepCountForUserYearAndMonth(testUserId, year, month)).thenReturn(expectedSteps);
+
             MvcResult result = mockMvc.perform(get(url, testUserId, year, month))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
@@ -446,6 +481,5 @@ public class StepApiControllerTest {
 
             assertEquals(expectedJsonResponse, actualJsonResponse);
         }
-
     }
 }

@@ -1,5 +1,13 @@
 package com.nexergroup.boostapp.java.step.controller;
 
+import com.nexergroup.boostapp.java.step.controller.apiresponse.GroupedApiResponse;
+import com.nexergroup.boostapp.java.step.dto.stepdto.BulkStepDateDTO;
+import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
+import com.nexergroup.boostapp.java.step.dto.stepdto.StepDateDTO;
+import com.nexergroup.boostapp.java.step.dto.stepdto.WeekStepDTO;
+import com.nexergroup.boostapp.java.step.exception.NotFoundException;
+import com.nexergroup.boostapp.java.step.model.Step;
+import com.nexergroup.boostapp.java.step.service.StepService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
@@ -9,13 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import com.nexergroup.boostapp.java.step.controller.apiresponse.GroupedApiResponse;
-import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
-import com.nexergroup.boostapp.java.step.dto.stepdto.StepDateDTO;
-import com.nexergroup.boostapp.java.step.dto.stepdto.BulkStepDateDTO;
-import com.nexergroup.boostapp.java.step.exception.NotFoundException;
-import com.nexergroup.boostapp.java.step.model.Step;
-import com.nexergroup.boostapp.java.step.service.StepService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -107,21 +108,6 @@ public class StepControllerDev {
 
 
     /**
-     * Get the latest step for a specific user
-     *
-     * @param userId The ID of the user whose latest step is being retrieved
-     * @return A ResponseEntity containing a {@link Step} object in the body,
-     * or a status 204 (NO_CONTENT) if no step data is found for the authenticated user
-     */
-    @Operation(summary = "Get user's latest step")
-    @GroupedApiResponse
-    @GetMapping(value = "/latest/{userId}")
-    public Step getUsersLatestStep(final @PathVariable String userId) {
-        return stepService.getLatestStepFromUser(userId);
-    }
-
-
-    /**
      * Get the step count per month for a specific user by user ID and year and month
      *
      * @param userId The ID of the user whose step count is being retrieved
@@ -174,6 +160,27 @@ public class StepControllerDev {
         return stepService.createBulkStepDateDtoForUserForCurrentWeek(userId)
                 .map(ResponseEntity::ok)
                 .orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
+    }
+
+    /**
+     * Get the latest step for a specific user
+     *
+     * @param userId The ID of the user whose latest step is being retrieved
+     * @return A ResponseEntity containing a {@link Step} object in the body,
+     * or a status 204 (NO_CONTENT) if no step data is found for the authenticated user
+     */
+    @Operation(summary = "Get user's latest step")
+    @GroupedApiResponse
+    @GetMapping(value = "/latest/{userId}")
+    public Step getUsersLatestStep(final @PathVariable String userId) {
+        return stepService.getLatestStepFromUser(userId);
+    }
+
+    @Operation(summary = "Get stepCount per day for current week for a specific user")
+    @GroupedApiResponse
+    @GetMapping(value = "/stepcount/{userId}/currentweekdaily")
+    public WeekStepDTO getStepCountByDayForUserAndDate(final @PathVariable String userId) {
+        return stepService.getStepsPerDayForWeek(userId);
     }
 }
 
