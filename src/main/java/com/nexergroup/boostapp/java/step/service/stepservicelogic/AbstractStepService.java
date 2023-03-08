@@ -4,7 +4,6 @@ import com.nexergroup.boostapp.java.step.builder.StepDTOBuilder;
 import com.nexergroup.boostapp.java.step.dto.stepdto.BulkStepDateDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDateDTO;
-import com.nexergroup.boostapp.java.step.dto.stepdto.WeekStepDTO;
 import com.nexergroup.boostapp.java.step.exception.NotFoundException;
 import com.nexergroup.boostapp.java.step.exception.ValidationFailedException;
 import com.nexergroup.boostapp.java.step.mapper.DateHelper;
@@ -23,7 +22,6 @@ import org.springframework.stereotype.Component;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -303,31 +301,6 @@ public abstract class AbstractStepService {
         weekStepRepository.save(StepMapper.mapper.stepDtoToWeekStep(stepDTO));
         monthStepRepository.save(StepMapper.mapper.stepDtoToMonthStep(stepDTO));
         return newStep;
-    }
-
-    /**
-     * Retrieves stepCount per day for a specified user the current week.
-     *
-     * @param userId the id of a user
-     * @return a {@link WeekStepDTO} object containing the daily stepCount
-     */
-    public WeekStepDTO getStepsPerDayForWeek(String userId) {
-        if (userId == null)
-            throw new ValidationFailedException("User id and time must not be null");
-        // Retrieve all Step objects belonging to the user from the step table
-        var stepsFromDatabase = stepRepository.getListOfStepsByUserId(userId)
-                .orElse(List.of(new Step(userId, 0, ZonedDateTime.now())));
-        // Create an ArrayList with 7 slots and the value '0' added to each slot
-        var stepCountsByDay = getDefaultWeekList();
-
-        // Loop through the retrieved Step objects and add the stepCount to the correct index of the list
-        for (Step step : stepsFromDatabase) {
-            // Sets the index the Step object is connected to depending on the startTime of the Step
-            var index = step.getStartTime().getDayOfWeek().getValue() - 1;
-            // Adds the stepCount of the Step object to the index
-            stepCountsByDay.set(index, stepCountsByDay.get(index) + step.getStepCount());
-        }
-        return new WeekStepDTO(userId, DateHelper.getWeek(ZonedDateTime.now()), stepCountsByDay);
     }
 
     /**
