@@ -114,7 +114,7 @@ public class StepController {
 
     @Operation(summary = "Get stepCount per day for current week for a specific user")
     @GroupedApiResponse
-    @GetMapping(value = "/stepcount/{userId}/currentweekdaily")
+    @GetMapping(value = {"/stepcount/currentweekdaily"})
     public WeekStepDTO getStepCountByDayForUserAndDate(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt) {
         return stepService.getStepsPerDayForWeek(JwtValidator.getUserId(jwt));
     }
