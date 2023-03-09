@@ -16,12 +16,29 @@ import java.lang.annotation.Target;
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
 @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Successful post request", content = @Content),
-        @ApiResponse(responseCode = "401", description = "Request is not authorized", content = @Content),
-        @ApiResponse(responseCode = "403", description = "Accessing the resource is forbidden", content = @Content),
-        @ApiResponse(responseCode = "404", description = "The resource you were trying to reach is not found", content = @Content),
+        @ApiResponse(
+                responseCode = "401",
+                description = "Request is not authorized. Check authentication credentials.\n" +
+                        "See Boost App wiki documentation for generating JWT through Postman",
+                content = @Content),
+        @ApiResponse(
+                responseCode = "403",
+                description = "Request is forbidden. Caller not authorized.",
+                content = @Content),
+        @ApiResponse(
+                responseCode = "404",
+                description = "Requested resource can not be found.",
+                content = @Content),
+        @ApiResponse(
+                responseCode = "500",
+                description = "Internal Server error. Unexpected condition prevented request.",
+                content = @Content),
+        @ApiResponse(
+                responseCode = "503",
+                description = "Service unavailable. Server not ready to handle request. See Azure Portal for troubleshooting",
+                content = @Content)
 })
 public @interface GroupedApiResponse {
 }
