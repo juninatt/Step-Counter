@@ -1,6 +1,7 @@
 package com.nexergroup.boostapp.java.step.controller;
 
 import com.nexergroup.boostapp.java.step.controller.apiresponse.GroupedApiResponse;
+import com.nexergroup.boostapp.java.step.controller.apiresponse.StepApiResponse;
 import com.nexergroup.boostapp.java.step.controller.apiresponse.WeekStepDTOApiResponse;
 import com.nexergroup.boostapp.java.step.dto.stepdto.BulkStepDateDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
@@ -72,7 +73,7 @@ public class StepController {
      *         or a status 400 (BAD_REQUEST) status if the request was invalid
      */
     @Operation(summary = "Register step entity")
-    @GroupedApiResponse
+    @StepApiResponse
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public Step registerStep(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                              final @RequestBody @Valid StepDTO stepDTO) {

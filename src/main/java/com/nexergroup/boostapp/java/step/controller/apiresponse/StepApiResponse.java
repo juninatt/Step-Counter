@@ -1,6 +1,6 @@
 package com.nexergroup.boostapp.java.step.controller.apiresponse;
 
-import com.nexergroup.boostapp.java.step.dto.stepdto.WeekStepDTO;
+import com.nexergroup.boostapp.java.step.model.Step;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,13 +16,13 @@ import java.lang.annotation.Target;
 @ApiResponses(value = {
         @ApiResponse(
                 responseCode = "200",
-                description = "Successful GET request",
+                description = "Successful POST request",
                 content = @Content(mediaType = "application/json",
-                schema = @Schema(implementation = WeekStepDTO.class))),
+                        schema = @Schema(implementation = Step.class))),
         @ApiResponse(
                 responseCode = "401",
                 description = "Request is not authorized. Check authentication credentials.\n" +
-                              "See Boost App wiki documentation for generating JWT through Postman",
+                        "See Boost App wiki documentation for generating JWT through Postman",
                 content = @Content),
         @ApiResponse(
                 responseCode = "403",
@@ -41,5 +41,5 @@ import java.lang.annotation.Target;
                 description = "Service unavailable. Server not ready to handle request. See Azure Portal for troubleshooting",
                 content = @Content)
 })
-public @interface WeekStepDTOApiResponse {
+public @interface StepApiResponse {
 }
