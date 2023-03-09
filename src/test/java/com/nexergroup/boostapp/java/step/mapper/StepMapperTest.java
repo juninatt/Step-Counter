@@ -10,7 +10,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,7 +41,7 @@ public class StepMapperTest {
         testStepDTO = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
         WeekStep weekStep = stepMapper.stepDtoToWeekStep(testStepDTO);
 
-        assertThat(testStepDTO.getYear()).isEqualTo(weekStep.getYear());
+        assertThat(testStepDTO.getStartTime().getYear()).isEqualTo(weekStep.getYear());
         assertThat(DateHelper.getWeek(testStepDTO.getEndTime())).isEqualTo(weekStep.getWeek());
         assertThat(testStepDTO.getStepCount()).isEqualTo(weekStep.getStepCount());
     }
@@ -53,8 +52,8 @@ public class StepMapperTest {
         testStepDTO = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
         MonthStep monthStep = stepMapper.stepDtoToMonthStep(testStepDTO);
 
-        assertThat(testStepDTO.getYear()).isEqualTo(monthStep.getYear());
-        assertThat(testStepDTO.getMonth()).isEqualTo(monthStep.getMonth());
+        assertThat(testStepDTO.getStartTime().getYear()).isEqualTo(monthStep.getYear());
+        assertThat(testStepDTO.getStartTime().getMonthValue()).isEqualTo(monthStep.getMonth());
         assertThat(testStepDTO.getStepCount()).isEqualTo(monthStep.getStepCount());
     }
 

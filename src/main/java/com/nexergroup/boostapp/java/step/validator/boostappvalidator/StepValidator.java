@@ -10,7 +10,6 @@ import com.nexergroup.boostapp.java.step.repository.StepRepository;
 import org.springframework.lang.NonNull;
 
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -90,7 +89,7 @@ public class StepValidator {
      * @return true if the stepDTO belongs to the same month as the MonthStep object, false otherwise.
      */
     public boolean shouldUpdateMonthStep(@NonNull StepDTO stepDTO, MonthStep monthStep) {
-        return monthStep.getMonth() == stepDTO.getMonth();
+        return monthStep.getMonth() == stepDTO.getStartTime().getMonthValue();
     }
 
     /**

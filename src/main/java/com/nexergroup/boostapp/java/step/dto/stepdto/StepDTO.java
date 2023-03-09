@@ -94,12 +94,6 @@ public class StepDTO {
         return uploadTime;
     }
 
-    public int getYear() {
-        return endTime.getYear();
-    }
-    public int getMonth() {
-        return endTime.getMonthValue();
-    }
 
     @Override
     public String toString() {

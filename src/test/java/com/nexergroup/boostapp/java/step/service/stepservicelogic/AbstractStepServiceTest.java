@@ -792,7 +792,7 @@ class AbstractStepServiceTest {
                     // Expected values of object stored in database
                     var expectedUserId = testUser;
                     var expectedStepCount = testDto.getStepCount();
-                    var expectedYear = testDto.getYear();
+                    var expectedYear = testDto.getStartTime().getYear();
                     var expectedWeek = DateHelper.getWeek(testDto.getEndTime());
 
                     // Actual values of the object stored in the database
@@ -822,7 +822,7 @@ class AbstractStepServiceTest {
                 // Expected values of object stored in database
                 var expectedUserId = testUser;
                 var expectedStepCount = testDto.getStepCount();
-                var expectedYear = testDto.getYear();
+                var expectedYear = testDto.getStartTime().getYear();
                 var expectedMonth = testDto.getEndTime().getMonthValue();
 
                 // Actual values of the object stored in the database
