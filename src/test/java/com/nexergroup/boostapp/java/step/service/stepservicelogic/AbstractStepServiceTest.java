@@ -17,6 +17,8 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -983,6 +985,87 @@ class AbstractStepServiceTest {
                 // Assert that the Step object returned by the tested method has the correct stepCount
                 assertEquals(expectedStepCount, actualStepCount,"Expected stepCount to be '" + expectedStepCount + "' but was '" + actualStepCount + "'. " + result);
             }
+        }
+    }
+
+    @Nested
+    @DisplayName("Test creation of WeekStepDTO")
+    public class GetStepsPerDayForWeekTest {
+
+        @Test
+        @DisplayName("getStepsPerDayOfWeek should throw ValidationFailedException when user is null")
+        public void testGetStepsPerDayOfWeekWithNullUser_ThrowsValidationFailedException() {
+            // Act and assert: Call the method to be tested with null userId and assert that the correct exception is thrown
+            assertThrows(ValidationFailedException.class, () -> stepService.getStepsPerDayForWeek(null));
+        }
+
+        @Test
+        @DisplayName("getStepsPerDayOfWeek should throw ValidationFailedException with correct message when user is null")
+        public void testGetStepsPerDayOfWeekWithNullUser() {
+            // Act and assert: Call the method to be tested with null userId and assert that the exception contains the correct exception message
+            ValidationFailedException exception = assertThrows(ValidationFailedException.class, () -> stepService.getStepsPerDayForWeek(null));
+            assertEquals("User id and time must not be null", exception.getMessage());
+        }
+
+
+        @Test
+        @DisplayName("getStepsPerDayOfWeek should return the correct total stepCount for the week")
+        public void testGetTotalStepCountForWeek() {
+            // Arrange: Create and save three test Step objects of the same week
+            var firstTestStep = testStepBuilder.createStepOfFirstMinuteOfYear();
+            stepRepository.save(firstTestStep);
+            stepRepository.save(testStepBuilder.createStepOfSecondMinuteOfYear());
+            stepRepository.save(testStepBuilder.createStepOfThirdMinuteOfYear());
+
+
+            // Act: Call the method to be tested to receive the data from the test steps from the database
+            var testWeekStepDTO = stepService.getStepsPerDayForWeek(testUser);
+
+            // Expected values: The total stepCount of all three objects
+            var expectedTotalStepCount = 10 + 20 + 30;
+
+            // Actual values: Calculate the total stepCount for the week by adding up the stepCounts for each day
+            var actualTotalStepCount = testWeekStepDTO.getMondayStepCount() +
+                    testWeekStepDTO.getTuesdayStepCount() +
+                    testWeekStepDTO.getWednesdayStepCount() +
+                    testWeekStepDTO.getThursdayStepCount() +
+                    testWeekStepDTO.getFridayStepCount() +
+                    testWeekStepDTO.getSaturdayStepCount() +
+                    testWeekStepDTO.getSundayStepCount();
+
+            // Assert that the actual total step count matches the expected total step count
+            assertEquals(expectedTotalStepCount, actualTotalStepCount);
+        }
+
+        @Test
+        @DisplayName("getStepsPerDayOfWeek should return correct stepCount for a week that spans two different years")
+        public void testGetStepsPerDayOfWeekForWeekSpanningTwoYears() {
+            // Arrange: Set up two dates of different years but on same week
+            var monday2022 = LocalDateTime.of(
+                    2022, 12, 26, 1, 1).atZone(ZoneId.systemDefault()); // Monday december 2022
+            var sunday2023 = LocalDateTime.of(
+                    2023, 1, 1, 1, 1).atZone(ZoneId.systemDefault()); // Sunday januari 2023
+
+
+            // Create Step objects of both years
+            var step1 = new Step(testUser, 2022, monday2022, monday2022.plusMinutes(1), monday2022.plusMinutes(2));
+            var step2 = new Step(testUser, 2022, monday2022.plusMinutes(3), monday2022.plusMinutes(4), monday2022.plusMinutes(5));
+            var step3 = new Step(testUser, 2023, sunday2023, sunday2023.plusMinutes(1), sunday2023.plusMinutes(2));
+
+            // Save Step objects to database
+            stepRepository.saveAll(List.of(step1, step2, step3));
+
+            // Act: Call method to be tested to receive the data from the database
+            var testWeekStepDTO = stepService.getStepsPerDayForWeek(testUser);
+
+            // Assert: Verify step counts for each day of the week
+            assertEquals(4044, testWeekStepDTO.getMondayStepCount());
+            assertEquals(0, testWeekStepDTO.getTuesdayStepCount());
+            assertEquals(0, testWeekStepDTO.getWednesdayStepCount());
+            assertEquals(0, testWeekStepDTO.getThursdayStepCount());
+            assertEquals(0, testWeekStepDTO.getFridayStepCount());
+            assertEquals(0, testWeekStepDTO.getSaturdayStepCount());
+            assertEquals(2023, testWeekStepDTO.getSundayStepCount());
         }
     }
 

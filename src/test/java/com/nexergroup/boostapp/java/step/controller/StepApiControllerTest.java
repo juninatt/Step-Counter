@@ -442,21 +442,21 @@ public class StepApiControllerTest {
         private final MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new StepControllerDev(stepService)).build();
 
         @Test
-        @DisplayName("Test getStepCountByDayForUserAndDate")
+        @DisplayName("Test getting daily step count for user and date returns correct fields")
         public void testGetStepCountByDayForUserAndDate() throws Exception {
+            // Set up test data
             String userId = "123";
-
             WeekStepDTO weekStepDTO = new WeekStepDTO(userId, 1, new ArrayList<>(Collections.nCopies(7, 0)));
 
             // Mock the stepService and set the expected return value
             when(stepService.getStepsPerDayForWeek(userId)).thenReturn(weekStepDTO);
 
             // Build the request with the correct path variable and request body
-            MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/steps/stepcount/{userId}/currentweekdaily", userId)
+            MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                    .get("/steps/stepcount/{userId}/currentweekdaily", userId)
                     .contentType(MediaType.APPLICATION_JSON);
 
-
-            // Perform the request and assert the status code and response body
+            // Perform the request and assert the response
             mockMvc.perform(requestBuilder)
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
@@ -472,10 +472,10 @@ public class StepApiControllerTest {
         }
 
         @Test
-        @DisplayName("Test getStepCountByDayForUserAndDate when getStepsPerDayForWeek returns non-null object")
-        public void testGetStepCountByDayForUserAndDate_whenStepServiceReturnsNonNullObject() throws Exception {
+        @DisplayName("Test getStepCountByDayForUserAndDate returns WeekStepDTO without null values when input is valid")
+        public void testGetStepCountByDayForUserAndDate_whenWeekStepDTONotNull() throws Exception {
+            // Set up test data
             String userId = "123";
-
             WeekStepDTO weekStepDTO = new WeekStepDTO(userId, 1, new ArrayList<>(Collections.nCopies(7, 0)));
 
             // Mock the stepService and set the expected return value
@@ -501,6 +501,40 @@ public class StepApiControllerTest {
         }
 
         @Test
+        @DisplayName("GetStepCountCyDayForUserAndDate returns correct values when input is valid")
+        public void testGetStepCountByDayForUserAndDateWithValidValues() throws Exception {
+            // Set up test data
+            String userId = "123";
+            List<Integer> weekStepCountByDay = new ArrayList<>(Collections.nCopies(7, 0));
+            weekStepCountByDay.set(0, 10);
+            weekStepCountByDay.set(1, 20);
+            weekStepCountByDay.set(6, 666);
+            WeekStepDTO weekStepDTO = new WeekStepDTO(userId, 1, weekStepCountByDay);
+
+            // Set up mock service
+            when(stepService.getStepsPerDayForWeek(userId)).thenReturn(weekStepDTO);
+
+            // Build the request
+            MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
+                    .get("/steps/stepcount/{userId}/currentweekdaily", userId)
+                    .contentType(MediaType.APPLICATION_JSON);
+
+            // Perform the request and assert the response
+            mockMvc.perform(requestBuilder)
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                    .andExpect(jsonPath("$.userId").value(userId))
+                    .andExpect(jsonPath("$.weekNumber").value(1))
+                    .andExpect(jsonPath("$.mondayStepCount").value(10))
+                    .andExpect(jsonPath("$.tuesdayStepCount").value(20))
+                    .andExpect(jsonPath("$.wednesdayStepCount").value(0))
+                    .andExpect(jsonPath("$.thursdayStepCount").value(0))
+                    .andExpect(jsonPath("$.fridayStepCount").value(0))
+                    .andExpect(jsonPath("$.saturdayStepCount").value(0))
+                    .andExpect(jsonPath("$.sundayStepCount").value(666));
+        }
+
+        @Test
         @DisplayName("Test getStepCountByDayForUserAndDate when getStepsPerDayForWeek returns null")
         public void testGetStepCountByDayForUserAndDate_whenStepServiceReturnsNull() throws Exception {
             String userId = "123";
@@ -516,44 +550,6 @@ public class StepApiControllerTest {
             mockMvc.perform(requestBuilder)
                     .andExpect(status().isOk());
         }
-
-
-        // TODO: Ändra till att kasta exception när userId Stringen är tom
-//        @Test
-//        @DisplayName("Test getStepCountByDayForUserAndDate when userId is null")
-//        public void testGetStepCountByDayForUserAndDate_whenUserIdIsNull() throws Exception {
-//            String userId = null;
-//
-//            // Build the request with the correct path variable and request body
-//            MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/steps/stepcount/{userId}/currentweekdaily", userId)
-//                    .contentType(MediaType.APPLICATION_JSON);
-//
-//            // Perform the request and assert the status code and response body
-//            mockMvc.perform(requestBuilder)
-//                    .andExpect(status().isBadRequest())
-//                    .andExpect(jsonPath("$.message").value("User id and time must not be null"));
-//        }
-
-        // TODO: Få detta testet att passera
-//        @Test
-//        @DisplayName("Test getStepCountByDayForUserAndDate with stepService throwing an exception")
-//        public void testGetStepCountByDayForUserAndDateWithStepServiceException() throws Exception {
-//            String userId = "123";
-//
-//            // Mock the stepService and set the expected return value to throw a RuntimeException
-//            when(stepService.getStepsPerDayForWeek(userId)).thenThrow(new RuntimeException("Error retrieving steps"));
-//
-//            // Build the request with the correct path variable and request body
-//            MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/steps/stepcount/{userId}/currentweekdaily", userId)
-//                    .contentType(MediaType.APPLICATION_JSON);
-//
-//            // Perform the request and assert the status code and response body
-//            mockMvc.perform(requestBuilder)
-//                    .andExpect(status().isInternalServerError())
-//                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-//                    .andExpect(jsonPath("$.message").value("Error retrieving steps"));
-//        }
-
     }
 
     @Nested
