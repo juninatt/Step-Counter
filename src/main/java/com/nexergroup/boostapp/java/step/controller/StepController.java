@@ -1,6 +1,7 @@
 package com.nexergroup.boostapp.java.step.controller;
 
 import com.nexergroup.boostapp.java.step.controller.apiresponse.GroupedApiResponse;
+import com.nexergroup.boostapp.java.step.controller.apiresponse.WeekStepDTOApiResponse;
 import com.nexergroup.boostapp.java.step.dto.stepdto.BulkStepDateDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDateDTO;
@@ -179,7 +180,7 @@ public class StepController {
     }
 
     @Operation(summary = "Get stepCount per day for current week for a specific user")
-    @GroupedApiResponse
+    @WeekStepDTOApiResponse
     @GetMapping(value = "/stepcount/currentweekdaily")
     public WeekStepDTO getStepCountByDayForUserAndDate(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt) {
         return stepService.getStepsPerDayForWeek(JwtValidator.getUserId(jwt));
