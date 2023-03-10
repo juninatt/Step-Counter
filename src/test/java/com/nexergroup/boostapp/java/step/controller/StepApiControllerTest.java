@@ -306,7 +306,7 @@ public class StepApiControllerTest {
         }
 
         @Test
-        @DisplayName("Test getStepCountByDayForUserAndDate")
+        @DisplayName("Test getStepCountByDayForUserCurrentWeek")
         public void testGetStepCountByDayForUserAndDate() throws Exception {
             String userId = "123";
 
@@ -472,7 +472,7 @@ public class StepApiControllerTest {
         }
 
         @Test
-        @DisplayName("Test getStepCountByDayForUserAndDate returns WeekStepDTO without null values when input is valid")
+        @DisplayName("Test getStepCountByDayForUserCurrentWeek returns WeekStepDTO without null values when input is valid")
         public void testGetStepCountByDayForUserAndDate_whenWeekStepDTONotNull() throws Exception {
             // Set up test data
             String userId = "123";
@@ -535,7 +535,7 @@ public class StepApiControllerTest {
         }
 
         @Test
-        @DisplayName("Test getStepCountByDayForUserAndDate when getStepsPerDayForWeek returns null")
+        @DisplayName("Test getStepCountByDayForUserCurrentWeek when getStepsPerDayForWeek returns null")
         public void testGetStepCountByDayForUserAndDate_whenStepServiceReturnsNull() throws Exception {
             String userId = "123";
 

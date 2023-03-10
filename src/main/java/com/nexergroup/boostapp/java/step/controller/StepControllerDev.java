@@ -167,7 +167,7 @@ public class StepControllerDev {
     @Operation(summary = "Get stepCount per day for current week for a specific user")
     @WeekStepDTOApiResponse
     @GetMapping(value = "/stepcount/{userId}/currentweekdaily")
-    public WeekStepDTO getStepCountByDayForUserAndDate(final @PathVariable String userId) {
+    public WeekStepDTO getStepCountByDayForUserCurrentWeek(final @PathVariable String userId) {
         return stepService.getStepsPerDayForWeek(userId);
     }
 
@@ -179,7 +179,7 @@ public class StepControllerDev {
      * or a status 204 (NO_CONTENT) if no step data is found for the authenticated user
      */
     @Operation(summary = "Get user's latest step")
-    @GroupedApiResponse
+    @StepApiResponse
     @GetMapping(value = "/latest/{userId}")
     public Step getUsersLatestStep(final @PathVariable String userId) {
         return stepService.getLatestStepFromUser(userId);

@@ -121,7 +121,7 @@ public class StepController {
      * @return An Optional containing a {@link StepDTO} object in the body,
      */
     @Operation(summary = "Get user's latest step")
-    @GroupedApiResponse
+    @StepApiResponse
     @GetMapping(value = "/latest")
     public Step getUsersLatestStep ( final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt) {
         return stepService.getLatestStepFromUser(JwtValidator.getUserId(jwt));
@@ -183,7 +183,7 @@ public class StepController {
     @Operation(summary = "Get stepCount per day for current week for a specific user")
     @WeekStepDTOApiResponse
     @GetMapping(value = "/stepcount/currentweekdaily")
-    public WeekStepDTO getStepCountByDayForUserAndDate(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt) {
+    public WeekStepDTO getStepCountByDayForUserCurrentWeek(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt) {
         return stepService.getStepsPerDayForWeek(JwtValidator.getUserId(jwt));
     }
 }
