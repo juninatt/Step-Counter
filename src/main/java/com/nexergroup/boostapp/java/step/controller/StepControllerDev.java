@@ -78,7 +78,7 @@ public class StepControllerDev {
      * @return A list of {@link StepDTO} objects representing the registered steps
      */
     @Operation(summary = "Register multiple step entities")
-    @GroupedApiResponse
+    @ListStepResponse
     @PostMapping(value = "/multiple/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public List<Step> registerMultipleSteps(final @PathVariable String userId,
                                                final @RequestBody List<@Valid StepDTO> stepDtoList) {

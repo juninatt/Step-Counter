@@ -84,7 +84,7 @@ public class StepController {
      * @return A list of {@link StepDTO} objects representing the registered steps
      */
     @Operation(summary = "Register multiple step entities")
-    @GroupedApiResponse
+    @ListStepResponse
     @PostMapping(value = "/multiple", consumes = MediaType.APPLICATION_JSON_VALUE)
     public List<Step> registerMultipleSteps(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                                final @RequestBody List<@Valid StepDTO> stepDtoList) {
