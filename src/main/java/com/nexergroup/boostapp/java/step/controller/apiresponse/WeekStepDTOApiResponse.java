@@ -18,8 +18,10 @@ import java.lang.annotation.Target;
         @ApiResponse(
                 responseCode = "200",
                 description = "Successful GET request",
-                content = @Content(mediaType = "application/json",
-                schema = @Schema(implementation = WeekStepDTO.class)))
+                content = @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = WeekStepDTO.class))
+        )
 })
 public @interface WeekStepDTOApiResponse {
 }

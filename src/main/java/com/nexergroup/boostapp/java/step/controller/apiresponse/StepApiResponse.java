@@ -18,8 +18,10 @@ import java.lang.annotation.Target;
         @ApiResponse(
                 responseCode = "200",
                 description = "Successful POST request",
-                content = @Content(mediaType = "application/json",
-                        schema = @Schema(implementation = Step.class)))
+                content = @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = Step.class))
+        )
 })
 public @interface StepApiResponse {
 }

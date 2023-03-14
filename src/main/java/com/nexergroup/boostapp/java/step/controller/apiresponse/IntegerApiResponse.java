@@ -1,6 +1,7 @@
 package com.nexergroup.boostapp.java.step.controller.apiresponse;
 
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
@@ -16,7 +17,9 @@ import java.lang.annotation.Target;
         @ApiResponse(
                 responseCode = "200",
                 description = "Successful GET request",
-                content = @Content()
+                content = @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = Integer.class))
         )
 })
 public @interface IntegerApiResponse {
