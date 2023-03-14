@@ -2,6 +2,7 @@ package com.nexergroup.boostapp.java.step.controller.apiresponse;
 
 
 import com.nexergroup.boostapp.java.step.dto.stepdto.BulkStepDateDTO;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -11,7 +12,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.List;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
@@ -22,8 +22,7 @@ import java.util.List;
                 description = "Successful POST request",
                 content = @Content(
                         mediaType = "application/json",
-                        schema = @Schema(implementation = List.class,
-                                subTypes = { BulkStepDateDTO.class })
+                        array = @ArraySchema(schema = @Schema(implementation = BulkStepDateDTO.class))
                 )
         )
 })
