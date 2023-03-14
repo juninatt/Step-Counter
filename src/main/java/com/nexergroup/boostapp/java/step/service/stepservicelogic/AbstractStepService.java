@@ -149,7 +149,8 @@ public abstract class AbstractStepService {
      * @return the users most recently stored {@link Step} object
      */
     public Step getLatestStepFromUser(String userId) {
-        return stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId).orElseThrow();
+        return stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId)
+                .orElseThrow(() -> new NotFoundException("No Steps found in database for userI: " + userId));
     }
 
     /**
