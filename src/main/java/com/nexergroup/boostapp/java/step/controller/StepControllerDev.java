@@ -101,8 +101,8 @@ public class StepControllerDev {
     @ListOfBulkStepDateDTOResponse
     @PostMapping(value = {"/stepcount/bulk/date"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<BulkStepDateDTO> getBulkStepsByUsers(final @RequestBody List<String> users,
-                                                     final @RequestParam String startDate,
-                                                     final @RequestParam(required = false) String endDate) {
+                                                     final @RequestParam(defaultValue = "yyyy-[m]m-[d]d") String startDate,
+                                                     final @RequestParam(defaultValue = "yyyy-[m]m-[d]d", required = false) String endDate) {
         return stepService.filterUsersAndCreateListOfBulkStepDateDtoWithRange(users, startDate, endDate);
     }
 

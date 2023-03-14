@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -107,8 +106,8 @@ public class StepController {
     @ListOfBulkStepDateDTOResponse
     @PostMapping(value = "/stepcount/bulk/date", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<BulkStepDateDTO> getBulkStepsByUsers(final @RequestBody List<String> users,
-                                                     final @RequestParam() @DateTimeFormat(pattern = "yyyy-MM-dd") String startDate,
-                                                     final @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") String endDate) {
+                                                     final @RequestParam(defaultValue = "yyyy-[m]m-[d]d") String startDate,
+                                                     final @RequestParam(defaultValue = "yyyy-[m]m-[d]d", required = false) String endDate) {
         return stepService.filterUsersAndCreateListOfBulkStepDateDtoWithRange(users, startDate, endDate);
     }
 
