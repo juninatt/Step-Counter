@@ -11,9 +11,7 @@ import com.nexergroup.boostapp.java.step.service.StepService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -154,12 +152,10 @@ public class StepControllerDev {
      *         or a status 204 (NO_CONTENT) status if the step data is not available.
      */
     @Operation(summary = "Get list of steps per day per current week)")
-    @GroupedApiResponse
+    @BulkStepDateDTOResponse
     @GetMapping(value = {"/stepcount/{userId}/currentweek"})
-    public ResponseEntity<BulkStepDateDTO> getUserWeekSteps(final @PathVariable String userId) {
-        return stepService.createBulkStepDateDtoForUserForCurrentWeek(userId)
-                .map(ResponseEntity::ok)
-                .orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
+    public BulkStepDateDTO getUserWeekSteps(final @PathVariable String userId) {
+        return stepService.createBulkStepDateDtoForUserForCurrentWeek(userId);
     }
 
     @Operation(summary = "Get stepCount per day for current week for a specific user")

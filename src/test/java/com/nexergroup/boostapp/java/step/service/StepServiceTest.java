@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -99,19 +98,5 @@ public class StepServiceTest {
 
         List<BulkStepDateDTO> result = stepService.filterUsersAndCreateListOfBulkStepDateDtoWithRange(requestedUsers, startDate, lastDate);
         assertEquals(2, result.size());
-    }
-
-    @Test
-    @DisplayName("Method should return list of size 0 when no data is found in database for user")
-    public void testCreateBulkStepDateDtoForUser_ReturnsListWithSizeZero(){
-        // Act
-        var result = stepService.createBulkStepDateDtoForUserForCurrentWeek(testUserId);
-
-        // Expected values
-        var expected = 0;
-
-        // Assert
-        assertTrue(result.isPresent());
-        assertEquals(expected, result.get().getStepList().size());
     }
 }

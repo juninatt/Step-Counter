@@ -41,7 +41,6 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -293,7 +292,7 @@ public class StepApiControllerTest {
                     .withUserId(testUserId)
                     .build();
             when(stepService.createBulkStepDateDtoForUserForCurrentWeek(any(String.class)))
-                    .thenReturn(Optional.of(bulkSteps));
+                    .thenReturn(bulkSteps);
 
             // Send the request and check the response
             MvcResult result = mockMvc.perform(get(requestUrl, testUserId))
@@ -420,18 +419,6 @@ public class StepApiControllerTest {
 
             // Verify that the expected and actual JSON responses are equal
             assertEquals(expectedJsonResponse, actualJsonResponse);
-        }
-
-        @Test
-        @DisplayName("Test getUserWeekStepList with invalid input returns status no content")
-        public void getUserWeekStepList_withInValidInput_ReturnsStatusNoContent() throws Exception {
-            String url = "/steps/stepcount/{userId}/currentweek";
-
-            when(stepService.createBulkStepDateDtoForUserForCurrentWeek("badUser")).thenReturn(Optional.empty());
-
-            mockMvc.perform(get(url, "badUser"))
-                    .andExpect(status().isNoContent())
-                    .andReturn();
         }
     }
 

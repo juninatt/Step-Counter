@@ -6,7 +6,6 @@ import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDateDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.WeekStepDTO;
 import com.nexergroup.boostapp.java.step.exception.NotFoundException;
-import com.nexergroup.boostapp.java.step.exception.ValidationFailedException;
 import com.nexergroup.boostapp.java.step.model.Step;
 import com.nexergroup.boostapp.java.step.service.StepService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -169,11 +168,10 @@ public class StepController {
      *         or a status 204 (NO_CONTENT) status if the step data is not available.
      */
     @Operation(summary = "Get list of steps per day per current week)")
-    @GroupedApiResponse
+    @BulkStepDateDTOResponse
     @GetMapping(value = {"/stepcount/currentweek"})
     public BulkStepDateDTO getStepDataByUserForCurrentWeek(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt) {
-        return stepService.createBulkStepDateDtoForUserForCurrentWeek(JwtValidator.getUserId(jwt))
-                .orElseThrow(() ->new ValidationFailedException("Data could not be fetched correctly"));
+        return stepService.createBulkStepDateDtoForUserForCurrentWeek(JwtValidator.getUserId(jwt));
     }
 
     @Operation(summary = "Get stepCount per day for current week for a specific user")

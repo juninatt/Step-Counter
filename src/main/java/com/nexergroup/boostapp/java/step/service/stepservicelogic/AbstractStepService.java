@@ -206,7 +206,7 @@ public abstract class AbstractStepService {
      * @param userId the id of the user
      * @return a {@link BulkStepDateDTO} object containing the step data for the given user and current week
      */
-    public Optional<BulkStepDateDTO> createBulkStepDateDtoForUserForCurrentWeek(String userId) {
+    public BulkStepDateDTO createBulkStepDateDtoForUserForCurrentWeek(String userId) {
         // Get the start and end of the week as ZonedDateTime objects
         var weekStart = DateHelper.getWeekStart(LocalDateTime.now(), ZoneId.systemDefault());
         var weekEnd = DateHelper.getWeekEnd(LocalDateTime.now(), ZoneId.systemDefault());
@@ -216,7 +216,7 @@ public abstract class AbstractStepService {
         // Temporary solution(weekNumber of DTO still always 0): TODO: Replace query in repository
         listOfUserStepDateDto.forEach(dto -> dto.setUserId(userId));
         // Create a BulkStepDateDTO object for the user from the list of StepDateDTO:s and return it to the caller
-        return Optional.of(new BulkStepDateDTO(userId, listOfUserStepDateDto));
+        return new BulkStepDateDTO(userId, listOfUserStepDateDto);
     }
 
     /**
