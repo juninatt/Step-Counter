@@ -213,6 +213,8 @@ public abstract class AbstractStepService {
         // Retrieve a list of StepDateDTO:s for the specified user and period
         var listOfUserStepDateDto = stepRepository.getStepDataByUserIdAndDateRange(
                 userId, Timestamp.valueOf(weekStart.toLocalDateTime()), Timestamp.valueOf(weekEnd.toLocalDateTime()));
+        // Temporary solution(weekNumber of DTO still always 0): TODO: Replace query in repository
+        listOfUserStepDateDto.forEach(dto -> dto.setUserId(userId));
         // Create a BulkStepDateDTO object for the user from the list of StepDateDTO:s and return it to the caller
         return Optional.of(new BulkStepDateDTO(userId, listOfUserStepDateDto));
     }
