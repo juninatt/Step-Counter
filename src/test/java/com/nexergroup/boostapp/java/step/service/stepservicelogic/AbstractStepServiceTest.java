@@ -75,7 +75,7 @@ class AbstractStepServiceTest {
             @DisplayName("Should throw 'ValidationFailedException' when StepDTO passed to method is null")
             public void testAddSingleStepForUser_ThrowsValidationFailedException_WhenStepDTOIsNull() {
                 // Expected exception message
-                var expectedMessage = "Step object is empty";
+                var expectedMessage = "StepDTO object is null";
 
                 // Assert that correct exception is thrown when StepDTO passed to method is null
                 var result = assertThrows(
