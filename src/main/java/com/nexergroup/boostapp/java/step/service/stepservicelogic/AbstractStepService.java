@@ -150,7 +150,7 @@ public abstract class AbstractStepService {
      */
     public Step getLatestStepFromUser(String userId) {
         return stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId)
-                .orElseThrow(() -> new NotFoundException("No Steps found in database for userI: " + userId));
+                .orElseThrow(() -> new NotFoundException("No Steps found in database for userId : " + userId));
     }
 
     /**
@@ -162,7 +162,8 @@ public abstract class AbstractStepService {
      * @return the users total stepCount for the requested month
      */
     public Integer getStepCountForUserYearAndMonth(String userId, int year, int month) {
-        return monthStepRepository.getStepCountByUserIdYearAndMonth(userId, year, month).orElseThrow();
+        return monthStepRepository.getStepCountByUserIdYearAndMonth(userId, year, month)
+                .orElseThrow(() -> new NotFoundException("No steps registered for userId " + userId + " during month " + month + ", year: " + year));
     }
 
     /**
@@ -174,7 +175,8 @@ public abstract class AbstractStepService {
      * @return the users total stepCount for the requested week
      */
     public Integer getStepCountForUserYearAndWeek(String userId, int year, int week) {
-        return weekStepRepository.getStepCountByUserIdYearAndWeek(userId, year, week).orElseThrow();
+        return weekStepRepository.getStepCountByUserIdYearAndWeek(userId, year, week)
+                .orElseThrow(() -> new NotFoundException("No steps registered for userId " + userId + " during week " + week + ", year: " + year));
     }
 
     /**
@@ -230,7 +232,7 @@ public abstract class AbstractStepService {
             listOfStepsDateDtoForUser = stepRepository.getStepDataByUserIdAndDateRange(userId, startTime, endTime);
         }
         catch (Exception exception) {
-            throw new NotFoundException();
+            throw new NotFoundException("No data found in database for userId " + userId + " between " + startTime + " and " + endTime);
         }
         // Create a BulkStepDateDTO object and add the retrieved StepDateDTO:s to it
         var bulkStepDateDTO = new BulkStepDateDTO();
@@ -317,7 +319,7 @@ public abstract class AbstractStepService {
             throw new ValidationFailedException("User id and time must not be null");
         // Retrieve all Step objects belonging to the user from the step table
         var stepsFromDatabase = stepRepository.getListOfStepsByUserId(userId)
-                .orElseThrow(() -> new NotFoundException("No Step object found for user id: " + userId));
+                .orElseThrow(() -> new NotFoundException("No steps found in database for user id: " + userId));
         // Create an ArrayList with 7 slots and the value '0' added to each slot
         var stepCountsByDay = getDefaultWeekList();
 

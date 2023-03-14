@@ -119,7 +119,7 @@ public class StepValidator {
      */
     private boolean stepDtoIsNotNull(StepDTO stepDto) {
         if (stepDto == null)
-            throw new ValidationFailedException("Step object is empty");
+            throw new ValidationFailedException("StepDTO object is null");
          else
             return true;
     }
