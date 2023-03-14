@@ -1,23 +1,19 @@
 package com.nexergroup.boostapp.java.step.controller;
 
-import com.nexergroup.boostapp.java.step.controller.apiresponse.GroupedApiResponse;
-import com.nexergroup.boostapp.java.step.controller.apiresponse.IntegerApiResponse;
-import com.nexergroup.boostapp.java.step.controller.apiresponse.StepApiResponse;
-import com.nexergroup.boostapp.java.step.controller.apiresponse.WeekStepDTOApiResponse;
+import com.nexergroup.boostapp.java.step.controller.apiresponse.*;
 import com.nexergroup.boostapp.java.step.dto.stepdto.BulkStepDateDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDateDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.WeekStepDTO;
 import com.nexergroup.boostapp.java.step.exception.NotFoundException;
+import com.nexergroup.boostapp.java.step.exception.ValidationFailedException;
 import com.nexergroup.boostapp.java.step.model.Step;
 import com.nexergroup.boostapp.java.step.service.StepService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -74,7 +70,7 @@ public class StepController {
      *         or a status 400 (BAD_REQUEST) status if the request was invalid
      */
     @Operation(summary = "Register step entity")
-    @StepApiResponse
+    @StepResponse
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public Step registerStep(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                              final @RequestBody @Valid StepDTO stepDTO) {
@@ -107,7 +103,7 @@ public class StepController {
      * @throws NotFoundException if no step data is found for the specified users and date range
      */
     @Operation(summary = "Get step count per day for a list of users by start date and end date (optional).")
-    @GroupedApiResponse
+    @ListOfBulkStepDateDTOResponse
     @PostMapping(value = "/stepcount/bulk/date", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<BulkStepDateDTO> getBulkStepsByUsers(final @RequestBody List<String> users,
                                                      final @RequestParam String startDate,
@@ -122,7 +118,7 @@ public class StepController {
      * @return An Optional containing a {@link StepDTO} object in the body,
      */
     @Operation(summary = "Get user's latest step")
-    @StepApiResponse
+    @StepResponse
     @GetMapping(value = "/latest")
     public Step getUsersLatestStep ( final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt) {
         return stepService.getLatestStepFromUser(JwtValidator.getUserId(jwt));
@@ -138,7 +134,7 @@ public class StepController {
      *         or a status 204 (NO_CONTENT) status if the step data is not available.
      */
     @Operation(summary = "Get a user's step count per month by user and year and month)")
-    @IntegerApiResponse
+    @GetStepCountResponse
     @GetMapping(value = {"/stepcount/year/{year}/month/{month}"})
     public Integer getUserMonthStepCountForYearAndMonth(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                                                         final @PathVariable int year,
@@ -156,7 +152,7 @@ public class StepController {
      *         or a status 204 (NO_CONTENT) status if the step count is not available.
      */
     @Operation(summary = "Get a user's step count per week by user and year and week)")
-    @IntegerApiResponse
+    @GetStepCountResponse
     @GetMapping(value = {"/stepcount/year/{year}/week/{week}"})
     public Integer getUserWeekStepCountForWeekAndYear(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                                                       final @PathVariable int year,
@@ -175,14 +171,13 @@ public class StepController {
     @Operation(summary = "Get list of steps per day per current week)")
     @GroupedApiResponse
     @GetMapping(value = {"/stepcount/currentweek"})
-    public ResponseEntity<BulkStepDateDTO> getStepDataByUserForCurrentWeek(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt) {
+    public BulkStepDateDTO getStepDataByUserForCurrentWeek(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt) {
         return stepService.createBulkStepDateDtoForUserForCurrentWeek(JwtValidator.getUserId(jwt))
-                .map(ResponseEntity::ok)
-                .orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
+                .orElseThrow(() ->new ValidationFailedException("Data could not be fetched correctly"));
     }
 
     @Operation(summary = "Get stepCount per day for current week for a specific user")
-    @WeekStepDTOApiResponse
+    @WeekStepDTOResponse
     @GetMapping(value = "/stepcount/currentweekdaily")
     public WeekStepDTO getStepCountByDayForUserCurrentWeek(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt) {
         return stepService.getStepsPerDayForWeek(JwtValidator.getUserId(jwt));

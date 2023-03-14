@@ -1,5 +1,7 @@
 package com.nexergroup.boostapp.java.step.controller.apiresponse;
 
+
+import com.nexergroup.boostapp.java.step.dto.stepdto.BulkStepDateDTO;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -9,18 +11,21 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.List;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-@GroupedApiResponse()
+@GroupedApiResponse
 @ApiResponses(value = {
         @ApiResponse(
                 responseCode = "200",
-                description = "Successful GET request",
+                description = "Successful POST request",
                 content = @Content(
                         mediaType = "application/json",
-                        schema = @Schema(implementation = Integer.class))
+                        schema = @Schema(implementation = List.class,
+                                subTypes = { BulkStepDateDTO.class })
+                )
         )
 })
-public @interface IntegerApiResponse {
+public @interface ListOfBulkStepDateDTOResponse {
 }

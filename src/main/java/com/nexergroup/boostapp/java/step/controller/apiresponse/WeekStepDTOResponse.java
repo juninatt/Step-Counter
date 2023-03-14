@@ -23,5 +23,5 @@ import java.lang.annotation.Target;
                         schema = @Schema(implementation = WeekStepDTO.class))
         )
 })
-public @interface WeekStepDTOApiResponse {
+public @interface WeekStepDTOResponse {
 }

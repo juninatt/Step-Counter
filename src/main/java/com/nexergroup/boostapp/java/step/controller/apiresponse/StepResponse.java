@@ -23,5 +23,5 @@ import java.lang.annotation.Target;
                         schema = @Schema(implementation = Step.class))
         )
 })
-public @interface StepApiResponse {
+public @interface StepResponse {
 }

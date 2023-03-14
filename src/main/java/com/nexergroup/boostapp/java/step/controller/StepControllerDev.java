@@ -1,9 +1,6 @@
 package com.nexergroup.boostapp.java.step.controller;
 
-import com.nexergroup.boostapp.java.step.controller.apiresponse.GroupedApiResponse;
-import com.nexergroup.boostapp.java.step.controller.apiresponse.IntegerApiResponse;
-import com.nexergroup.boostapp.java.step.controller.apiresponse.StepApiResponse;
-import com.nexergroup.boostapp.java.step.controller.apiresponse.WeekStepDTOApiResponse;
+import com.nexergroup.boostapp.java.step.controller.apiresponse.*;
 import com.nexergroup.boostapp.java.step.dto.stepdto.BulkStepDateDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDateDTO;
@@ -68,7 +65,7 @@ public class StepControllerDev {
      *         or a status 400 (BAD_REQUEST) status if the request was invalid
      */
     @Operation(summary = "Register step entity")
-    @StepApiResponse
+    @StepResponse
     @PostMapping(value = "/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Step registerStep(final @PathVariable String userId,
                                              final @RequestBody @Valid StepDTO stepDTO) {
@@ -101,7 +98,7 @@ public class StepControllerDev {
      * @throws NotFoundException if no step data is found for the specified users and date range
      */
     @Operation(summary = "Get step count per day for a list of users by start date and end date (optional).")
-    @GroupedApiResponse
+    @ListOfBulkStepDateDTOResponse
     @PostMapping(value = {"/stepcount/bulk/date"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<BulkStepDateDTO> getBulkStepsByUsers(final @RequestBody List<String> users,
                                                      final @RequestParam String startDate,
@@ -120,7 +117,7 @@ public class StepControllerDev {
      *         or a status 204 (NO_CONTENT) status if the step data is not available.
      */
     @Operation(summary = "Get a user's step count per month by user ID and year and month)")
-    @IntegerApiResponse
+    @GetStepCountResponse
     @GetMapping(value = {"/stepcount/{userId}/year/{year}/month/{month}"})
     public Integer getUserMonthSteps(final @PathVariable String userId,
                                                      final @PathVariable int year,
@@ -139,7 +136,7 @@ public class StepControllerDev {
      *         or a status 204 (NO_CONTENT) status if the step count is not available.
      */
     @Operation(summary = "Get a user's step count per week by user ID and year and week)")
-    @IntegerApiResponse
+    @GetStepCountResponse
     @GetMapping(value = {"/stepcount/{userId}/year/{year}/week/{week}"})
     public Integer getUserWeekStepCountForWeekAndYear(final @PathVariable String userId,
                                                                       final @PathVariable int year,
@@ -166,7 +163,7 @@ public class StepControllerDev {
     }
 
     @Operation(summary = "Get stepCount per day for current week for a specific user")
-    @WeekStepDTOApiResponse
+    @WeekStepDTOResponse
     @GetMapping(value = "/stepcount/{userId}/currentweekdaily")
     public WeekStepDTO getStepCountByDayForUserCurrentWeek(final @PathVariable String userId) {
         return stepService.getStepsPerDayForWeek(userId);
@@ -180,7 +177,7 @@ public class StepControllerDev {
      * or a status 204 (NO_CONTENT) if no step data is found for the authenticated user
      */
     @Operation(summary = "Get user's latest step")
-    @StepApiResponse
+    @StepResponse
     @GetMapping(value = "/latest/{userId}")
     public Step getUsersLatestStep(final @PathVariable String userId) {
         return stepService.getLatestStepFromUser(userId);
