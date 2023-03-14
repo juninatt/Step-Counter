@@ -1,6 +1,7 @@
 package com.nexergroup.boostapp.java.step.controller;
 
 import com.nexergroup.boostapp.java.step.controller.apiresponse.GroupedApiResponse;
+import com.nexergroup.boostapp.java.step.controller.apiresponse.IntegerApiResponse;
 import com.nexergroup.boostapp.java.step.controller.apiresponse.StepApiResponse;
 import com.nexergroup.boostapp.java.step.controller.apiresponse.WeekStepDTOApiResponse;
 import com.nexergroup.boostapp.java.step.dto.stepdto.BulkStepDateDTO;
@@ -137,7 +138,7 @@ public class StepController {
      *         or a status 204 (NO_CONTENT) status if the step data is not available.
      */
     @Operation(summary = "Get a user's step count per month by user and year and month)")
-    @GroupedApiResponse
+    @IntegerApiResponse
     @GetMapping(value = {"/stepcount/year/{year}/month/{month}"})
     public Integer getUserMonthStepCountForYearAndMonth(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                                                         final @PathVariable int year,
@@ -155,7 +156,7 @@ public class StepController {
      *         or a status 204 (NO_CONTENT) status if the step count is not available.
      */
     @Operation(summary = "Get a user's step count per week by user and year and week)")
-    @GroupedApiResponse
+    @IntegerApiResponse
     @GetMapping(value = {"/stepcount/year/{year}/week/{week}"})
     public Integer getUserWeekStepCountForWeekAndYear(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                                                       final @PathVariable int year,
