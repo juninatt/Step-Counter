@@ -3,7 +3,6 @@ package com.nexergroup.boostapp.java.step.controller;
 import com.nexergroup.boostapp.java.step.controller.apiresponse.*;
 import com.nexergroup.boostapp.java.step.dto.stepdto.BulkStepDateDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
-import com.nexergroup.boostapp.java.step.dto.stepdto.StepDateDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.WeekStepDTO;
 import com.nexergroup.boostapp.java.step.exception.NotFoundException;
 import com.nexergroup.boostapp.java.step.model.Step;
@@ -157,21 +156,6 @@ public class StepController {
                                                                       final @PathVariable int year,
                                                                       final @PathVariable int week) {
         return stepService.getStepCountForUserYearAndWeek(JwtValidator.getUserId(jwt), year, week);
-    }
-
-    /**
-     * Get a list of steps per day for the current week for an authenticated user.
-     *
-     * @param jwt A JSON Web Token (JWT) representing the authenticated user
-     * @return A ResponseEntity containing a list of {@link StepDateDTO} objects representing
-     *         the steps taken by the user on each day of the current week,
-     *         or a status 204 (NO_CONTENT) status if the step data is not available.
-     */
-    @Operation(summary = "Get list of steps per day per current week)")
-    @BulkStepDateDTOResponse
-    @GetMapping(value = {"/stepcount/currentweek"})
-    public BulkStepDateDTO getStepDataByUserForCurrentWeek(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt) {
-        return stepService.createBulkStepDateDtoForUserForCurrentWeek(JwtValidator.getUserId(jwt));
     }
 
     @Operation(summary = "Get stepCount per day for current week for a specific user")

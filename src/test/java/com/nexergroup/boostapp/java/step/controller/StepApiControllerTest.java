@@ -2,7 +2,6 @@ package com.nexergroup.boostapp.java.step.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.nexergroup.boostapp.java.step.builder.BulkStepDateDTOBuilder;
 import com.nexergroup.boostapp.java.step.dto.starpointdto.BulkUserStarPointsDTO;
 import com.nexergroup.boostapp.java.step.dto.starpointdto.RequestStarPointsDTO;
 import com.nexergroup.boostapp.java.step.dto.starpointdto.StarPointDateDTO;
@@ -277,32 +276,6 @@ public class StepApiControllerTest {
             assertEquals(expectedJsonResponse, actualJsonResponse);
         }
 
-        @Test
-        @DisplayName("Test getUserWeekStepsList with valid input")
-        public void getUserWeekStepsList_WithValidInput_ReturnsStatusOkAndCorrectContent() throws Exception {
-            // Set up test data and expectations
-            String requestUrl = "/steps/stepcount/{userId}/currentweek";
-            String testUserId = "TestUser1";
-            List<StepDateDTO> stepDateDTOList = new ArrayList<>();
-            stepDateDTOList.add(new StepDateDTO(testUserId, Date.valueOf("2020-06-06"), 1, 200L));
-            stepDateDTOList.add(new StepDateDTO(testUserId, Date.valueOf("2020-06-07"), 2, 100L));
-            stepDateDTOList.add(new StepDateDTO(testUserId, Date.valueOf("2020-06-08"), 3, 300L));
-            BulkStepDateDTO bulkSteps = new BulkStepDateDTOBuilder()
-                    .withStepList(stepDateDTOList)
-                    .withUserId(testUserId)
-                    .build();
-            when(stepService.createBulkStepDateDtoForUserForCurrentWeek(any(String.class)))
-                    .thenReturn(bulkSteps);
-
-            // Send the request and check the response
-            MvcResult result = mockMvc.perform(get(requestUrl, testUserId))
-                    .andExpect(status().isOk())
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                    .andReturn();
-            String actualResponseJson = result.getResponse().getContentAsString();
-            String expectedResultJson = objectMapper.writeValueAsString(bulkSteps);
-            assertEquals(expectedResultJson, actualResponseJson);
-        }
 
         @Test
         @DisplayName("Test getStepCountByDayForUserCurrentWeek")
