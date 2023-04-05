@@ -195,9 +195,12 @@ public abstract class AbstractStepService {
         // Collect the matching string to a list (removing requested users not found in database)
         var matchingUsers = StringComparator.getMatching(users, stepRepository.getListOfAllDistinctUserId());
         // Create a BulkStepDateDTO object for each user, collect them to a list and return it to the caller
-        return matchingUsers.stream()
+        List<BulkStepDateDTO> listOfBulkStepDateDTO = matchingUsers.stream()
                 .map(user -> createBulkStepDateDtoForUser(user, sqlStartDate, sqlEndDate))
                 .collect(Collectors.toList());
+        if (listOfBulkStepDateDTO.isEmpty())
+            throw new NotFoundException("No data found in database for users '" + users + " between " + startDate + " and " + endDate);
+        return listOfBulkStepDateDTO;
     }
 
     /**
