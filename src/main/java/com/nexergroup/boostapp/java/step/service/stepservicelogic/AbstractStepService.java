@@ -21,6 +21,7 @@ import com.nexergroup.boostapp.java.step.validator.boostappvalidator.StepValidat
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -191,7 +192,7 @@ public abstract class AbstractStepService {
         var stringConverter = new StringToTimeStampConverter();
         // Convert the string to a time format supported by the database
         var sqlStartDate = stringConverter.convert(startDate);
-        var sqlEndDate = stringConverter.convert(endDate);
+        var sqlEndDate = endDate.isEmpty() ? Timestamp.from(Instant.now()) : stringConverter.convert(endDate);
         // Collect the matching string to a list (removing requested users not found in database)
         var matchingUsers = StringComparator.getMatching(users, stepRepository.getListOfAllDistinctUserId());
         // Create a BulkStepDateDTO object for each user, collect them to a list and return it to the caller
