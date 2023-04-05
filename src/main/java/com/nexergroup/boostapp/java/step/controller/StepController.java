@@ -106,7 +106,7 @@ public class StepController {
     public List<BulkStepDateDTO> getBulkStepsByUsers(final @RequestBody List<String> users,
                                                      final @RequestParam(defaultValue = "yyyy-[m]m-[d]d") String startDate,
                                                      final @RequestParam(defaultValue = "yyyy-[m]m-[d]d", required = false) String endDate) {
-        return stepService.filterUsersAndCreateListOfBulkStepDateDtoWithRange(users, startDate, endDate);
+        return stepService.getListOfUsersStepDataBetweenDates(users, startDate, endDate);
     }
 
     /**

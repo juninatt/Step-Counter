@@ -207,7 +207,7 @@ public class StepApiControllerTest {
             bulkStepListDTODate.add(new BulkStepDateDTO("Test2", stepDateDTOList2));
 
             // Set up mock service response
-            when(stepService.filterUsersAndCreateListOfBulkStepDateDtoWithRange(testUserIDs, startDate, endDate))
+            when(stepService.getListOfUsersStepDataBetweenDates(testUserIDs, startDate, endDate))
                     .thenReturn((bulkStepListDTODate));
 
             // Build and send the request
@@ -253,7 +253,7 @@ public class StepApiControllerTest {
             bulkStepListDTODate.add(new BulkStepDateDTO("Test1", stepDateDTOList1));
             bulkStepListDTODate.add(new BulkStepDateDTO("Test2", stepDateDTOList2));
 
-            when(stepService.filterUsersAndCreateListOfBulkStepDateDtoWithRange(testUsers, startDate, endDate)).thenReturn((bulkStepListDTODate));
+            when(stepService.getListOfUsersStepDataBetweenDates(testUsers, startDate, endDate)).thenReturn((bulkStepListDTODate));
 
             RequestBuilder requestBuilder = MockMvcRequestBuilders
                     .post(url)

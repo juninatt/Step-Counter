@@ -96,7 +96,7 @@ public class StepServiceTest {
 
         when(mockedStepRepository.getListOfAllDistinctUserId()).thenReturn(allUsers);
 
-        List<BulkStepDateDTO> result = stepService.filterUsersAndCreateListOfBulkStepDateDtoWithRange(requestedUsers, startDate, lastDate);
+        List<BulkStepDateDTO> result = stepService.getListOfUsersStepDataBetweenDates(requestedUsers, startDate, lastDate);
         assertEquals(2, result.size());
     }
 }

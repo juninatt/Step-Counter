@@ -42,8 +42,8 @@ public class StepService extends AbstractStepService {
     }
 
     @Override
-    public List<BulkStepDateDTO> filterUsersAndCreateListOfBulkStepDateDtoWithRange(List<String> users, String startDate, String endDate) {
-        return super.filterUsersAndCreateListOfBulkStepDateDtoWithRange(users, startDate, endDate);
+    public List<BulkStepDateDTO> getListOfUsersStepDataBetweenDates(List<String> users, String startDate, String endDate) {
+        return super.getListOfUsersStepDataBetweenDates(users, startDate, endDate);
     }
 
     @Override

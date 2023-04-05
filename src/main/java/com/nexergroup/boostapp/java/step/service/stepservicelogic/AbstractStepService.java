@@ -187,7 +187,7 @@ public abstract class AbstractStepService {
      * @param endDate the end date in string format (yyyy-MM-dd)
      * @return a list of {@link BulkStepDateDTO} objects
      */
-    public List<BulkStepDateDTO> filterUsersAndCreateListOfBulkStepDateDtoWithRange(List<String> users, String startDate, String endDate) {
+    public List<BulkStepDateDTO> getListOfUsersStepDataBetweenDates(List<String> users, String startDate, String endDate) {
         var stringConverter = new StringToTimeStampConverter();
         // Convert the string to a time format supported by the database
         var sqlStartDate = stringConverter.convert(startDate);
@@ -199,7 +199,7 @@ public abstract class AbstractStepService {
                 .map(user -> createBulkStepDateDtoForUser(user, sqlStartDate, sqlEndDate))
                 .collect(Collectors.toList());
         if (listOfBulkStepDateDTO.isEmpty())
-            throw new NotFoundException("No data found in database for users '" + users + " between " + startDate + " and " + endDate);
+            throw new NotFoundException("No data found in database for userId's " + users + " between " + startDate + " and " + endDate);
         return listOfBulkStepDateDTO;
     }
 

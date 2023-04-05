@@ -94,13 +94,13 @@ public class StepControllerDev {
      * @return A list of {@link BulkStepDateDTO} objects
      * @throws NotFoundException if no step data is found for the specified users and date range
      */
-    @Operation(summary = "Get step count per day for a list of users by start date and end date (optional).")
+    @Operation(summary = "Get step count per day for a list of users by start date and end date (optional). *Only data from last Monday available")
     @ListOfBulkStepDateDTOResponse
     @PostMapping(value = {"/stepcount/bulk/date"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<BulkStepDateDTO> getBulkStepsByUsers(final @RequestBody List<String> users,
                                                      final @RequestParam(defaultValue = "yyyy-[m]m-[d]d") String startDate,
                                                      final @RequestParam(defaultValue = "yyyy-[m]m-[d]d", required = false) String endDate) {
-        return stepService.filterUsersAndCreateListOfBulkStepDateDtoWithRange(users, startDate, endDate);
+        return stepService.getListOfUsersStepDataBetweenDates(users, startDate, endDate);
     }
 
 
