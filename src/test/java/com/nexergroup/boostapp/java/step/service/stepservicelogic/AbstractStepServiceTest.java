@@ -405,7 +405,7 @@ class AbstractStepServiceTest {
                     var result = stepService.addSingleStepForUser(testUser, testStepDTO);
 
                     // Expected stepCount of the returned Step
-                    var expectedStepCount = testStepDTO.getStepCount() + testStep.getStepCount();
+                    var expectedStepCount = testStepDTO.getStepCount();
 
                     // Actual stepCount of the returned Step
                     var actualStepCount = result.getStepCount();
@@ -493,7 +493,7 @@ class AbstractStepServiceTest {
                 stepService.addSingleStepForUser(testUser, testStepDTO);
 
                 // Expected stepCount after Step is updated
-                var expectedStepCount = testStepDTO.getStepCount() + testStep.getStepCount();
+                var expectedStepCount = testStepDTO.getStepCount();
 
                 // Actual object in database and stepCount
                 var result = stepRepository.findFirstByUserIdOrderByEndTimeDesc(testUser);

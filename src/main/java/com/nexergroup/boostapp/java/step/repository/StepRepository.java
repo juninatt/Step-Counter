@@ -39,16 +39,16 @@ public interface StepRepository extends JpaRepository<Step, Long> {
      * Update the stepCount-, endTime- and uploadTime- fields of a {@link Step} object in the database.
      *
      * @param step The {@link Step} object to update.
-     * @param increment The number to add to the stepCount field.
+     * @param stepCount The new stepCount of the step object
      * @param endTime The new endTime value of the object.
      * @param uploadTime The new uploadTime value of the object.
      */
     @Transactional
     @Modifying
-    @Query("UPDATE Step s SET s.stepCount = s.stepCount + :increment, s.endTime = :endTime, s.uploadTime = :uploadTime WHERE s = :step")
+    @Query("UPDATE Step s SET s.stepCount = :stepCount, s.endTime = :endTime, s.uploadTime = :uploadTime WHERE s = :step")
     void incrementStepCountAndUpdateTimes(
             @Param("step") Step step,
-            @Param("increment") int increment,
+            @Param("stepCount") int stepCount,
             @Param("endTime") ZonedDateTime endTime,
             @Param("uploadTime") ZonedDateTime uploadTime);
 
