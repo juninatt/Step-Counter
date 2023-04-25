@@ -51,7 +51,7 @@ public interface WeekStepRepository extends JpaRepository<WeekStep, Long> {
      */
     @Transactional
     @Modifying
-    @Query("UPDATE WeekStep ws SET ws.stepCount = ws.stepCount + :increment WHERE ws.id = :id")
+    @Query("UPDATE WeekStep ws SET ws.stepCount = :increment WHERE ws.id = :id")
     void incrementWeekStepCount(@Param("id") Long id, @Param("increment") int increment);
 
     Optional<WeekStep> findTopByUserIdOrderByIdDesc(String userId);

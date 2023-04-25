@@ -51,7 +51,7 @@ public interface MonthStepRepository extends JpaRepository<MonthStep, Long> {
      */
     @Transactional
     @Modifying
-    @Query("UPDATE MonthStep ms SET ms.stepCount = ms.stepCount + :increment WHERE ms.id = :id")
+    @Query("UPDATE MonthStep ms SET ms.stepCount = :increment WHERE ms.id = :id")
     void incrementMonthStepCount(@Param("id") Long id, @Param("increment") int increment);
 
     Optional<MonthStep> findTopByUserIdOrderByIdDesc(String userId);

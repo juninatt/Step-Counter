@@ -583,7 +583,7 @@ class AbstractStepServiceTest {
                 stepService.addSingleStepForUser(testUser, testStepDTO);
 
                 // Expected stepCount of WeekStep object in database
-                var expectedStepCount = testStepDTO.getStepCount() + testStep.getStepCount();
+                var expectedStepCount = testStepDTO.getStepCount();
 
                 // Actual object in database and stepCount
                 // TODO: Use new query
