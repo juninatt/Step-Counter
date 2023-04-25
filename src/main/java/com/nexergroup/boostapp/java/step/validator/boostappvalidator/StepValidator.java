@@ -66,7 +66,7 @@ public class StepValidator {
         // Fetch the most recently stored Step object for the specified user
         var existingStep = repository.findFirstByUserIdOrderByEndTimeDesc(stepData.getUserId());
         // Returns true if a Step is found for the userId with an endTime that is after the startTime of the new data
-        return existingStep.map(step -> firstTimeFieldIsAfterSecondTimeField(step.getEndTime(), stepData.getStartTime()))
+        return existingStep.map(step -> step.getEndTime().getDayOfYear() == stepData.getEndTime().getDayOfYear())
                 .orElse(false);
     }
 
