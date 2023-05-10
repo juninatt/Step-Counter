@@ -1,6 +1,5 @@
 package com.nexergroup.boostapp.java.step.service;
 
-import com.nexergroup.boostapp.java.step.dto.stepdto.BulkStepDateDTO;
 import com.nexergroup.boostapp.java.step.repository.MonthStepRepository;
 import com.nexergroup.boostapp.java.step.repository.StepRepository;
 import com.nexergroup.boostapp.java.step.repository.WeekStepRepository;
@@ -14,8 +13,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
@@ -87,16 +84,4 @@ public class StepServiceTest {
         assertEquals(Optional.of(mockedStepsInWeek), Optional.of(optionalStep));
     }
 
-    @Test
-    public void getStepsByMultipleUsers_ReturnsListWithCorrectSize(){
-        List<String> allUsers = new ArrayList<>(List.of("user1", "user2", "user3"));
-        List<String> requestedUsers = new ArrayList<>(List.of("user1", "user2"));
-        String startDate = "2020-08-23";
-        String lastDate = "2020-09-23";
-
-        when(mockedStepRepository.getListOfAllDistinctUserId()).thenReturn(allUsers);
-
-        List<BulkStepDateDTO> result = stepService.getListOfUsersStepDataBetweenDates(requestedUsers, startDate, lastDate);
-        assertEquals(2, result.size());
-    }
 }

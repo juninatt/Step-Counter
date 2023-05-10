@@ -5,9 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.nexergroup.boostapp.java.step.dto.starpointdto.BulkUserStarPointsDTO;
 import com.nexergroup.boostapp.java.step.dto.starpointdto.RequestStarPointsDTO;
 import com.nexergroup.boostapp.java.step.dto.starpointdto.StarPointDateDTO;
-import com.nexergroup.boostapp.java.step.dto.stepdto.BulkStepDateDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
-import com.nexergroup.boostapp.java.step.dto.stepdto.StepDateDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.WeekStepDTO;
 import com.nexergroup.boostapp.java.step.exception.ValidationFailedException;
 import com.nexergroup.boostapp.java.step.model.Step;
@@ -34,7 +32,6 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -181,99 +178,6 @@ public class StepApiControllerTest {
 
             // Verify that the response status is OK (200)
             assertEquals(HttpStatus.OK.value(), response.getStatus());
-        }
-
-        @Test
-        @DisplayName("Test bulk step count retrieval with valid input, returns status OK and correct content")
-        public void testGetBulkStepCountWithValidInput() throws Exception {
-            // Set up test data
-            var requestUrl = "/steps/stepcount/bulk/date";
-            List<String> testUserIDs = new ArrayList<>(List.of("TestUser1", "TestUser2"));
-            var startDate = "2021-10-01";
-            var endDate = "2021-10-05";
-
-            List<StepDateDTO> stepDateDTOList1 = new ArrayList<>();
-            stepDateDTOList1.add(new StepDateDTO("Test1", Date.valueOf("2021-10-01"), 1, 200L));
-            stepDateDTOList1.add(new StepDateDTO("Test1", Date.valueOf("2021-10-02"), 2, 100L));
-            stepDateDTOList1.add(new StepDateDTO("Test1", Date.valueOf("2021-10-03"), 3, 300L));
-
-            List<StepDateDTO> stepDateDTOList2 = new ArrayList<>();
-            stepDateDTOList2.add(new StepDateDTO("Test2", Date.valueOf("2021-10-01"), 1, 200L));
-            stepDateDTOList2.add(new StepDateDTO("Test2", Date.valueOf("2021-10-02"), 2, 100L));
-            stepDateDTOList2.add(new StepDateDTO("Test2", Date.valueOf("2021-10-03"), 3, 300L));
-
-            List<BulkStepDateDTO> bulkStepListDTODate = new ArrayList<>();
-            bulkStepListDTODate.add(new BulkStepDateDTO("Test1", stepDateDTOList1));
-            bulkStepListDTODate.add(new BulkStepDateDTO("Test2", stepDateDTOList2));
-
-            // Set up mock service response
-            when(stepService.getListOfUsersStepDataBetweenDates(testUserIDs, startDate, endDate))
-                    .thenReturn((bulkStepListDTODate));
-
-            // Build and send the request
-            RequestBuilder requestBuilder = MockMvcRequestBuilders
-                    .post(requestUrl)
-                    .param("startDate", startDate)
-                    .param("endDate", endDate)
-                    .accept(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(testUserIDs)).characterEncoding("utf-8")
-                    .contentType(MediaType.APPLICATION_JSON);
-
-            // Verify the response
-            MvcResult result = mockMvc.perform(requestBuilder)
-                    .andExpect(status().isOk())
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                    .andReturn();
-
-            String expectedJsonResponse = objectMapper.writeValueAsString(bulkStepListDTODate);
-            String actualJsonResponse = result.getResponse().getContentAsString();
-
-            assertEquals(expectedJsonResponse, actualJsonResponse);
-        }
-
-
-        @Test
-        @DisplayName("Given valid input, when calling getBulkStepsByUsers endpoint, then it should return status OK and correct content")
-        public void givenValidInput_whenCallingGetBulkStepsByUsersEndpoint_shouldReturnStatusOkAndCorrectContent() throws Exception {
-            //Arrange
-            String url = "/steps/stepcount/bulk/date";
-            List<String> testUsers = new ArrayList<>(List.of("Test1", "Test2"));
-            String startDate = "2021-10-01";
-            String endDate = "2021-10-05";
-            List<StepDateDTO> stepDateDTOList1 = new ArrayList<>();
-            stepDateDTOList1.add(new StepDateDTO("Test1", Date.valueOf("2021-10-01"), 1, 200L));
-            stepDateDTOList1.add(new StepDateDTO("Test1", Date.valueOf("2021-10-02"), 2, 100L));
-            stepDateDTOList1.add(new StepDateDTO("Test1", Date.valueOf("2021-10-03"), 3, 300L));
-
-            List<StepDateDTO> stepDateDTOList2 = new ArrayList<>();
-            stepDateDTOList2.add(new StepDateDTO("Test2", Date.valueOf("2021-10-01"), 1, 200L));
-            stepDateDTOList2.add(new StepDateDTO("Test2", Date.valueOf("2021-10-02"), 2, 100L));
-            stepDateDTOList2.add(new StepDateDTO("Test2", Date.valueOf("2021-10-03"), 3, 300L));
-
-            List<BulkStepDateDTO> bulkStepListDTODate = new ArrayList<>();
-            bulkStepListDTODate.add(new BulkStepDateDTO("Test1", stepDateDTOList1));
-            bulkStepListDTODate.add(new BulkStepDateDTO("Test2", stepDateDTOList2));
-
-            when(stepService.getListOfUsersStepDataBetweenDates(testUsers, startDate, endDate)).thenReturn((bulkStepListDTODate));
-
-            RequestBuilder requestBuilder = MockMvcRequestBuilders
-                    .post(url)
-                    .param("startDate", startDate)
-                    .param("endDate", endDate)
-                    .accept(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(testUsers))
-                    .characterEncoding("utf-8")
-                    .contentType(MediaType.APPLICATION_JSON);
-
-            //Act and Assert
-            MvcResult result = mockMvc.perform(requestBuilder)
-                    .andExpect(status().isOk())
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                    .andReturn();
-
-            String expectedJsonResponse = objectMapper.writeValueAsString(bulkStepListDTODate);
-            String actualJsonResponse = result.getResponse().getContentAsString();
-
-            assertEquals(expectedJsonResponse, actualJsonResponse);
         }
 
 

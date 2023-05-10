@@ -42,11 +42,6 @@ public class StepService extends AbstractStepService {
     }
 
     @Override
-    public List<BulkStepDateDTO> getListOfUsersStepDataBetweenDates(List<String> users, String startDate, String endDate) {
-        return super.getListOfUsersStepDataBetweenDates(users, startDate, endDate);
-    }
-
-    @Override
     public Integer getStepCountForUserYearAndMonth(String userId, int year, int month) {
         return super.getStepCountForUserYearAndMonth(userId, year, month);
     }

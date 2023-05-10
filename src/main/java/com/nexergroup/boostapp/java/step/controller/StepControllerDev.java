@@ -1,10 +1,8 @@
 package com.nexergroup.boostapp.java.step.controller;
 
 import com.nexergroup.boostapp.java.step.controller.apiresponse.*;
-import com.nexergroup.boostapp.java.step.dto.stepdto.BulkStepDateDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.WeekStepDTO;
-import com.nexergroup.boostapp.java.step.exception.NotFoundException;
 import com.nexergroup.boostapp.java.step.model.Step;
 import com.nexergroup.boostapp.java.step.service.StepService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -82,25 +80,6 @@ public class StepControllerDev {
     public List<Step> registerMultipleSteps(final @PathVariable String userId,
                                                final @RequestBody List<@Valid StepDTO> stepDtoList) {
         return List.of(stepService.addMultipleStepsForUser(userId, stepDtoList));
-    }
-
-
-    /**
-     * Get step count per day for a list of users by start date and end date
-     *
-     * @param users     List of userIds
-     * @param startDate Start date as String in the format "yyyy-[m]m-[d]d"
-     * @param endDate   End date as String in the format "yyyy-[m]m-[d]d" (optional)
-     * @return A list of {@link BulkStepDateDTO} objects
-     * @throws NotFoundException if no step data is found for the specified users and date range
-     */
-    @Operation(summary = "Get step count per day for a list of users by start date and end date (optional). ! Only data from last Monday up to the present is available !")
-    @ListOfBulkStepDateDTOResponse
-    @PostMapping(value = {"/stepcount/bulk/date"}, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<BulkStepDateDTO> getBulkStepsByUsers(final @RequestBody List<String> users,
-                                                     final @RequestParam(defaultValue = "yyyy-[m]m-[d]d") String startDate,
-                                                     final @RequestParam(defaultValue = "yyyy-[m]m-[d]d", required = false) String endDate) {
-        return stepService.getListOfUsersStepDataBetweenDates(users, startDate, endDate);
     }
 
 
