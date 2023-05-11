@@ -7,7 +7,7 @@ import javax.validation.constraints.Min;
 import java.util.List;
 
 @Schema(description = "Step stepCount per day for specific week")
-public class WeekStepDTO {
+public class DailyWeekStepDTO {
 
     @Schema(description = "User id")
     private String userId;
@@ -38,7 +38,7 @@ public class WeekStepDTO {
     @Schema(description = "Total number of steps taken on sunday")
     private int sundayStepCount;
 
-    public WeekStepDTO(String userId, int weekNumber, List<Integer> stepCountPerDay) {
+    public DailyWeekStepDTO(String userId, int weekNumber, List<Integer> stepCountPerDay) {
         this.userId = userId;
         this.weekNumber = weekNumber;
         this.mondayStepCount = stepCountPerDay.get(0);

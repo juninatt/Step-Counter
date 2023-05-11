@@ -1,8 +1,10 @@
 package com.nexergroup.boostapp.java.step.controller;
 
 import com.nexergroup.boostapp.java.step.controller.apiresponse.*;
+import com.nexergroup.boostapp.java.step.dto.stepdto.WeeklyStepDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
-import com.nexergroup.boostapp.java.step.dto.stepdto.WeekStepDTO;
+import com.nexergroup.boostapp.java.step.dto.stepdto.DailyWeekStepDTO;
+import com.nexergroup.boostapp.java.step.exception.NotFoundException;
 import com.nexergroup.boostapp.java.step.model.Step;
 import com.nexergroup.boostapp.java.step.service.StepService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -98,7 +100,8 @@ public class StepController {
     @StepResponse
     @GetMapping(value = "/latest")
     public Step getUsersLatestStep ( final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt) {
-        return stepService.getLatestStepFromUser(JwtValidator.getUserId(jwt));
+        return stepService.getLatestStepFromUser(JwtValidator.getUserId(jwt))
+                .orElseThrow(() -> new NotFoundException("No steps found for user with id: " + JwtValidator.getUserId(jwt)));
     }
 
     /**
@@ -140,7 +143,13 @@ public class StepController {
     @Operation(summary = "Get stepCount per day for current week for a specific user")
     @WeekStepDTOResponse
     @GetMapping(value = "/stepcount/currentweekdaily")
-    public WeekStepDTO getStepCountByDayForUserCurrentWeek(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt) {
+    public DailyWeekStepDTO getStepCountByDayForUserCurrentWeek(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt) {
         return stepService.getStepsPerDayForWeek(JwtValidator.getUserId(jwt));
+    }
+
+    @Operation(summary = "Get stepCount per week")
+    @GetMapping(value = "/stepcount/weekly")
+    public WeeklyStepDTO getStepCountForUserPerWeek(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt ) {
+        return stepService.getStepCountPerWeekForUser(JwtValidator.getUserId(jwt));
     }
 }

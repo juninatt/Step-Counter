@@ -1,6 +1,5 @@
 package com.nexergroup.boostapp.java.step.service;
 
-import com.nexergroup.boostapp.java.step.dto.stepdto.BulkStepDateDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
 import com.nexergroup.boostapp.java.step.model.Step;
 import com.nexergroup.boostapp.java.step.repository.MonthStepRepository;
@@ -10,6 +9,7 @@ import com.nexergroup.boostapp.java.step.service.stepservicelogic.AbstractStepSe
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -32,7 +32,7 @@ public class StepService extends AbstractStepService {
     }
 
     @Override
-    public Step getLatestStepFromUser(String userId) {
+    public Optional<Step> getLatestStepFromUser(String userId) {
         return super.getLatestStepFromUser(userId);
     }
 
@@ -49,10 +49,6 @@ public class StepService extends AbstractStepService {
     @Override
     public Integer getStepCountForUserYearAndWeek(String userId, int year, int week) {
         return super.getStepCountForUserYearAndWeek(userId, year, week);
-    }
-
-    public BulkStepDateDTO createBulkStepDateDtoForUserForCurrentWeek(String userId) {
-        return super.createBulkStepDateDtoForUserForCurrentWeek(userId);
     }
 
     @Override

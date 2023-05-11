@@ -1,6 +1,6 @@
 package com.nexergroup.boostapp.java.step.controller.apiresponse;
 
-import com.nexergroup.boostapp.java.step.dto.stepdto.WeekStepDTO;
+import com.nexergroup.boostapp.java.step.dto.stepdto.DailyWeekStepDTO;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -20,7 +20,7 @@ import java.lang.annotation.Target;
                 description = "Successful GET request",
                 content = @Content(
                         mediaType = "application/json",
-                        schema = @Schema(implementation = WeekStepDTO.class))
+                        schema = @Schema(implementation = DailyWeekStepDTO.class))
         )
 })
 public @interface WeekStepDTOResponse {

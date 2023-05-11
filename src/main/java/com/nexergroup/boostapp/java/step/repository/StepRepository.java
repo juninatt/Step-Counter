@@ -46,7 +46,7 @@ public interface StepRepository extends JpaRepository<Step, Long> {
     @Transactional
     @Modifying
     @Query("UPDATE Step s SET s.stepCount = :stepCount, s.endTime = :endTime, s.uploadTime = :uploadTime WHERE s = :step")
-    void incrementStepCountAndUpdateTimes(
+    void setTotalStepCountAndUpdateDateTime(
             @Param("step") Step step,
             @Param("stepCount") int stepCount,
             @Param("endTime") ZonedDateTime endTime,

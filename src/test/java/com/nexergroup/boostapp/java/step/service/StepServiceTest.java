@@ -60,10 +60,10 @@ public class StepServiceTest {
         final int expectedStep = 10;
 
         // Actual stepCount
-        final int actualStepCount = result.getStepCount();
+        final int actualStepCount = result.get().getStepCount();
 
         // Assert
-        assertEquals(mockStep.orElseThrow().getEndTime(), result.getEndTime());
+        assertEquals(mockStep.orElseThrow().getEndTime(), result.get().getEndTime());
         assertEquals(expectedStep, actualStepCount);
     }
 

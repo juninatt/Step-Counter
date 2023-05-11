@@ -2,7 +2,8 @@ package com.nexergroup.boostapp.java.step.controller;
 
 import com.nexergroup.boostapp.java.step.controller.apiresponse.*;
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
-import com.nexergroup.boostapp.java.step.dto.stepdto.WeekStepDTO;
+import com.nexergroup.boostapp.java.step.dto.stepdto.DailyWeekStepDTO;
+import com.nexergroup.boostapp.java.step.exception.NotFoundException;
 import com.nexergroup.boostapp.java.step.model.Step;
 import com.nexergroup.boostapp.java.step.service.StepService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -123,7 +124,7 @@ public class StepControllerDev {
     @Operation(summary = "Get stepCount per day for current week for a specific user")
     @WeekStepDTOResponse
     @GetMapping(value = "/stepcount/{userId}/currentweekdaily")
-    public WeekStepDTO getStepCountByDayForUserCurrentWeek(final @PathVariable String userId) {
+    public DailyWeekStepDTO getStepCountByDayForUserCurrentWeek(final @PathVariable String userId) {
         return stepService.getStepsPerDayForWeek(userId);
     }
 
@@ -138,7 +139,8 @@ public class StepControllerDev {
     @StepResponse
     @GetMapping(value = "/latest/{userId}")
     public Step getUsersLatestStep(final @PathVariable String userId) {
-        return stepService.getLatestStepFromUser(userId);
+        return stepService.getLatestStepFromUser(userId)
+                .orElseThrow(() -> new NotFoundException("No steps found for user with id: " + userId));
     }
 }
 

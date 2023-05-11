@@ -5,6 +5,7 @@ import com.nexergroup.boostapp.java.step.exception.DateTimeValueException;
 import com.nexergroup.boostapp.java.step.exception.ValidationFailedException;
 import com.nexergroup.boostapp.java.step.mapper.DateHelper;
 import com.nexergroup.boostapp.java.step.model.Step;
+import com.nexergroup.boostapp.java.step.model.WeekStep;
 import com.nexergroup.boostapp.java.step.repository.MonthStepRepository;
 import com.nexergroup.boostapp.java.step.repository.StepRepository;
 import com.nexergroup.boostapp.java.step.repository.WeekStepRepository;
@@ -405,7 +406,7 @@ class AbstractStepServiceTest {
                     var result = stepService.addSingleStepForUser(testUser, testStepDTO);
 
                     // Expected stepCount of the returned Step
-                    var expectedStepCount = testStepDTO.getStepCount();
+                    var expectedStepCount = testStepDTO.getStepCount() + testStep.getStepCount();
 
                     // Actual stepCount of the returned Step
                     var actualStepCount = result.getStepCount();
@@ -493,7 +494,7 @@ class AbstractStepServiceTest {
                 stepService.addSingleStepForUser(testUser, testStepDTO);
 
                 // Expected stepCount after Step is updated
-                var expectedStepCount = testStepDTO.getStepCount();
+                var expectedStepCount = testStepDTO.getStepCount() + testStep.getStepCount();
 
                 // Actual object in database and stepCount
                 var result = stepRepository.findFirstByUserIdOrderByEndTimeDesc(testUser);
@@ -583,7 +584,7 @@ class AbstractStepServiceTest {
                 stepService.addSingleStepForUser(testUser, testStepDTO);
 
                 // Expected stepCount of WeekStep object in database
-                var expectedStepCount = testStepDTO.getStepCount();
+                var expectedStepCount = testStepDTO.getStepCount() + testStep.getStepCount();
 
                 // Actual object in database and stepCount
                 // TODO: Use new query
@@ -593,6 +594,37 @@ class AbstractStepServiceTest {
                 // Assert that the stepCount of the WeekStep has been updated correctly
                 assertEquals(expectedStepCount, actualStepCount,
                         () -> "Expected stepCount to be '" + expectedStepCount + "' but was '" + actualStepCount + "'. " + result);
+            }
+
+            @Test
+            @DisplayName("Should update stepCount of WeekStep even if several Step objects are added")
+            public void testAddingSingleStepForUser_CreatesOneWeekStepObject_IfStepObjectsAreSameMonth() {
+                cleanUp();
+                // Create a StepDTO to serve as test data
+                var startOfWeek = DateHelper.getWeekStart(LocalDateTime.now(), ZoneId.systemDefault());
+
+                var testStepDTOOne = new StepDTO(testUser, 10,  startOfWeek.plusMinutes(2), startOfWeek.plusMinutes(12), startOfWeek.plusMinutes(56));
+                var testStepDTOTwo = new StepDTO(testUser, 20,  startOfWeek.plusMinutes(58), startOfWeek.plusMinutes(68), startOfWeek.plusMinutes(78));
+                var testStepDTOThree = new StepDTO(testUser, 30,  startOfWeek.plusMinutes(88), startOfWeek.plusMinutes(98), startOfWeek.plusMinutes(108));
+
+                System.out.println(weekStepRepository.findAll().size());
+                // Pass the test data to the method to be tested
+                stepService.addSingleStepForUser(testUser, testStepDTOOne);
+                stepService.addSingleStepForUser(testUser, testStepDTOTwo);
+                stepService.addSingleStepForUser(testUser, testStepDTOThree);
+
+                // Expected number of WeekStep objects
+                var expectedStepCount = testStepDTOOne.getStepCount()
+                        + testStepDTOTwo.getStepCount()
+                        + testStepDTOThree.getStepCount();
+
+                // Actual number of WeekStep objects
+                var actualStepCount = (weekStepRepository.findTopByUserIdOrderByIdDesc(
+                        testUser).orElse(new WeekStep(testUser, 0, 0, 0)).getStepCount());
+                System.out.println(weekStepRepository.findAll().size());
+                // Assert that the stepCount of the WeekStep has been updated correctly
+                assertEquals(expectedStepCount, actualStepCount,
+                        () -> "Expected stepCount to be '" + expectedStepCount + "' but was '" + actualStepCount + "'. " + weekStepRepository.findAll().size());
             }
         }
 
