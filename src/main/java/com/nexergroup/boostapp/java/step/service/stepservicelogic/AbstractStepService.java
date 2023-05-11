@@ -152,7 +152,7 @@ public abstract class AbstractStepService {
      */
     public Integer getStepCountForUserYearAndMonth(String userId, int year, int month) {
         return monthStepRepository.getStepCountByUserIdYearAndMonth(userId, year, month)
-                .orElseThrow(() -> new NotFoundException("No steps registered for userId " + userId + " during month " + month + ", year: " + year));
+                .orElse(0);
     }
 
     /**
@@ -165,7 +165,7 @@ public abstract class AbstractStepService {
      */
     public Integer getStepCountForUserYearAndWeek(String userId, int year, int week) {
         return weekStepRepository.getStepCountByUserIdYearAndWeek(userId, year, week)
-                .orElseThrow(() -> new NotFoundException("No steps registered for userId " + userId + " during week " + week + ", year: " + year));
+                .orElse(0);
     }
 
 
@@ -221,7 +221,8 @@ public abstract class AbstractStepService {
                 throw new RuntimeException("Java API failed to persist new step data to database " + runtimesException.getMessage());
             }
 
-            return getLatestStepFromUser(stepDTO.getUserId()).get();
+            return getLatestStepFromUser(stepDTO.getUserId())
+                    .orElseThrow(() -> new NotFoundException("Unknown error in Java save function. Step was not persisted to database"));
 
     }
 
