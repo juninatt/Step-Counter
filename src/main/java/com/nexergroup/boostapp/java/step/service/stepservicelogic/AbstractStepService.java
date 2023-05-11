@@ -183,8 +183,9 @@ public abstract class AbstractStepService {
             var latestStepInDB = getLatestStepFromUser(stepDTO.getUserId())
                     .orElse(new Step());
             if (stepValidator.shouldUpdateStep(stepDTO))
-                // make method use id instead of object
-                stepRepository.setTotalStepCountAndUpdateDateTime(latestStepInDB, latestStepInDB.getStepCount() + stepDTO.getStepCount(), stepDTO.getEndTime(), stepDTO.getUploadTime());
+                // TODO: Make method use id instead of object
+                // DTO always contains total step-count of the day
+                stepRepository.setTotalStepCountAndUpdateDateTime(latestStepInDB, stepDTO.getStepCount(), stepDTO.getEndTime(), stepDTO.getUploadTime());
             else {
                 stepRepository.save(StepMapper.mapper.stepDtoToStep(stepDTO));
             }
