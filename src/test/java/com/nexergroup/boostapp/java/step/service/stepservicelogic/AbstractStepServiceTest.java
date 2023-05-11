@@ -20,6 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -1100,6 +1101,45 @@ class AbstractStepServiceTest {
             assertEquals(2023, testWeekStepDTO.getSundayStepCount());
         }
     }
+
+    @Test
+    @DisplayName("Test Get Step Count Per Week For User")
+    void testGetStepCountPerWeekForUser_ReturnsCorrectValues() {
+        // Clean up existing data
+        weekStepRepository.deleteAll();
+
+        // Get current week and year
+        var now = ZonedDateTime.now();
+        var currentWeek = DateHelper.getWeek(now);
+        var currentYear = now.getYear();
+
+        // Create WeekStep objects for testing
+        WeekStep weekStep1 = new WeekStep(testUser, currentWeek, currentYear, 1000);
+        WeekStep weekStep2 = new WeekStep(testUser, currentWeek + 1, currentYear, 2000);
+        weekStepRepository.save(weekStep1);
+        weekStepRepository.save(weekStep2);
+
+        // Invoke the method under test
+        var result = stepService.getStepCountPerWeekForUser(testUser);
+
+        // Retrieve expected values (adjust for negative array index)
+        var expected1 = result.getWeeklySteps().get(currentWeek - 1);
+        var expected2 = result.getWeeklySteps().get(currentWeek);
+
+        // Assertions
+        assertNotNull(result);
+        assertEquals(testUser, result.getUserId());
+        assertEquals(52, result.getWeeklySteps().size());
+        assertEquals((Integer) 1000, expected1);
+        assertEquals((Integer) 2000, expected2);
+    }
+
+
+
+
+
+
+
 
     @Nested
     @DisplayName("Parameterized tests: ")

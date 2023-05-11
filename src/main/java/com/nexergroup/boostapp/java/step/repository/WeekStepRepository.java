@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -55,4 +56,7 @@ public interface WeekStepRepository extends JpaRepository<WeekStep, Long> {
     void setTotalStepCountById(@Param("id") Long id, @Param("increment") int increment);
 
     Optional<WeekStep> findTopByUserIdOrderByIdDesc(String userId);
+
+    @Query("SELECT ws FROM WeekStep ws WHERE ws.year = :year ORDER BY ws.week ASC")
+    List<WeekStep> getAllWeekStepsFromYear(int year);
 }

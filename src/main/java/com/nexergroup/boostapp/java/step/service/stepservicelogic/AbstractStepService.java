@@ -260,27 +260,26 @@ public abstract class AbstractStepService {
         return  new ArrayList<>(Collections.nCopies(7, 0));
     }
 
+    /**
+     * Retrieves all {@link WeekStep} objects belonging to the user and adds step count values to new list which is returned.
+     *
+     * @param userId The ID of the user
+     * @return A {@link WeeklyStepDTO} object containing weekly step count for current year
+     */
     public WeeklyStepDTO getStepCountPerWeekForUser(String userId) {
+        // Fetch all step objects belonging to user from current year
+        var fetchedWeekStepList = weekStepRepository.getAllWeekStepsFromYear(ZonedDateTime.now().getYear());
+        // Create a list with 52 slots of 0
+        ArrayList<Integer> weeklyStepCountList = new ArrayList<>(Collections.nCopies(52, 0));
 
-        // Get current date time and week number
-        var now = ZonedDateTime.now();
-        var currentWeek = DateHelper.getWeek(now);
-
-        // Create a list with one slot per week of the year
-        var weekList = new ArrayList<Integer>(52);
-
-        // Fill the list with the stepCount of every week until current week
-        for (int i = 0; i < currentWeek - 1; i++) {
-            var stepCountWeek = weekStepRepository.getStepCountByUserIdYearAndWeek(userId, now.getYear(), i)
-                    .orElse(0);
-            weekList.add(stepCountWeek);
+        // Add step count from week-step objects to corresponding slot in new array
+        for (WeekStep weekStep : fetchedWeekStepList) {
+            int week = weekStep.getWeek();
+            int stepCount = weekStep.getStepCount();
+            if (week >= 1 && week <= 52) {
+                weeklyStepCountList.set(week - 1, stepCount);
+            }
         }
-
-        // Fill in the rest with '0'
-        for (int i = currentWeek - 1; i < 52; i++) {
-            weekList.add(0);
-        }
-
-        return new WeeklyStepDTO(userId, weekList);
+        return new WeeklyStepDTO(userId, weeklyStepCountList);
     }
 }
