@@ -50,7 +50,7 @@ public class StepServiceTest {
         var userID = "testUser";
         var mockStep = Optional.of(testStepBuilder.createStepOfFirstMinuteOfYear());
 
-        when(mockedStepRepository.findFirstByUserIdOrderByEndTimeDesc(any(String.class)))
+        when(mockedStepRepository.findFirstByUserIdOrderByStartTimeDesc(any(String.class)))
                 .thenReturn(mockStep);
 
         // Act

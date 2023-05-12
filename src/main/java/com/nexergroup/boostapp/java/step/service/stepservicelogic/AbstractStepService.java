@@ -139,7 +139,7 @@ public abstract class AbstractStepService {
      * @return the users most recently stored {@link Step} object
      */
     public Optional<Step> getLatestStepFromUser(String userId) {
-        return stepRepository.findFirstByUserIdOrderByEndTimeDesc(userId);
+        return stepRepository.findFirstByUserIdOrderByStartTimeDesc(userId);
     }
 
     /**
@@ -180,12 +180,11 @@ public abstract class AbstractStepService {
      */
     private Step  saveToAllTables(StepDTO stepDTO) {
         try {
-            var latestStepInDB = getLatestStepFromUser(stepDTO.getUserId())
-                    .orElse(new Step());
-            if (stepValidator.shouldUpdateStep(stepDTO))
+            var latestStepInDB = getLatestStepFromUser(stepDTO.getUserId());
+            if (latestStepInDB.isPresent() && stepValidator.shouldUpdateStep(stepDTO))
                 // TODO: Make method use id instead of object
                 // DTO always contains total step-count of the day
-                stepRepository.setTotalStepCountAndUpdateDateTime(latestStepInDB, stepDTO.getStepCount(), stepDTO.getEndTime(), stepDTO.getUploadTime());
+                stepRepository.setTotalStepCountAndUpdateDateTime(latestStepInDB.get().getId(), stepDTO.getStepCount(), stepDTO.getEndTime(), stepDTO.getUploadTime());
             else {
                 stepRepository.save(StepMapper.mapper.stepDtoToStep(stepDTO));
             }
