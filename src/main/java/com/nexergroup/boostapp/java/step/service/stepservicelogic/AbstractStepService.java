@@ -275,10 +275,10 @@ public abstract class AbstractStepService {
 
         // Add step count from week-step objects to corresponding slot in new array
         for (WeekStep weekStep : fetchedWeekStepList) {
-            int week = weekStep.getWeek();
-            int stepCount = weekStep.getStepCount();
-            if (week >= 1 && week <= 52) {
-                weeklyStepCountList.set(week - 1, stepCount);
+            int weekNumber = weekStep.getWeek();
+            int weekStepCount = weekStep.getStepCount();
+            if (weekNumber >= 1 && weekNumber <= 52) {
+                weeklyStepCountList.set(weekNumber - 1, weekStepCount);
             }
         }
         return new WeeklyStepDTO(userId, weeklyStepCountList);

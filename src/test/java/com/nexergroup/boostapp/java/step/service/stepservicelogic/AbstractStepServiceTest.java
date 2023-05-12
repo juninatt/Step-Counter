@@ -464,12 +464,13 @@ class AbstractStepServiceTest {
             @Test
             @DisplayName("Should not create new Step object if startTime of StepDTO is before endTime of Step")
             public void testAddSingleStepForUser_DoesNotCreateNewStep_WhenStartTimeIsBeforeEndTime() {
-                // Create a StepDTO to serve as test data
-                var testStepDTO = testDTOBuilder.createStepDTOOfSecondMinuteOfYear();
-                // Set time field so Step in database gets updated
-                testStepDTO.setStartTime(testStep.getEndTime().minusSeconds(10));
+                // Get end-time of the step stored in the database
+                var testStepEndTime = testStep.getEndTime();
 
-                // Pass the test data to the method to be tested
+                // Create a StepDTO to serve as test data that starts before the database step ends
+                var testStepDTO = new StepDTO(testUser, 1000, testStepEndTime.minusMinutes(1), testStepEndTime.plusMinutes(4), testStepEndTime.plusMinutes(5));
+
+                // Pass the StepDTO to the method to be tested to store the new data in the database
                 stepService.addSingleStepForUser(testUser, testStepDTO);
 
                 // Expected number of objects in database
@@ -602,7 +603,7 @@ class AbstractStepServiceTest {
             public void testAddingSingleStepForUser_CreatesOneWeekStepObject_IfStepObjectsAreSameMonth() {
                 cleanUp();
                 // Create a StepDTO to serve as test data
-                var startOfWeek = DateHelper.getWeekStart(LocalDateTime.now(), ZoneId.systemDefault());
+                var startOfWeek = DateHelper.getWeekStart(ZonedDateTime.now());
 
                 var testStepDTOOne = new StepDTO(testUser, 10,  startOfWeek.plusMinutes(2), startOfWeek.plusMinutes(12), startOfWeek.plusMinutes(56));
                 var testStepDTOTwo = new StepDTO(testUser, 20,  startOfWeek.plusMinutes(58), startOfWeek.plusMinutes(68), startOfWeek.plusMinutes(78));
@@ -1111,13 +1112,15 @@ class AbstractStepServiceTest {
         // Get current week and year
         var now = ZonedDateTime.now();
         var currentWeek = DateHelper.getWeek(now);
-        var currentYear = now.getYear();
+        var startOfWeek = DateHelper.getWeekStart(now);
 
         // Create WeekStep objects for testing
-        WeekStep weekStep1 = new WeekStep(testUser, currentWeek, currentYear, 1000);
-        WeekStep weekStep2 = new WeekStep(testUser, currentWeek + 1, currentYear, 2000);
-        weekStepRepository.save(weekStep1);
-        weekStepRepository.save(weekStep2);
+        var stepsInCurrentWeek = new StepDTO(testUser, 1000, startOfWeek, startOfWeek.plusMinutes(1), startOfWeek.plusMinutes(2));
+        var stepsInNextWeek = new StepDTO(testUser, 2000, startOfWeek.plusWeeks(1), startOfWeek.plusMinutes(1).plusWeeks(1), startOfWeek.plusMinutes(2).plusWeeks(1));
+
+        stepService.addSingleStepForUser(testUser, stepsInCurrentWeek);
+        stepService.addSingleStepForUser(testUser, stepsInNextWeek);
+
 
         // Invoke the method under test
         var result = stepService.getStepCountPerWeekForUser(testUser);
@@ -1133,6 +1136,111 @@ class AbstractStepServiceTest {
         assertEquals((Integer) 1000, expected1);
         assertEquals((Integer) 2000, expected2);
     }
+
+    @Test
+    @DisplayName("Test Get Step Count Per Week For User - No Step Data")
+    void testGetStepCountPerWeekForUser_NoStepData_ReturnsEmptyList() {
+        // Clean up existing data
+        weekStepRepository.deleteAll();
+
+        // Invoke the method under test
+        var result = stepService.getStepCountPerWeekForUser(testUser);
+
+        // Assertions
+        assertNotNull(result);
+        assertEquals(testUser, result.getUserId());
+        assertEquals(52, result.getWeeklySteps().size());
+        assertTrue(result.getWeeklySteps().stream().allMatch(stepCount -> stepCount == 0));
+    }
+
+    @Test
+    @DisplayName("Test Get Step Count Per Week For User - Week Out of Range")
+    void testGetStepCountPerWeekForUser_WeekOutOfRange_IgnoresInvalidWeek() {
+        // Clean up existing data
+        weekStepRepository.deleteAll();
+
+        var now = ZonedDateTime.now();
+        var startOfWeek = DateHelper.getWeekStart(now);
+
+        // Create WeekStep object with an invalid week
+        var invalidWeek = new StepDTO(testUser, 500, startOfWeek.plusWeeks(53), startOfWeek.plusMinutes(1).plusWeeks(53), startOfWeek.plusMinutes(2).plusWeeks(53));
+        stepService.addSingleStepForUser(testUser, invalidWeek);
+
+        // Invoke the method under test
+        var result = stepService.getStepCountPerWeekForUser(testUser);
+
+        // Assertions
+        assertNotNull(result);
+        assertEquals(testUser, result.getUserId());
+        assertEquals(52, result.getWeeklySteps().size());
+        assertTrue(result.getWeeklySteps().stream().allMatch(stepCount -> stepCount == 0));
+    }
+
+    @Test
+    @DisplayName("Test Get Step Count Per Week For User - Multiple Steps in Different Weeks")
+    void testGetStepCountPerWeekForUser_MultipleStepsInDifferentWeeks_ReturnsCorrectStepCounts() {
+        // Clean up existing data
+        weekStepRepository.deleteAll();
+
+        var now = ZonedDateTime.now();
+        var startOfWeek = DateHelper.getWeekStart(now);
+
+        // Create WeekStep objects for testing
+        var stepsInWeek1 = new StepDTO(testUser, 1000, startOfWeek, startOfWeek.plusMinutes(1), startOfWeek.plusMinutes(2));
+        var stepsInWeek2 = new StepDTO(testUser, 2000, startOfWeek.plusWeeks(1), startOfWeek.plusMinutes(1).plusWeeks(1), startOfWeek.plusMinutes(2).plusWeeks(1));
+        var stepsInWeek3 = new StepDTO(testUser, 1500, startOfWeek.plusWeeks(2), startOfWeek.plusMinutes(1).plusWeeks(2), startOfWeek.plusMinutes(2).plusWeeks(2));
+
+        stepService.addSingleStepForUser(testUser, stepsInWeek1);
+        stepService.addSingleStepForUser(testUser, stepsInWeek2);
+        stepService.addSingleStepForUser(testUser, stepsInWeek3);
+
+        // Invoke the method under test
+        var result = stepService.getStepCountPerWeekForUser(testUser);
+
+        // Retrieve expected values
+        var expected1 = result.getWeeklySteps().get(DateHelper.getWeek(stepsInWeek1.getStartTime()) - 1);
+        var expected2 = result.getWeeklySteps().get(DateHelper.getWeek(stepsInWeek2.getStartTime()) - 1);
+        var expected3 = result.getWeeklySteps().get(DateHelper.getWeek(stepsInWeek3.getStartTime()) - 1);
+        System.out.println(result.getWeeklySteps());
+        // Assertions
+        assertNotNull(result);
+        assertEquals(testUser, result.getUserId());
+        assertEquals(52, result.getWeeklySteps().size());
+        assertEquals((Integer) 1000, expected1);
+        assertEquals((Integer) 2000, expected2);
+        assertEquals((Integer) 1500, expected3);
+    }
+
+    @Test
+    @DisplayName("Test Get Step Count Per Week For User - Multiple Steps in Same Week")
+    void testGetStepCountPerWeekForUser_MultipleStepsInSameWeek_ReturnsSumOfStepCounts() {
+        // Clean up existing data
+        weekStepRepository.deleteAll();
+
+        var now = ZonedDateTime.now();
+        var startOfWeek = DateHelper.getWeekStart(now);
+
+        // Create WeekStep objects for testing
+        var stepsInWeek = new StepDTO(testUser, 500, startOfWeek, startOfWeek.plusMinutes(1), startOfWeek.plusMinutes(2));
+        var additionalStepsInWeek = new StepDTO(testUser, 700, startOfWeek.plusDays(3), startOfWeek.plusMinutes(1).plusDays(3), startOfWeek.plusMinutes(2).plusDays(3));
+
+        stepService.addSingleStepForUser(testUser, stepsInWeek);
+        stepService.addSingleStepForUser(testUser, additionalStepsInWeek);
+
+        // Invoke the method under test
+        var result = stepService.getStepCountPerWeekForUser(testUser);
+
+        // Retrieve expected value
+        var expected = result.getWeeklySteps().get(DateHelper.getWeek(startOfWeek) - 1);
+
+        // Assertions
+        assertNotNull(result);
+        assertEquals(testUser, result.getUserId());
+        assertEquals(52, result.getWeeklySteps().size());
+        assertEquals((Integer) 1200, expected); // Sum of step counts in the same week
+    }
+
+
 
 
 

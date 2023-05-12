@@ -30,29 +30,27 @@ public class DateHelper {
      * Returns a ZonedDateTime object representing the start of the week for the input LocalDateTime.
      * If the input is null, the method returns null.
      *
-     * @param time a LocalDateTime object representing the date for which to find the week start
-     * @param zoneId the time zone to use for the ZonedDateTime
+     * @param dateTime a ZonedDateTime object representing the date for which to find the week start
      * @return a ZonedDateTime object representing the start of the week
      */
-    public static ZonedDateTime getWeekStart(LocalDateTime time, ZoneId zoneId) {
-        if (time == null) {
+    public static ZonedDateTime getWeekStart(ZonedDateTime dateTime) {
+        if (dateTime == null) {
             return null;
         }
-        return time.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).atZone(zoneId);
+        return dateTime.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
     }
 
     /**
      * Returns a ZonedDateTime object representing the end of the week for the input LocalDateTime.
      * If the input is null, the method returns null.
      *
-     * @param time a LocalDateTime object representing the date for which to find the week end
-     * @param zoneId the time zone to use for the ZonedDateTime
+     * @param dateTime a ZonedDateTime object representing the date for which to find the week end
      * @return a ZonedDateTime object representing the end of the week
      */
-    public static ZonedDateTime getWeekEnd(LocalDateTime time, ZoneId zoneId) {
-        if (time == null) {
+    public static ZonedDateTime getWeekEnd(ZonedDateTime dateTime) {
+        if (dateTime == null) {
             return null;
         }
-        return time.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).atZone(zoneId);
+        return dateTime.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
     }
 }
