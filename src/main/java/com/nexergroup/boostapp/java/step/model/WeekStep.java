@@ -7,7 +7,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "weekstep")
-public class WeekStep implements BoostAppStep {
+public class WeekStep {
 
     /**
      * Entity weekstep table
@@ -50,9 +50,7 @@ public class WeekStep implements BoostAppStep {
         this.id = id;
     }
 
-    public int getWeek() {
-        return week;
-    }
+    public int getWeek() { return week; }
 
     public void setWeek(int week) {
         this.week = week;
@@ -65,25 +63,14 @@ public class WeekStep implements BoostAppStep {
     public void setYear(int year) {
         this.year = year;
     }
-    @Override
-    public void setStepCount(int stepCount) {
-        // exist for database to find variable
-        this.stepCount = stepCount;
-    }
-    @Override
-    public int getStepCount() {
-        // exist for database to find variable
-        return stepCount;
-    }
 
-    @Override
+    public void setStepCount(int stepCount) { this.stepCount = stepCount; }
+
+    public int getStepCount() { return stepCount; }
+
     public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    @Override
-    public String getUserId() {
-
-        return userId;
-    }
+    public String getUserId() { return userId; }
 }

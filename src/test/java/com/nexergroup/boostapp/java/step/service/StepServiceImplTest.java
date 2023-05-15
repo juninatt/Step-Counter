@@ -21,7 +21,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class StepServiceTest {
+public class StepServiceImplTest {
 
     @Mock
     private StepRepository mockedStepRepository;
@@ -31,7 +31,7 @@ public class StepServiceTest {
     private MonthStepRepository mockedMonthStepRepository;
 
     @InjectMocks
-    private StepService stepService;
+    private StepServiceImpl stepServiceImpl;
 
     private final String testUserId = "testUser";
 
@@ -40,7 +40,7 @@ public class StepServiceTest {
     @Before
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
-        stepService = new StepService(mockedStepRepository, mockedMonthStepRepository, mockedWeekStepRepository);
+        stepServiceImpl = new StepServiceImpl(mockedStepRepository, mockedMonthStepRepository, mockedWeekStepRepository);
     }
 
     @Test
@@ -54,23 +54,23 @@ public class StepServiceTest {
                 .thenReturn(mockStep);
 
         // Act
-        var result = stepService.getLatestStepFromUser(userID);
+        var result = stepServiceImpl.getLatestStepByStartTimeFromUser(userID);
 
         // Expected stepCount
         final int expectedStep = 10;
 
         // Actual stepCount
-        final int actualStepCount = result.get().getStepCount();
+        final int actualStepCount = result.getStepCount();
 
         // Assert
-        assertEquals(mockStep.orElseThrow().getEndTime(), result.get().getEndTime());
+        assertEquals(mockStep.orElseThrow().getEndTime(), result.getEndTime());
         assertEquals(expectedStep, actualStepCount);
     }
 
     @Test
     @DisplayName("Should call delete-method in repository class")
     public void whenMethodIsCalled_ShouldExecuteRepositoryMethod() {
-        stepService.deleteStepTable();
+        stepServiceImpl.deleteStepTable();
         verify(mockedStepRepository).deleteAllFromStep();
     }
     @Test
@@ -80,7 +80,7 @@ public class StepServiceTest {
         when(mockedWeekStepRepository.getStepCountByUserIdYearAndWeek(testUserId, 2020, 43))
                 .thenReturn(Optional.of(mockedStepsInWeek));
 
-        var optionalStep = stepService.getStepCountForUserYearAndWeek(testUserId, 2020, 43);
+        var optionalStep = stepServiceImpl.getStepCountForUserYearAndWeek(testUserId, 2020, 43);
         assertEquals(Optional.of(mockedStepsInWeek), Optional.of(optionalStep));
     }
 

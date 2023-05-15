@@ -1,12 +1,11 @@
 package com.nexergroup.boostapp.java.step.controller;
 
 import com.nexergroup.boostapp.java.step.controller.apiresponse.*;
-import com.nexergroup.boostapp.java.step.dto.stepdto.WeeklyStepDTO;
-import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.DailyWeekStepDTO;
-import com.nexergroup.boostapp.java.step.exception.NotFoundException;
+import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
+import com.nexergroup.boostapp.java.step.dto.stepdto.WeeklyStepDTO;
 import com.nexergroup.boostapp.java.step.model.Step;
-import com.nexergroup.boostapp.java.step.service.StepService;
+import com.nexergroup.boostapp.java.step.service.StepServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -26,7 +25,7 @@ import java.util.List;
  * This class is used for production and has a security token for authentication. It is a version of {@link StepControllerDev}
  * with the added security features.
  *
- * @see StepService
+ * @see StepServiceImpl
  * @see JwtValidator
  * @see GroupedApiResponse
  */
@@ -36,15 +35,15 @@ import java.util.List;
 @RequestMapping("/steps")
 public class StepController {
 
-    private final StepService stepService;
+    private final StepServiceImpl stepServiceImpl;
 
     /**
      * Constructs a new StepController with the given step service and JWT parser {@link JwtValidator}.
      *
-     * @param stepService the service to use for handling steps {@link StepService}
+     * @param stepServiceImpl the service to use for handling steps {@link StepServiceImpl}
      */
-    public StepController(final StepService stepService) {
-        this.stepService = stepService;
+    public StepController(final StepServiceImpl stepServiceImpl) {
+        this.stepServiceImpl = stepServiceImpl;
     }
 
     /**
@@ -56,7 +55,7 @@ public class StepController {
     // 1=seconds , 0=minutes, 0=hours, *-dayOfTheMonth *-month MON-Monday
     @Scheduled(cron = "1 0 0 * * MON")
     public void deleteStepTable() {
-        stepService.deleteStepTable();
+        stepServiceImpl.deleteStepTable();
     }
 
     /**
@@ -72,7 +71,7 @@ public class StepController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public Step registerStep(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                              final @RequestBody @Valid StepDTO stepDTO) {
-        return stepService.addSingleStepForUser(JwtValidator.getUserId(jwt), stepDTO);
+        return stepServiceImpl.addSingleStepForUser(JwtValidator.getUserId(jwt), stepDTO);
     }
 
     /**
@@ -87,7 +86,7 @@ public class StepController {
     @PostMapping(value = "/multiple", consumes = MediaType.APPLICATION_JSON_VALUE)
     public List<Step> registerMultipleSteps(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                                final @RequestBody List<@Valid StepDTO> stepDtoList) {
-        return List.of(stepService.addMultipleStepsForUser(JwtValidator.getUserId(jwt), stepDtoList));
+        return List.of(stepServiceImpl.addMultipleStepsForUser(JwtValidator.getUserId(jwt), stepDtoList));
     }
 
     /**
@@ -100,8 +99,7 @@ public class StepController {
     @StepResponse
     @GetMapping(value = "/latest")
     public Step getUsersLatestStep ( final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt) {
-        return stepService.getLatestStepFromUser(JwtValidator.getUserId(jwt))
-                .orElseThrow(() -> new NotFoundException("No steps found for user with id: " + JwtValidator.getUserId(jwt)));
+        return stepServiceImpl.getLatestStepByStartTimeFromUser(JwtValidator.getUserId(jwt));
     }
 
     /**
@@ -119,7 +117,7 @@ public class StepController {
     public Integer getUserMonthStepCountForYearAndMonth(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                                                         final @PathVariable int year,
                                                                         final @PathVariable int month) {
-        return stepService.getStepCountForUserYearAndMonth(JwtValidator.getUserId(jwt), year, month);
+        return stepServiceImpl.getStepCountForUserYearAndMonth(JwtValidator.getUserId(jwt), year, month);
     }
 
     /**
@@ -137,19 +135,19 @@ public class StepController {
     public Integer getUserWeekStepCountForWeekAndYear(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                                                       final @PathVariable int year,
                                                                       final @PathVariable int week) {
-        return stepService.getStepCountForUserYearAndWeek(JwtValidator.getUserId(jwt), year, week);
+        return stepServiceImpl.getStepCountForUserYearAndWeek(JwtValidator.getUserId(jwt), year, week);
     }
 
     @Operation(summary = "Get stepCount per day for current week for a specific user")
     @WeekStepDTOResponse
     @GetMapping(value = "/stepcount/currentweekdaily")
     public DailyWeekStepDTO getStepCountByDayForUserCurrentWeek(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt) {
-        return stepService.getStepsPerDayForWeek(JwtValidator.getUserId(jwt));
+        return stepServiceImpl.getStepsPerDayForWeek(JwtValidator.getUserId(jwt));
     }
 
     @Operation(summary = "Get stepCount per week")
     @GetMapping(value = "/stepcount/weekly")
     public WeeklyStepDTO getStepCountForUserPerWeek(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt ) {
-        return stepService.getStepCountPerWeekForUser(JwtValidator.getUserId(jwt));
+        return stepServiceImpl.getStepCountPerWeekForUser(JwtValidator.getUserId(jwt));
     }
 }

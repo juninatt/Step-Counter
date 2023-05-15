@@ -48,15 +48,17 @@ public interface WeekStepRepository extends JpaRepository<WeekStep, Long> {
      * Increments the stepCount field of a specific {@link WeekStep} object in the database.
      *
      * @param id The id of the {@link WeekStep} object to be updated.
-     * @param increment The number to be added to the existing stepCount.
+     * @param newTotal The number to be added to the existing stepCount.
      */
     @Transactional
     @Modifying
-    @Query("UPDATE WeekStep ws SET ws.stepCount = :increment WHERE ws.id = :id")
-    void setTotalStepCountById(@Param("id") Long id, @Param("increment") int increment);
+    @Query("UPDATE WeekStep ws SET ws.stepCount = :newTotal WHERE ws.id = :id")
+    void setTotalStepCountById(@Param("id") Long id, @Param("newTotal") int newTotal);
+
+
 
     Optional<WeekStep> findTopByUserIdOrderByIdDesc(String userId);
 
-    @Query("SELECT ws FROM WeekStep ws WHERE ws.year = :year ORDER BY ws.week ASC")
-    List<WeekStep> getAllWeekStepsFromYear(int year);
+    @Query("SELECT ws FROM WeekStep ws WHERE ws.year = :year AND ws.userId = :userId ORDER BY ws.week ASC")
+    List<WeekStep> getAllWeekStepsFromYearForUser(int year, String userId);
 }

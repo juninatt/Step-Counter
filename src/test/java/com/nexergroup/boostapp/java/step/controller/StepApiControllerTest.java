@@ -5,13 +5,13 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.nexergroup.boostapp.java.step.dto.starpointdto.BulkUserStarPointsDTO;
 import com.nexergroup.boostapp.java.step.dto.starpointdto.RequestStarPointsDTO;
 import com.nexergroup.boostapp.java.step.dto.starpointdto.StarPointDateDTO;
-import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.DailyWeekStepDTO;
+import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
 import com.nexergroup.boostapp.java.step.exception.ValidationFailedException;
 import com.nexergroup.boostapp.java.step.model.Step;
 import com.nexergroup.boostapp.java.step.repository.StepRepository;
 import com.nexergroup.boostapp.java.step.service.StarPointService;
-import com.nexergroup.boostapp.java.step.service.StepService;
+import com.nexergroup.boostapp.java.step.service.StepServiceImpl;
 import com.nexergroup.boostapp.java.step.testobjects.dto.stepdto.TestStepDtoBuilder;
 import com.nexergroup.boostapp.java.step.testobjects.model.TestStepBuilder;
 import org.junit.jupiter.api.DisplayName;
@@ -37,7 +37,6 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -53,7 +52,7 @@ public class StepApiControllerTest {
     @MockBean
     private StarPointService starPointService;
     @MockBean
-    private StepService stepService;
+    private StepServiceImpl stepServiceImpl;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -64,7 +63,7 @@ public class StepApiControllerTest {
     @DisplayName("Step Controller")
     class StepControllerDevTest {
 
-        private final MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new StepControllerDev(stepService)).build();
+        private final MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new StepControllerDev(stepServiceImpl)).build();
         private final TestStepBuilder testStepBuilder = new TestStepBuilder();
         private final TestStepDtoBuilder testDTOBuilder = new TestStepDtoBuilder();
         private final String testUserId = "testUser";
@@ -77,7 +76,7 @@ public class StepApiControllerTest {
             var testStep = testStepBuilder.createStepOfFirstMinuteOfYear();
 
             // Set the method responding to the endpoint to return the test Step object when the endpoint is called
-            when(stepService.getLatestStepFromUser(testUserId)).thenReturn(Optional.of(testStep));
+            when(stepServiceImpl.getLatestStepByStartTimeFromUser(testUserId)).thenReturn(testStep);
 
             // Act: Perform the request to the endpoint and print the result to the console
             mockMvc.perform(get("/steps/latest/{userId}", testUserId))
@@ -122,7 +121,7 @@ public class StepApiControllerTest {
             var stepDTO = testDTOBuilder.createStepDTOOfSecondMinuteOfYear(); // Create StepDTO for testing
 
             // Mock the addSingleStepForUser method of the step service
-            when(stepService.addSingleStepForUser(Mockito.anyString(),
+            when(stepServiceImpl.addSingleStepForUser(Mockito.anyString(),
                     Mockito.any(StepDTO.class))).thenReturn(mockStep);
 
             // Build the request to add the user steps
@@ -162,7 +161,7 @@ public class StepApiControllerTest {
             stepDTOList.add(dto3);
 
             // Mock the stepService to return a Step object when addMultipleStepsForUser is called with any String and the stepDTOList
-            when(stepService.addMultipleStepsForUser(Mockito.anyString(), Mockito.anyList())).thenReturn(
+            when(stepServiceImpl.addMultipleStepsForUser(Mockito.anyString(), Mockito.anyList())).thenReturn(
                     new Step(testUserId, 60, dto1.getStartTime(), dto3.getEndTime(), dto3.getUploadTime()));
 
             // Build a POST request to register multiple steps for a user
@@ -190,7 +189,7 @@ public class StepApiControllerTest {
             DailyWeekStepDTO dailyWeekStepDTO = new DailyWeekStepDTO(userId, 1, new ArrayList<>(Collections.nCopies(7, 0)));
 
             // Mock the stepService and set the expected return value
-            when(stepService.getStepsPerDayForWeek(userId)).thenReturn(dailyWeekStepDTO);
+            when(stepServiceImpl.getStepsPerDayForWeek(userId)).thenReturn(dailyWeekStepDTO);
 
             // Build the request with the correct path variable and request body
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/steps/stepcount/{userId}/currentweekdaily", userId)
@@ -221,7 +220,7 @@ public class StepApiControllerTest {
             int year = 2023;
             int week = 10;
 
-            when(stepService.getStepCountForUserYearAndWeek("nonExistingUser", year, week))
+            when(stepServiceImpl.getStepCountForUserYearAndWeek("nonExistingUser", year, week))
                     .thenThrow(ValidationFailedException.class);
 
             // Act and Assert
@@ -244,7 +243,7 @@ public class StepApiControllerTest {
             int expectedSteps = 500;
 
             // Set up mock behavior
-            when(stepService.getStepCountForUserYearAndWeek(testUserId, year, week))
+            when(stepServiceImpl.getStepCountForUserYearAndWeek(testUserId, year, week))
                     .thenReturn(expectedSteps);
 
             // Perform the test
@@ -268,7 +267,7 @@ public class StepApiControllerTest {
             int year = 2021;
             int month = 1;
 
-            when(stepService.getStepCountForUserYearAndMonth("badUser", year, month))
+            when(stepServiceImpl.getStepCountForUserYearAndMonth("badUser", year, month))
                     .thenThrow(ValidationFailedException.class);
 
             mockMvc.perform(get(url, "badUser", year, month))
@@ -285,7 +284,7 @@ public class StepApiControllerTest {
             int month = 1;
             int expectedSteps = 1200;
 
-            when(stepService.getStepCountForUserYearAndMonth(testUserId, year, month)).thenReturn(expectedSteps);
+            when(stepServiceImpl.getStepCountForUserYearAndMonth(testUserId, year, month)).thenReturn(expectedSteps);
 
             MvcResult result = mockMvc.perform(get(url, testUserId, year, month))
                     .andExpect(status().isOk())
@@ -304,7 +303,7 @@ public class StepApiControllerTest {
     @DisplayName("GetStepCountByDayForUserAndDate method tests")
     class GetStepCountByDayForUserAndDate {
 
-        private final MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new StepControllerDev(stepService)).build();
+        private final MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new StepControllerDev(stepServiceImpl)).build();
 
         @Test
         @DisplayName("Test getting daily step count for user and date returns correct fields")
@@ -314,7 +313,7 @@ public class StepApiControllerTest {
             DailyWeekStepDTO dailyWeekStepDTO = new DailyWeekStepDTO(userId, 1, new ArrayList<>(Collections.nCopies(7, 0)));
 
             // Mock the stepService and set the expected return value
-            when(stepService.getStepsPerDayForWeek(userId)).thenReturn(dailyWeekStepDTO);
+            when(stepServiceImpl.getStepsPerDayForWeek(userId)).thenReturn(dailyWeekStepDTO);
 
             // Build the request with the correct path variable and request body
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -344,7 +343,7 @@ public class StepApiControllerTest {
             DailyWeekStepDTO dailyWeekStepDTO = new DailyWeekStepDTO(userId, 1, new ArrayList<>(Collections.nCopies(7, 0)));
 
             // Mock the stepService and set the expected return value
-            when(stepService.getStepsPerDayForWeek(userId)).thenReturn(dailyWeekStepDTO);
+            when(stepServiceImpl.getStepsPerDayForWeek(userId)).thenReturn(dailyWeekStepDTO);
 
             // Build the request with the correct path variable and request body
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/steps/stepcount/{userId}/currentweekdaily", userId)
@@ -377,7 +376,7 @@ public class StepApiControllerTest {
             DailyWeekStepDTO dailyWeekStepDTO = new DailyWeekStepDTO(userId, 1, weekStepCountByDay);
 
             // Set up mock service
-            when(stepService.getStepsPerDayForWeek(userId)).thenReturn(dailyWeekStepDTO);
+            when(stepServiceImpl.getStepsPerDayForWeek(userId)).thenReturn(dailyWeekStepDTO);
 
             // Build the request
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
@@ -405,7 +404,7 @@ public class StepApiControllerTest {
             String userId = "123";
 
             // Mock the stepService and set the expected return value
-            when(stepService.getStepsPerDayForWeek(userId)).thenReturn(null);
+            when(stepServiceImpl.getStepsPerDayForWeek(userId)).thenReturn(null);
 
             // Build the request with the correct path variable and request body
             MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/steps/stepcount/{userId}/currentweekdaily", userId)

@@ -1,6 +1,8 @@
 package com.nexergroup.boostapp.java.step.mapper;
 
-import java.time.*;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAdjusters;
 
@@ -21,8 +23,8 @@ public class DateHelper {
         if (time == null) {
             return 0;
         }
-        LocalDate date = LocalDate.ofYearDay(time.getYear(), time.getDayOfYear());
-        int weekNumber = date.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+        var date = LocalDate.ofYearDay(time.getYear(), time.getDayOfYear());
+        var weekNumber = date.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
         return Math.min(weekNumber, 52);
     }
 

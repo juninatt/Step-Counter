@@ -9,12 +9,11 @@ import javax.persistence.*;
 @Entity
 @DynamicUpdate
 @Table(name = "monthstep")
-public class MonthStep implements BoostAppStep{
+public class MonthStep {
 
     /**
      * Entity monthstep table
      */
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(description = "The database generated monthStep ID")
@@ -69,26 +68,20 @@ public class MonthStep implements BoostAppStep{
         this.year = year;
     }
 
-    @Override
     public String getUserId() {
         return userId;
     }
 
-    @Override
     public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    @Override
     public void setStepCount(int stepCount) {
         this.stepCount = stepCount;
     }
 
-    @Override
-    public int getStepCount() {
-        return stepCount;
-    }
-    @Override
+    public int getStepCount() {return stepCount; }
+
     public String toString() {
         return "MonthStep{" +
                 "id=" + id +

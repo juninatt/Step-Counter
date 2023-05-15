@@ -41,7 +41,7 @@ public class StepRepositoryTest {
     @DisplayName("ok")
     public void testFindFirstMethod_ShouldReturnLatestStep() {
         // Use the method to be tested to retrieve a step from the default test userId
-        var step = stepRepository.findFirstByUserIdOrderByEndTimeDesc(testUser);
+        var step = stepRepository.findFirstByUserIdOrderByStartTimeDesc(testUser);
 
         // Expected id of returned Step object
         var expectedId = step3.getId();

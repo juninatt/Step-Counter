@@ -36,24 +36,6 @@ public interface StepRepository extends JpaRepository<Step, Long> {
     void deleteAllFromStep();
 
     /**
-     * Update the stepCount-, endTime- and uploadTime- fields of a {@link Step} object in the database.
-     *
-     * @param id The ID of the object to update.
-     * @param stepCount The new stepCount of the step object
-     * @param endTime The new endTime value of the object.
-     * @param uploadTime The new uploadTime value of the object.
-     */
-    @Transactional
-    @Modifying
-    @Query("UPDATE Step s SET s.stepCount = :stepCount, s.endTime = :endTime, s.uploadTime = :uploadTime WHERE s.id = :id")
-    void setTotalStepCountAndUpdateDateTime(
-            @Param("id") Long id,
-            @Param("stepCount") int stepCount,
-            @Param("endTime") ZonedDateTime endTime,
-            @Param("uploadTime") ZonedDateTime uploadTime);
-
-
-    /**
      * Retrieves a list of steps for a user with the given user ID.
      * @param userId A user ID to search for
      * @return An Optional containing a list of steps for the given user, or an empty Optional if no steps were found
@@ -88,14 +70,6 @@ public interface StepRepository extends JpaRepository<Step, Long> {
      */
     @Query(QueryHelper.SELECT_STEP_COUNT_WITHIN_TIME_RANGE)
     Optional<Integer> getStepCountByUserIdAndDateRange(@Param("userId") String userId, @Param("startTime") ZonedDateTime startTime, @Param("endTime") ZonedDateTime endTime);
-
-    /**
-     * retrieves the latest registered step entity for a user with the given user id.
-     *
-     @param userId A user ID to search for
-     @return An optional containing a {@link Step} from the step-table using userId.
-     */
-    Optional<Step> findFirstByUserIdOrderByEndTimeDesc(String userId);
 
     Optional<Step> findFirstByUserIdOrderByStartTimeDesc(String userId);
 }

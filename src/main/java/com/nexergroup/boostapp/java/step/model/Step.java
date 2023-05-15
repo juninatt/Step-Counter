@@ -9,7 +9,7 @@ import java.time.ZonedDateTime;
 @Entity
 @Table(name = "step")
 @Schema(description = "All details about the step entity. ")
-public class Step implements BoostAppStep {
+public class Step {
 
     /**
      * Entity step table
@@ -90,27 +90,22 @@ public class Step implements BoostAppStep {
         this.uploadTime = uploadTime;
     }
 
-    @Override
     public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    @Override
+
     public String getUserId() {
         return userId;
     }
 
-    @Override
-    public void setStepCount(int stepCount) {
-        this.stepCount = stepCount;
-    }
 
-    @Override
+    public void setStepCount(int stepCount) { this.stepCount = stepCount;  }
+
     public int getStepCount() {
         return stepCount;
     }
 
-    @Override
     public String toString() {
         return "Step{" +
                 "id=" + id +

@@ -9,11 +9,10 @@ import com.nexergroup.boostapp.java.step.service.stepservicelogic.AbstractStepSe
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 
 @Service
-public class StepService extends AbstractStepService {
+public class StepServiceImpl extends AbstractStepService {
 
     /**
      * Constructor
@@ -22,7 +21,7 @@ public class StepService extends AbstractStepService {
      * @param monthStepRepository {@link MonthStepRepository}
      * @param weekStepRepository  {@link WeekStepRepository}
      */
-    public StepService(StepRepository stepRepository, MonthStepRepository monthStepRepository, WeekStepRepository weekStepRepository) {
+    public StepServiceImpl(StepRepository stepRepository, MonthStepRepository monthStepRepository, WeekStepRepository weekStepRepository) {
         super(stepRepository, monthStepRepository, weekStepRepository);
     }
 
@@ -32,8 +31,8 @@ public class StepService extends AbstractStepService {
     }
 
     @Override
-    public Optional<Step> getLatestStepFromUser(String userId) {
-        return super.getLatestStepFromUser(userId);
+    public Step getLatestStepByStartTimeFromUser(String userId) {
+        return super.getLatestStepByStartTimeFromUser(userId);
     }
 
     @Override

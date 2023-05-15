@@ -7,6 +7,7 @@ import com.nexergroup.boostapp.java.step.mapper.DateHelper;
 import com.nexergroup.boostapp.java.step.model.MonthStep;
 import com.nexergroup.boostapp.java.step.model.WeekStep;
 import com.nexergroup.boostapp.java.step.repository.StepRepository;
+import com.nexergroup.boostapp.java.step.model.Step;
 import org.springframework.lang.NonNull;
 
 import javax.validation.constraints.NotNull;
@@ -57,7 +58,7 @@ public class StepValidator {
     }
 
     /**
-     * Checks if the {@link com.nexergroup.boostapp.java.step.model.Step} object should be updated or not
+     * Checks if the {@link Step} object should be updated or not
      *
      * @param stepData the {@link StepDTO} object holding the new data
      * @return true if the Step object should be updated, false otherwise

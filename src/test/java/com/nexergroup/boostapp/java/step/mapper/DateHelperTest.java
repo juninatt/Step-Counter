@@ -52,4 +52,12 @@ public class DateHelperTest {
         int weekNumber = DateHelper.getWeek(time);
         assertThat(weekNumber, is(9));
     }
+
+    @Test
+    @DisplayName("getWeek should handle leap year correctly")
+    public void testGetWeek_2023() {
+        var time = LocalDateTime.of(2023, 1, 1, 1, 1).atZone(ZoneId.systemDefault());
+        int weekNumber = DateHelper.getWeek(time);
+        assertThat(weekNumber, is(1));
+    }
 }
