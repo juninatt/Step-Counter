@@ -1128,7 +1128,7 @@ class AbstractStepServiceImplTest {
 
 
         // Invoke the method under test
-        var weeklyStepCount = stepServiceImpl.getStepCountPerWeekForUser(testUser);
+        var weeklyStepCount = stepServiceImpl.getStepCountPerWeekForUser(testUser, ZonedDateTime.now().getYear());
 
         // Retrieve expected values (adjust for negative array index)
         var expected1 = weeklyStepCount.getWeeklySteps().get(DateHelper.getWeek(stepsInCurrentWeek.getStartTime()));
@@ -1150,7 +1150,7 @@ class AbstractStepServiceImplTest {
         weekStepRepository.deleteAll();
 
         // Invoke the method under test
-        var result = stepServiceImpl.getStepCountPerWeekForUser(testUser);
+        var result = stepServiceImpl.getStepCountPerWeekForUser(testUser, ZonedDateTime.now().getYear());
 
         // Assertions
         assertNotNull(result);
@@ -1173,7 +1173,7 @@ class AbstractStepServiceImplTest {
         stepServiceImpl.addSingleStepForUser(testUser, invalidWeek);
 
         // Invoke the method under test
-        var result = stepServiceImpl.getStepCountPerWeekForUser(testUser);
+        var result = stepServiceImpl.getStepCountPerWeekForUser(testUser, ZonedDateTime.now().getYear());
 
         // Assertions
         assertNotNull(result);
@@ -1201,7 +1201,7 @@ class AbstractStepServiceImplTest {
         stepServiceImpl.addSingleStepForUser(testUser, stepsInWeek3);
 
         // Invoke the method under test
-        var result = stepServiceImpl.getStepCountPerWeekForUser(testUser);
+        var result = stepServiceImpl.getStepCountPerWeekForUser(testUser, ZonedDateTime.now().getYear());
 
         // Retrieve expected values
         var expected1 = result.getWeeklySteps().get(DateHelper.getWeek(stepsInWeek1.getStartTime()));
@@ -1234,7 +1234,7 @@ class AbstractStepServiceImplTest {
         stepServiceImpl.addSingleStepForUser(testUser, additionalStepsInWeek);
 
         // Invoke the method under test
-        var result = stepServiceImpl.getStepCountPerWeekForUser(testUser);
+        var result = stepServiceImpl.getStepCountPerWeekForUser(testUser, ZonedDateTime.now().getYear());
 
         // Retrieve expected value
         var expected = result.getWeeklySteps().get(DateHelper.getWeek(startOfWeek));

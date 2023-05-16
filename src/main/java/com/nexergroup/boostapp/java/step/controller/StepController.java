@@ -154,8 +154,9 @@ public class StepController {
     }
 
     @Operation(summary = "Get stepCount per week")
-    @GetMapping(value = "/stepcount/weekly")
-    public WeeklyStepDTO getStepCountForUserPerWeek(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt ) {
-        return stepServiceImpl.getStepCountPerWeekForUser(JwtValidator.getUserId(jwt));
+    @GetMapping(value = "/stepcount/user/{userId}/year/{year}/weekly")
+    public WeeklyStepDTO getStepCountForUserPerWeek(final @PathVariable String userId,
+                                                    final @PathVariable int year) {
+        return stepServiceImpl.getStepCountPerWeekForUser(userId, year);
     }
 }

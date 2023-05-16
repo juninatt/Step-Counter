@@ -99,18 +99,6 @@ public class WeekStepRepositoryTest {
     }
 
     @Test
-    public void shouldNotUpdateStepCountForNonExistentWeekStepId() {
-        // Call the setTotalStepCountById method with a non-existent ID
-        weekStepRepository.setTotalStepCountById(9999L, 500);
-
-        // Attempt to retrieve the WeekStep object with the non-existent ID
-        Optional<WeekStep> updatedWeekStepOptional = weekStepRepository.findById(9999L);
-
-        // Assert that the WeekStep object is not present
-        Assert.assertFalse(updatedWeekStepOptional.isPresent());
-    }
-
-    @Test
     public void shouldUpdateStepCountToZero() {
         // Create a WeekStep object and save it to the database
         WeekStep weekStep = new WeekStep("johanna", 1, 2023, 100);

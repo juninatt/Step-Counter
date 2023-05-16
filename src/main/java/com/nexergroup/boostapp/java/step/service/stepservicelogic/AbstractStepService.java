@@ -277,9 +277,9 @@ public abstract class AbstractStepService {
      * @param userId The ID of the user
      * @return A {@link WeeklyStepDTO} object containing weekly step count for current year
      */
-    public WeeklyStepDTO getStepCountPerWeekForUser(String userId) {
+    public WeeklyStepDTO getStepCountPerWeekForUser(String userId, int year) {
         // Fetch all step objects belonging to user from current year
-        var fetchedWeekStepList = weekStepRepository.getAllWeekStepsFromYearForUser(ZonedDateTime.now().getYear(), userId);
+        var fetchedWeekStepList = weekStepRepository.getAllWeekStepsFromYearForUser(year , userId);
         // Create a list with 52 slots of 0
         ArrayList<Integer> weeklyStepCountList = new ArrayList<>(Collections.nCopies(53, 0));
 
