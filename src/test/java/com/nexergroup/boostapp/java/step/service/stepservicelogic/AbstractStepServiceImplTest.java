@@ -77,7 +77,7 @@ class AbstractStepServiceImplTest {
             @DisplayName("Should throw 'ValidationFailedException' when StepDTO passed to method is null")
             public void testAddSingleStepForUser_ThrowsValidationFailedException_WhenStepDTOIsNull() {
                 // Expected exception message
-                var expectedMessage = "StepDTO object is null";
+                var expectedMessage = "Object holding new data cant be null";
 
                 // Assert that correct exception is thrown when StepDTO passed to method is null
                 var result = assertThrows(
@@ -103,49 +103,49 @@ class AbstractStepServiceImplTest {
             }
 
             @Test
-            @DisplayName("Should throw 'ValidationFailedException' when StepDTO startTime is null")
-            public void testAddSingleStepForUser_ThrowsValidationFailedException_WhenStartTimeIsNull() {
+            @DisplayName("Should throw 'DateTimeValueException' when StepDTO startTime is null")
+            public void testAddSingleStepForUser_ThrowsDateTimeValueException_WhenStartTimeIsNull() {
                 // Create a StepDTO where startTime is null
                 var badTestDto = testDTOBuilder.createStepDTOWhereStartTimeIsNull();
 
                 // Expected exception message
-                var expectedMessage = "Step start time was null";
+                var expectedMessage = "Start time cant be null";
 
                 // Assert that correct exception is thrown when test data is passed to method
                 var result = assertThrows(
-                        ValidationFailedException.class, () -> stepServiceImpl.addSingleStepForUser(testUser, badTestDto));
+                        DateTimeValueException .class, () -> stepServiceImpl.addSingleStepForUser(testUser, badTestDto));
                 assertTrue(result.getMessage().contains(expectedMessage),
                         "Expected exception message to be '" + expectedMessage + "' but was '" + result.getMessage() + "'");
             }
 
             @Test
-            @DisplayName("Should throw 'ValidationFailedException' when StepDTO endTime is null")
-            public void testAddSingleStepForUser_ThrowsValidationFailedException_WhenEndTimeIsNull() {
+            @DisplayName("Should throw 'DateTimeValueException' when StepDTO endTime is null")
+            public void testAddSingleStepForUser_ThrowsDateTimeValueException_WhenEndTimeIsNull() {
                 // Create a StepDTO where endTime is null as test data
                 var badTestDto = testDTOBuilder.createStepDTOWhereEndTimeIsNull();
 
                 // Expected exception message
-                var expectedMessage = "End time was null";
+                var expectedMessage = "End time cant be null";
 
                 // Assert that correct exception is thrown when test data is passed to method
                 var result = assertThrows(
-                        ValidationFailedException.class, () -> stepServiceImpl.addSingleStepForUser(testUser, badTestDto));
+                        DateTimeValueException.class, () -> stepServiceImpl.addSingleStepForUser(testUser, badTestDto));
                 assertTrue(result.getMessage().contains(expectedMessage),
                         "Expected exception message to be '" + expectedMessage + "' but was '" + result.getMessage() + "'");
             }
 
             @Test
-            @DisplayName("Should throw 'ValidationFailedException' when StepDTO uploadTime is null")
-            public void testAddSingleStepForUser_ThrowsValidationFailedException_WhenUploadTimeIsNull() {
+            @DisplayName("Should throw 'DateTimeValueException' when StepDTO uploadTime is null")
+            public void testAddSingleStepForUser_ThrowsDateTimeValueException_WhenUploadTimeIsNull() {
                 // Create a StepDTO where uploadTime is null as test data
                 var badTestDto = testDTOBuilder.createStepDTOWhereUploadTimeIsNull();
 
                 // Expected exception message
-                var expectedMessage = "Upload time is null";
+                var expectedMessage = "Upload time cant be null";
 
                 // Assert that correct exception is thrown when test data is passed to method
                 var result = assertThrows(
-                        ValidationFailedException.class, () -> stepServiceImpl.addSingleStepForUser(testUser, badTestDto));
+                        DateTimeValueException.class, () -> stepServiceImpl.addSingleStepForUser(testUser, badTestDto));
                 assertTrue(result.getMessage().contains(expectedMessage),
                         "Expected exception message to be '" + expectedMessage + "' but was '" + result.getMessage() + "'");
             }
@@ -945,54 +945,54 @@ class AbstractStepServiceImplTest {
             }
 
             @Test
-            @DisplayName("Should throw 'ValidationFailedException' when list contains StepDTO with null startTime")
-            public void testMultipleStepsForUser_ThrowsValidationFailedException_WhenStartTimeIsNull() {
+            @DisplayName("Should throw 'DateTimeValueException' when list contains StepDTO with null startTime")
+            public void testMultipleStepsForUser_ThrowsDateTimeValueException_WhenStartTimeIsNull() {
                 // Create a StepDTO where startTime is null
                 var badTestDto = testDTOBuilder.createStepDTOWhereStartTimeIsNull();
                 testStepDTOList.add(badTestDto);
 
                 // Expected exception message
-                var expectedMessage = "Step start time was null";
+                var expectedMessage = "Start time cant be null";
 
                 // Assert that correct exception is thrown when test data is passed to method
                 var result = assertThrows(
-                        ValidationFailedException.class, () -> stepServiceImpl.addMultipleStepsForUser(testUser, testStepDTOList));
+                        DateTimeValueException.class, () -> stepServiceImpl.addMultipleStepsForUser(testUser, testStepDTOList));
                 assertTrue(result.getMessage().contains(expectedMessage),
                         "Expected exception message to be '" + expectedMessage + "' but was '" + result.getMessage() + "'");
                 testStepDTOList.remove(badTestDto);
             }
 
             @Test
-            @DisplayName("Should throw 'ValidationFailedException' when StepDTO endTime is null")
-            public void testAddSingleStepForUser_ThrowsValidationFailedException_WhenEndTimeIsNull() {
+            @DisplayName("Should throw 'DateTimeValueException' when StepDTO endTime is null")
+            public void testAddSingleStepForUser_ThrowsDateTimeValueException_WhenEndTimeIsNull() {
                 // Create a StepDTO where endTim is null
                 var badTestDto = testDTOBuilder.createStepDTOWhereEndTimeIsNull();
                 testStepDTOList.add(badTestDto);
 
                 // Expected exception message
-                var expectedMessage = "End time was null";
+                var expectedMessage = "End time cant be null";
 
                 // Assert that correct exception is thrown when test data is passed to method
                 var result = assertThrows(
-                        ValidationFailedException.class, () -> stepServiceImpl.addMultipleStepsForUser(testUser, testStepDTOList));
+                        DateTimeValueException.class, () -> stepServiceImpl.addMultipleStepsForUser(testUser, testStepDTOList));
                 assertTrue(result.getMessage().contains(expectedMessage),
                         "Expected exception message to be '" + expectedMessage + "' but was '" + result.getMessage() + "'");
                 testStepDTOList.remove(badTestDto);
             }
 
             @Test
-            @DisplayName("Should throw 'ValidationFailedException' when StepDTO uploadTime is null")
-            public void testAddSingleStepForUser_ThrowsValidationFailedException_WhenUploadTimeIsNull() {
+            @DisplayName("Should throw 'DateTimeValueException' when StepDTO uploadTime is null")
+            public void testAddSingleStepForUser_ThrowsDateTimeValueException_WhenUploadTimeIsNull() {
                 // Create a StepDTO where uploadTime is null
                 var badTestDto = testDTOBuilder.createStepDTOWhereUploadTimeIsNull();
                 testStepDTOList.add(badTestDto);
 
                 // Expected exception message
-                var expectedMessage = "Upload time is null";
+                var expectedMessage = "Upload time cant be null";
 
                 // Assert that correct exception is thrown when test data is passed to method
                 var result = assertThrows(
-                        ValidationFailedException.class, () -> stepServiceImpl.addMultipleStepsForUser(testUser, testStepDTOList));
+                        DateTimeValueException.class, () -> stepServiceImpl.addMultipleStepsForUser(testUser, testStepDTOList));
                 assertTrue(result.getMessage().contains(expectedMessage),
                         "Expected exception message to be '" + expectedMessage + "' but was '" + result.getMessage() + "'");
                 testStepDTOList.remove(badTestDto);
