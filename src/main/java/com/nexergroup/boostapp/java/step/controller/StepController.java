@@ -140,10 +140,10 @@ public class StepController {
     }
 
     @Operation(summary = "Get all step object for user from year")
-    @GetMapping(value = "weeksteps/year/{year}")
-    public List<WeekStep> getAllWeeksStepsFromYearForUser(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
+    @GetMapping(value = "weeksteps/user/{userId}/year/{year}")
+    public List<WeekStep> getAllWeeksStepsFromYearForUser(final @PathVariable String userId,
                                                           final @PathVariable int year) {
-        return stepServiceImpl.getWeekStepsForUserAndYear(JwtValidator.getUserId(jwt), year);
+        return stepServiceImpl.getWeekStepsForUserAndYear(userId, year);
     }
 
     @Operation(summary = "Get stepCount per day for current week for a specific user")

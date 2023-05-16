@@ -434,9 +434,10 @@ class AbstractStepServiceImplTest {
                     // Actual id of the returned Step
                     var actualStepId = result.getId();
 
-                    // Assert that the returned Step has the correct id
+                    // Assert that the returned Step has the correct id and stepCount
                     assertEquals(expectedStepId, actualStepId,
                             "Expected id of Step object to be '" + expectedStepId + "'  but was '" + actualStepId + "'. " + result);
+                    assertEquals(testStepDTO.getStepCount(), result.getStepCount());
                 }
             }
         }
