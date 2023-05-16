@@ -5,6 +5,7 @@ import com.nexergroup.boostapp.java.step.dto.stepdto.DailyWeekStepDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.WeeklyStepDTO;
 import com.nexergroup.boostapp.java.step.model.Step;
+import com.nexergroup.boostapp.java.step.model.WeekStep;
 import com.nexergroup.boostapp.java.step.service.StepServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -136,6 +137,13 @@ public class StepController {
                                                                       final @PathVariable int year,
                                                                       final @PathVariable int week) {
         return stepServiceImpl.getStepCountForUserYearAndWeek(JwtValidator.getUserId(jwt), year, week);
+    }
+
+    @Operation(summary = "Get all step object for user from year")
+    @GetMapping(value = "weeksteps/year/{year}")
+    public List<WeekStep> getAllWeeksStepsFromYearForUser(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
+                                                          final @PathVariable int year) {
+        return stepServiceImpl.getWeekStepsForUserAndYear(JwtValidator.getUserId(jwt), year);
     }
 
     @Operation(summary = "Get stepCount per day for current week for a specific user")

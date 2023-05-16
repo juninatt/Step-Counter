@@ -26,11 +26,15 @@ public class WeekStepRepositoryTest {
         WeekStep wStep2 = new WeekStep("danijela", 1, 2020, 400);
         WeekStep wStep3 = new WeekStep("yahya", 1, 2020, 500);
         WeekStep wStep4 = new WeekStep("gabrielle", 1,2020, 900);
+        WeekStep wStep5 = new WeekStep("gabrielle", 52,2020, 900);
+        WeekStep wStep6 = new WeekStep("gabrielle", 52,2020, 900);
 
         weekStepRepository.save(wStep1);
         weekStepRepository.save(wStep2);
         weekStepRepository.save(wStep3);
         weekStepRepository.save(wStep4);
+        weekStepRepository.save(wStep5);
+        weekStepRepository.save(wStep6);
     }
 
     @Test
@@ -123,4 +127,37 @@ public class WeekStepRepositoryTest {
         Assert.assertEquals(0, updatedWeekStep.getStepCount());
     }
 
+    @Test
+    public void shouldReturnWeekStepsForUserAndYear() {
+        List<WeekStep> weekSteps = weekStepRepository.getAllWeekStepsFromYearForUser(2020, "johanna");
+        Assert.assertEquals(1, weekSteps.size());
+        Assert.assertEquals("johanna", weekSteps.get(0).getUserId());
+        Assert.assertEquals(2020, weekSteps.get(0).getYear());
+    }
+
+    @Test
+    public void shouldReturnEmptyListForNonExistingUser() {
+        List<WeekStep> weekSteps = weekStepRepository.getAllWeekStepsFromYearForUser( 2020, "no one");
+        Assert.assertTrue(weekSteps.isEmpty());
+    }
+
+    @Test
+    public void shouldReturnEmptyListForNonExistingYear() {
+        List<WeekStep> weekSteps = weekStepRepository.getAllWeekStepsFromYearForUser(2021, "johanna");
+        Assert.assertTrue(weekSteps.isEmpty());
+    }
+
+    @Test
+    public void shouldReturnEmptyListForNonExistingUserAndYear() {
+        List<WeekStep> weekSteps = weekStepRepository.getAllWeekStepsFromYearForUser( 2021, "no one");
+        Assert.assertTrue(weekSteps.isEmpty());
+    }
+    @Test
+    public void shouldReturnCorrectListSizeWithSeveralObjectsInDB() {
+        List<WeekStep> weekSteps = weekStepRepository.getAllWeekStepsFromYearForUser( 2020, "gabrielle");
+        var secondResult = weekStepRepository.getStepCountByUserIdYearAndWeek("gabrielle", 2020, 52)
+                .orElseThrow();
+        Assert.assertEquals(3, weekSteps.size());
+        Assert.assertEquals(1800, (int) secondResult);
+    }
 }

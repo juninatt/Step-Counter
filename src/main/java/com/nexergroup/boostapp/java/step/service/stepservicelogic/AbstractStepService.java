@@ -309,4 +309,8 @@ public abstract class AbstractStepService {
         weekStep.setStepCount(weekStep.getStepCount() + stepCount);
         weekStepRepository.save(weekStep);
     }
+
+    public List<WeekStep> getWeekStepsForUserAndYear(String userId, int year) {
+        return weekStepRepository.getAllWeekStepsFromYearForUser(year, userId);
+    }
 }

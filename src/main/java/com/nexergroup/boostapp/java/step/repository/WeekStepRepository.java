@@ -32,6 +32,8 @@ public interface WeekStepRepository extends JpaRepository<WeekStep, Long> {
      */
     Optional<WeekStep> findByUserIdAndYearAndWeek(String userId, int year, int week);
 
+    List<WeekStep> findByUserIdAndYear(String userId, int year);
+
     /**
      * Retrieve the number of steps taken by user with given user id from the given year and week
      *
@@ -54,7 +56,6 @@ public interface WeekStepRepository extends JpaRepository<WeekStep, Long> {
     @Modifying
     @Query("UPDATE WeekStep ws SET ws.stepCount = :newTotal WHERE ws.id = :id")
     void setTotalStepCountById(@Param("id") Long id, @Param("newTotal") int newTotal);
-
 
 
     Optional<WeekStep> findTopByUserIdOrderByIdDesc(String userId);
