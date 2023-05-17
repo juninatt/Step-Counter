@@ -45,7 +45,4 @@ public interface WeekStepRepository extends JpaRepository<WeekStep, Long> {
 
 
     Optional<WeekStep> findTopByUserIdOrderByIdDesc(String userId);
-
-    @Query("SELECT ws FROM WeekStep ws WHERE ws.year = :year AND ws.userId = :userId ORDER BY ws.week ASC")
-    List<WeekStep> getAllWeekStepsFromYearForUser(int year, String userId);
 }

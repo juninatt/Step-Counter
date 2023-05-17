@@ -4,6 +4,7 @@ import com.nexergroup.boostapp.java.step.controller.apiresponse.*;
 import com.nexergroup.boostapp.java.step.dto.stepdto.DailyWeekStepDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.WeeklyStepDTO;
+import com.nexergroup.boostapp.java.step.model.MonthStep;
 import com.nexergroup.boostapp.java.step.model.Step;
 import com.nexergroup.boostapp.java.step.model.WeekStep;
 import com.nexergroup.boostapp.java.step.service.StepServiceImpl;
@@ -139,11 +140,18 @@ public class StepController {
         return stepServiceImpl.getStepCountForUserYearAndWeek(JwtValidator.getUserId(jwt), year, week);
     }
 
-    @Operation(summary = "Get all step object for user from year")
-    @GetMapping(value = "weeksteps/user/{userId}/year/{year}")
+    @Operation(summary = "Get all week-steps for user from year")
+    @GetMapping(value = "/weeksteps/user/{userId}/year/{year}")
     public List<WeekStep> getAllWeeksStepsFromYearForUser(final @PathVariable String userId,
                                                           final @PathVariable int year) {
         return stepServiceImpl.getWeekStepsForUserAndYear(userId, year);
+    }
+
+    @Operation(summary = "Get all month-step objects for user from year")
+    @GetMapping(value = "/monthsteps/user/{userId}/year/{year}")
+    public List<MonthStep> getAllMonthStepsFromYearForUser(final @PathVariable String userId,
+                                                           final @PathVariable int year) {
+        return stepServiceImpl.getMonthStepsFromYearForUser(userId, year);
     }
 
     @Operation(summary = "Get stepCount per day for current week for a specific user")

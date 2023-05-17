@@ -625,7 +625,7 @@ class AbstractStepServiceImplTest {
                 var expectedStepCount = testDTO3.getStepCount();
 
                 // Actual step count
-                var actualStepCount = weekStepRepository.getAllWeekStepsFromYearForUser(testDTO3.getStartTime().getYear(), testUser).get(0).getStepCount();
+                var actualStepCount = weekStepRepository.findByUserIdAndYear(testUser, testDTO3.getStartTime().getYear()).get(0).getStepCount();
 
                 // Assert that the stepCount of the WeekStep has been updated correctly
                 assertEquals(expectedStepCount, actualStepCount,

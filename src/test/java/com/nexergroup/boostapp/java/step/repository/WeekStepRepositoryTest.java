@@ -47,7 +47,7 @@ public class WeekStepRepositoryTest {
 
     @Test
     public void shouldReturnAllWeekStepsFromYear2020() {
-        List<WeekStep> weekSteps = weekStepRepository.getAllWeekStepsFromYearForUser(2020, "johanna");
+        List<WeekStep> weekSteps = weekStepRepository.findByUserIdAndYear("johanna", 2020);
         Assert.assertEquals(1, weekSteps.size());
     }
 
@@ -117,7 +117,7 @@ public class WeekStepRepositoryTest {
 
     @Test
     public void shouldReturnWeekStepsForUserAndYear() {
-        List<WeekStep> weekSteps = weekStepRepository.getAllWeekStepsFromYearForUser(2020, "johanna");
+        List<WeekStep> weekSteps = weekStepRepository.findByUserIdAndYear("johanna", 2020);
         Assert.assertEquals(1, weekSteps.size());
         Assert.assertEquals("johanna", weekSteps.get(0).getUserId());
         Assert.assertEquals(2020, weekSteps.get(0).getYear());
@@ -125,24 +125,24 @@ public class WeekStepRepositoryTest {
 
     @Test
     public void shouldReturnEmptyListForNonExistingUser() {
-        List<WeekStep> weekSteps = weekStepRepository.getAllWeekStepsFromYearForUser( 2020, "no one");
+        List<WeekStep> weekSteps = weekStepRepository.findByUserIdAndYear("no one", 2020);
         Assert.assertTrue(weekSteps.isEmpty());
     }
 
     @Test
     public void shouldReturnEmptyListForNonExistingYear() {
-        List<WeekStep> weekSteps = weekStepRepository.getAllWeekStepsFromYearForUser(2021, "johanna");
+        List<WeekStep> weekSteps = weekStepRepository.findByUserIdAndYear("johanna", 2021);
         Assert.assertTrue(weekSteps.isEmpty());
     }
 
     @Test
     public void shouldReturnEmptyListForNonExistingUserAndYear() {
-        List<WeekStep> weekSteps = weekStepRepository.getAllWeekStepsFromYearForUser( 2021, "no one");
+        List<WeekStep> weekSteps = weekStepRepository.findByUserIdAndYear("no one", 2021);
         Assert.assertTrue(weekSteps.isEmpty());
     }
     @Test
     public void shouldReturnCorrectListSizeWithSeveralObjectsInDB() {
-        List<WeekStep> weekSteps = weekStepRepository.getAllWeekStepsFromYearForUser( 2020, "gabrielle");
+        List<WeekStep> weekSteps = weekStepRepository.findByUserIdAndYear("gabrielle", 2020);
         var secondResult = weekStepRepository.getStepCountByUserIdYearAndWeek("gabrielle", 2020, 52)
                 .orElseThrow();
         Assert.assertEquals(3, weekSteps.size());

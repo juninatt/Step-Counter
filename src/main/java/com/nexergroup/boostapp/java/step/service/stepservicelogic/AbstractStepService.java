@@ -8,6 +8,7 @@ import com.nexergroup.boostapp.java.step.exception.NotFoundException;
 import com.nexergroup.boostapp.java.step.exception.ValidationFailedException;
 import com.nexergroup.boostapp.java.step.mapper.DateHelper;
 import com.nexergroup.boostapp.java.step.mapper.StepMapper;
+import com.nexergroup.boostapp.java.step.model.MonthStep;
 import com.nexergroup.boostapp.java.step.model.Step;
 import com.nexergroup.boostapp.java.step.model.WeekStep;
 import com.nexergroup.boostapp.java.step.repository.MonthStepRepository;
@@ -285,7 +286,7 @@ public abstract class AbstractStepService {
      */
     public WeeklyStepDTO getStepCountPerWeekForUser(String userId, int year) {
         // Fetch all step objects belonging to user from current year
-        var fetchedWeekStepList = weekStepRepository.getAllWeekStepsFromYearForUser(year , userId);
+        var fetchedWeekStepList = weekStepRepository.findByUserIdAndYear(userId, year);
         // Create a list with 52 slots of 0
         ArrayList<Integer> weeklyStepCountList = new ArrayList<>(Collections.nCopies(53, 0));
 
@@ -319,6 +320,10 @@ public abstract class AbstractStepService {
     }
 
     public List<WeekStep> getWeekStepsForUserAndYear(String userId, int year) {
-        return weekStepRepository.getAllWeekStepsFromYearForUser(year, userId);
+        return weekStepRepository.findByUserIdAndYear(userId, year);
+    }
+
+    public List<MonthStep> getMonthStepsFromYearForUser(String userId, int year) {
+        return monthStepRepository.findByUserIdAndYear(userId, year);
     }
 }
