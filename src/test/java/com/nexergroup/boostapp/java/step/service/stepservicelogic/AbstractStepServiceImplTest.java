@@ -5,7 +5,6 @@ import com.nexergroup.boostapp.java.step.exception.DateTimeValueException;
 import com.nexergroup.boostapp.java.step.exception.ValidationFailedException;
 import com.nexergroup.boostapp.java.step.mapper.DateHelper;
 import com.nexergroup.boostapp.java.step.model.Step;
-import com.nexergroup.boostapp.java.step.model.WeekStep;
 import com.nexergroup.boostapp.java.step.repository.MonthStepRepository;
 import com.nexergroup.boostapp.java.step.repository.StepRepository;
 import com.nexergroup.boostapp.java.step.repository.WeekStepRepository;
@@ -1134,7 +1133,7 @@ class AbstractStepServiceImplTest {
         var expected1 = weeklyStepCount.getWeeklySteps().get(DateHelper.getWeek(stepsInCurrentWeek.getStartTime()));
         var expected2 = weeklyStepCount.getWeeklySteps().get(DateHelper.getWeek(stepsInNextWeek.getStartTime()));
 
-
+        System.out.println(weeklyStepCount.getWeeklySteps());
         // Assertions
         assertNotNull(weeklyStepCount);
         assertEquals(testUser, weeklyStepCount.getUserId());
@@ -1220,46 +1219,31 @@ class AbstractStepServiceImplTest {
     @Test
     @DisplayName("Test Get Step Count Per Week For User - Multiple Steps in Same Week")
     void testGetStepCountPerWeekForUser_MultipleStepsInSameWeek_ReturnsSumOfStepCounts() {
-        // Clean up existing data
-        weekStepRepository.deleteAll();
-
         var now = ZonedDateTime.now();
         var startOfWeek = DateHelper.getWeekStart(now);
 
-        // Create WeekStep objects for testing
+        // Create DTO objects for testing
         var stepsInWeek = new StepDTO(testUser, 500, startOfWeek, startOfWeek.plusMinutes(1), startOfWeek.plusMinutes(2));
         var additionalStepsInWeek = new StepDTO(testUser, 700, startOfWeek.plusDays(3), startOfWeek.plusMinutes(1).plusDays(3), startOfWeek.plusMinutes(2).plusDays(3));
 
+        // Add data to test method
         stepServiceImpl.addSingleStepForUser(testUser, stepsInWeek);
         stepServiceImpl.addSingleStepForUser(testUser, additionalStepsInWeek);
 
         // Invoke the method under test
         var result = stepServiceImpl.getStepCountPerWeekForUser(testUser, ZonedDateTime.now().getYear());
+        var objectsInDataBase = weekStepRepository.findAll();
 
         // Retrieve expected value
         var expected = result.getWeeklySteps().get(DateHelper.getWeek(startOfWeek));
-
-        var weekSteps = weekStepRepository.findAll();
-        for (WeekStep step : weekSteps) {
-            System.out.println(step.getYear() + "  " + step.getWeek() + "  " + step.getStepCount());
-        }
-        System.out.println(result.getWeeklySteps());
 
         // Assertions
         assertNotNull(result);
         assertEquals(testUser, result.getUserId());
         assertEquals(53, result.getWeeklySteps().size());
         assertEquals((Integer) 1200, expected); // Sum of step counts in the same week
+        assertEquals(1, objectsInDataBase.size());
     }
-
-
-
-
-
-
-
-
-
 
     @Nested
     @DisplayName("Parameterized tests: ")

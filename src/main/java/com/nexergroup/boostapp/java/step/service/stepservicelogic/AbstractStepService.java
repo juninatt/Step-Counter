@@ -8,7 +8,6 @@ import com.nexergroup.boostapp.java.step.exception.NotFoundException;
 import com.nexergroup.boostapp.java.step.exception.ValidationFailedException;
 import com.nexergroup.boostapp.java.step.mapper.DateHelper;
 import com.nexergroup.boostapp.java.step.mapper.StepMapper;
-import com.nexergroup.boostapp.java.step.model.MonthStep;
 import com.nexergroup.boostapp.java.step.model.Step;
 import com.nexergroup.boostapp.java.step.model.WeekStep;
 import com.nexergroup.boostapp.java.step.repository.MonthStepRepository;
@@ -179,49 +178,20 @@ public abstract class AbstractStepService {
      * Converts a StepDTO object to Step, WeekStep, and MonthStep objects and saves them in the database
      *
      * @param stepDTO the {@link StepDTO} object to convert, holding the new data
-     * @return the users most recently stored {@link Step} object
+     * @return The updated {@link Step} object
      */
     private Step  saveToAllTables(StepDTO stepDTO) {
-        // Fetch the users latest week-step and month-step from database, or empty objects if no data is found
-        var latestWeekStep = weekStepRepository.findTopByUserIdOrderByIdDesc(stepDTO.getUserId())
-                .orElse(new WeekStep());
-        var latestMonthStep = monthStepRepository.findTopByUserIdOrderByIdDesc(stepDTO.getUserId())
-                .orElse(new MonthStep());
-
-        // Get the step-count from the new data
-        var newStepCount = stepDTO.getStepCount();
-
+        Step updatedStep;
         try {
-            // If the new step data is from the same day as the most recently stored step in database
+            // If new data is from same day as latest step object, the step is updated
             if (stepValidator.shouldUpdateStep(stepDTO)) {
-                // Fetch users latest step object from database
-                var latestStepInDB = getLatestStepByStartTimeFromUser(stepDTO.getUserId());
-                // Get the value added to be added to the current step object
-                var stepCountAdded = Math.abs(latestStepInDB.getStepCount() - newStepCount);
-                // Add stepCount to all tables without creating new objects in database
-                updateStep(latestStepInDB, stepDTO);
-                updateWeekStep(latestWeekStep, stepCountAdded);
-                updateMonthStep(latestMonthStep, stepCountAdded);
+                updatedStep = updateStep(stepDTO);
             }
             else {
-                // If not, create new step object and persist to database
-                stepRepository.save(StepMapper.mapper.stepDtoToStep(stepDTO));
-                // If the step data is of the same week as existing week-step object, update week-step
-                if (stepValidator.shouldUpdateWeekStep(stepDTO, latestWeekStep)) {
-                    updateWeekStep(latestWeekStep, newStepCount);
-                }
-                else {
-                    // If not, create new week-step object and persist to database
-                    weekStepRepository.save(StepMapper.mapper.stepDtoToWeekStep(stepDTO));
-                }
-                // If the step data is of the same month as existing month-step object, update month-step
-                if (stepValidator.shouldUpdateMonthStep(stepDTO, latestMonthStep)) {
-                    updateMonthStep(latestMonthStep, newStepCount);
-                }
-                // If not, create new month-step object and persist to database
-                else {
-                    monthStepRepository.save(StepMapper.mapper.stepDtoToMonthStep(stepDTO));
-                }
+                // If not, new step object is created and the data persisted to all tables
+                updatedStep = stepRepository.save(StepMapper.mapper.stepDtoToStep(stepDTO));
+                addStepDataToWeekStepTable(stepDTO, stepDTO.getStepCount());
+                addStepDataToMonthStepTable(stepDTO, stepDTO.getStepCount());
             }
             } catch (NullPointerException nullPointerException) {
                 throw new NullPointerException("NullPointerException when saving " + nullPointerException.getMessage());
@@ -229,12 +199,48 @@ public abstract class AbstractStepService {
                 throw new RuntimeException("Java API failed to persist new step data to database " + runtimesException.getMessage());
             }
 
-        var updatedStep = getLatestStepByStartTimeFromUser(stepDTO.getUserId());
-        // If persisted step-count is 0 something went wrong and RuntimeException is thrown, otherwise the new/updated step is returned to the caller
+        // If persisted step-count is 0, something went wrong and RuntimeException is thrown, otherwise the new/updated step is returned to the caller
         if (updatedStep.getStepCount() > 0)
             return updatedStep;
         else
             throw new NotFoundException("Unknown error in Java save function. Step was not persisted to database");
+    }
+
+    private Step updateStep(StepDTO stepDTO) {
+        Step updatedStep;
+        // Fetch users latest step object from database
+        var latestStepInDB = getLatestStepByStartTimeFromUser(stepDTO.getUserId());
+        // Get the value to be added to the current step object(The DTO-stepCount is always the new total of the day)
+        var stepCountIncrease = Math.abs(latestStepInDB.getStepCount() - stepDTO.getStepCount());
+        // Add stepCount to all tables without creating new objects in database
+        updatedStep = updateStep(latestStepInDB, stepDTO);
+        updateWeekStepForUser(stepDTO.getUserId(), stepCountIncrease);
+        updateMonthStep(stepDTO.getUserId(), stepCountIncrease);
+        return updatedStep;
+    }
+
+    private void addStepDataToMonthStepTable(StepDTO stepDTO, int newStepCount) {
+        // Fetch month-step object from same month and year from database
+        var monthStepToUpdate = monthStepRepository.findByUserIdAndYearAndMonth(stepDTO.getUserId(), stepDTO.getStartTime().getYear(), stepDTO.getStartTime().getMonthValue());
+        // If a month-step object from the same month was found it is updated
+        monthStepToUpdate.ifPresentOrElse(monthStep -> {
+                    monthStep.setStepCount(monthStep.getStepCount() + newStepCount);
+                    monthStepRepository.save(monthStep);
+                },
+                // If no month-step from same month and year was found a new object is created and stored in database
+                () -> monthStepRepository.save(StepMapper.mapper.stepDtoToMonthStep(stepDTO)));
+    }
+
+    private void addStepDataToWeekStepTable(StepDTO stepDTO, int newStepCount) {
+        // Fetch week-step object from same week and year from database
+        var weekStepToUpdate = weekStepRepository.findByUserIdAndYearAndWeek(stepDTO.getUserId(), stepDTO.getStartTime().getYear(), DateHelper.getWeek(stepDTO.getStartTime()));
+        // If a week-step object from the same week was found it is updated
+        weekStepToUpdate.ifPresentOrElse(weekStep -> {
+                    weekStep.setStepCount(weekStep.getStepCount() + newStepCount);
+                    weekStepRepository.save(weekStep);
+                },
+                // If no week-step from same week and year was found a new object is created and stored in database
+                () -> weekStepRepository.save(StepMapper.mapper.stepDtoToWeekStep(stepDTO)));
     }
 
     /**
@@ -294,18 +300,20 @@ public abstract class AbstractStepService {
         return new WeeklyStepDTO(userId, weeklyStepCountList);
     }
 
-    private void updateStep(Step step, StepDTO stepDTO) {
+    private Step updateStep(Step step, StepDTO stepDTO) {
         step.setStepCount(stepDTO.getStepCount());
         step.setEndTime(stepDTO.getEndTime());
         step.setUploadTime(stepDTO.getUploadTime());
-        stepRepository.save(step);
+        return stepRepository.save(step);
     }
-    private void updateMonthStep(MonthStep monthStep, int stepCount) {
+    private void updateMonthStep(String userId, int stepCount) {
+        var monthStep = monthStepRepository.findTopByUserIdOrderByIdDesc(userId).get();
         monthStep.setStepCount(monthStep.getStepCount() + stepCount);
         monthStepRepository.save(monthStep);
     }
 
-    private void updateWeekStep(WeekStep weekStep, int stepCount) {
+    private void updateWeekStepForUser(String userId, int stepCount) {
+        var weekStep = weekStepRepository.findTopByUserIdOrderByIdDesc(userId).get();
         weekStep.setStepCount(weekStep.getStepCount() + stepCount);
         weekStepRepository.save(weekStep);
     }

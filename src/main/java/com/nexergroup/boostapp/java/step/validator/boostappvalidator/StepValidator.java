@@ -4,11 +4,8 @@ import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
 import com.nexergroup.boostapp.java.step.exception.DateTimeValueException;
 import com.nexergroup.boostapp.java.step.exception.UserIdValueException;
 import com.nexergroup.boostapp.java.step.exception.ValidationFailedException;
-import com.nexergroup.boostapp.java.step.mapper.DateHelper;
-import com.nexergroup.boostapp.java.step.model.MonthStep;
-import com.nexergroup.boostapp.java.step.model.WeekStep;
-import com.nexergroup.boostapp.java.step.repository.StepRepository;
 import com.nexergroup.boostapp.java.step.model.Step;
+import com.nexergroup.boostapp.java.step.repository.StepRepository;
 import org.springframework.lang.NonNull;
 
 import javax.validation.constraints.NotNull;
@@ -72,28 +69,6 @@ public class StepValidator {
     }
 
     /**
-     * Checks if the given {@link  StepDTO} should update the provided {@link WeekStep} object.
-     *
-     * @param stepDTO  the {@link StepDTO} holding the data to be stored in the database
-     * @param weekStep  the {@link WeekStep} object to compare to.
-     * @return true if the stepDTO belongs to the same week as the WeekStep object, false otherwise.
-     */
-    public boolean shouldUpdateWeekStep(@NonNull StepDTO stepDTO, WeekStep weekStep) {
-        return DateHelper.getWeek(stepDTO.getStartTime()) == weekStep.getWeek();
-    }
-
-    /**
-     * Checks if the given {@link  StepDTO} should update the provided {@link  MonthStep}.
-     *
-     * @param stepDTO   the {@link StepDTO} holding the data to be stored in the database
-     * @param monthStep  the {@link MonthStep} object to compare to
-     * @return true if the stepDTO belongs to the same month as the MonthStep object, false otherwise.
-     */
-    public boolean shouldUpdateMonthStep(@NonNull StepDTO stepDTO, MonthStep monthStep) {
-        return monthStep.getMonth() == stepDTO.getStartTime().getMonthValue();
-    }
-
-    /**
      * Checks if the fields of the {@link StepDTO} are null or not and if the time-fields are ok.
      * The time-fields are seen as ok if startTime is before endTime, and endTime is before uploadTime.
      *
@@ -101,13 +76,9 @@ public class StepValidator {
      * @return true if no fields are null and the time-fields are ok, false and throws exception otherwise
      */
     private boolean stepDtoIsValid(StepDTO stepDto) {
-        return  noFieldsAreNull(stepDto) &&
-                endTimeIsAfterStartTime(stepDto) &&
-                uploadTimeIsAfterEndTime(stepDto);
+        return  noFieldsAreNull(stepDto) && timeFieldsAreCorrect(stepDto);
+
     }
-
-
-
 
     /**
      * Checks if any of the fields in the given {@link StepDTO} object are null.
@@ -118,52 +89,25 @@ public class StepValidator {
     private boolean noFieldsAreNull(@NotNull StepDTO stepDto) {
         if (stepDto == null)
             throw new ValidationFailedException("Object holding new data cant be null");
-        // Assign all the DTO fields values to variables for readability
-        var userId = stepDto.getUserId();
-        var stepCount = stepDto.getStepCount();
-        var startTime = stepDto.getStartTime();
-        var endTime = stepDto.getEndTime();
-        var uploadTime = stepDto.getUploadTime();
 
         // Check each field and throw exception if null value is found
-        if (userId == null)
+        if (stepDto.getUserId() == null)
             throw new UserIdValueException("User ID cant be null");
-        else if (stepCount < 1)
+        else if (stepDto.getStepCount() < 1)
             throw new IllegalArgumentException("Step count must be greater than 0");
-        else if (startTime == null)
+        else if (stepDto.getStartTime() == null)
             throw new DateTimeValueException("Start time cant be null");
-        else if (endTime == null)
+        else if (stepDto.getEndTime() == null)
             throw new DateTimeValueException("End time cant be null");
-        else if (uploadTime == null)
+        else if (stepDto.getUploadTime() == null)
             throw new DateTimeValueException("Upload time cant be null");
         else
             return true;
-
     }
 
-    /**
-     * Checks whether the endTime of a {@link StepDTO} object is after its startTime or not.
-     *
-     * @param stepDto the {@link StepDTO} object holding the time-fields to check
-     * @return true is the endTime of the {@link StepDTO} object is after its startTime, false and throws exception otherwise
-     */
-    private boolean endTimeIsAfterStartTime(StepDTO stepDto) {
+    private boolean timeFieldsAreCorrect(StepDTO stepDto) {
         if (stepDto.getEndTime().isBefore(stepDto.getStartTime())){
             throw new DateTimeValueException("Start time must be before end time\n" + notValidDTOString(stepDto));
-        } else {
-            return true;
-        }
-    }
-
-    /**
-     * Checks whether the uploadTime of a {@link StepDTO} object is after its endTime or not.
-     *
-     * @param stepDto the {@link StepDTO} object holding the time-fields to check
-     * @return true is the uploadTime of the {@link StepDTO} object is after endTime, false and throws exception otherwise
-     */
-    private boolean uploadTimeIsAfterEndTime(StepDTO stepDto) {
-        if (stepDto.getUploadTime().isBefore(stepDto.getEndTime())) {
-            throw new DateTimeValueException("Upload time must be after end time\n" + notValidDTOString(stepDto));
         } else {
             return true;
         }
