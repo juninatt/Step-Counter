@@ -60,7 +60,7 @@ public class StepControllerDev {
      *         or a status 400 (BAD_REQUEST) status if the request was invalid
      */
     @Operation(summary = "Register step entity")
-    @StepResponse
+    @OkPostResponse(schemaImplementation = Step.class)
     @PostMapping(value = "/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Step registerStep(final @PathVariable String userId,
                                              final @RequestBody @Valid StepDTO stepDTO) {
@@ -75,7 +75,7 @@ public class StepControllerDev {
      * @return A list of {@link StepDTO} objects representing the registered steps
      */
     @Operation(summary = "Register multiple step entities")
-    @ListStepResponse
+    @OkPostResponse(schemaImplementation = Step.class)
     @PostMapping(value = "/multiple/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public List<Step> registerMultipleSteps(final @PathVariable String userId,
                                                final @RequestBody List<@Valid StepDTO> stepDtoList) {
@@ -93,7 +93,7 @@ public class StepControllerDev {
      *         or a status 204 (NO_CONTENT) status if the step data is not available.
      */
     @Operation(summary = "Get a user's step count per month by user ID and year and month)")
-    @GetStepCountResponse
+    @OkGetRequest(schemaImplementation = Integer.class)
     @GetMapping(value = {"/stepcount/{userId}/year/{year}/month/{month}"})
     public Integer getUserMonthSteps(final @PathVariable String userId,
                                                      final @PathVariable int year,
@@ -112,7 +112,7 @@ public class StepControllerDev {
      *         or a status 204 (NO_CONTENT) status if the step count is not available.
      */
     @Operation(summary = "Get a user's step count per week by user ID and year and week)")
-    @GetStepCountResponse
+    @OkGetRequest(schemaImplementation = Integer.class)
     @GetMapping(value = {"/stepcount/{userId}/year/{year}/week/{week}"})
     public Integer getUserWeekStepCountForWeekAndYear(final @PathVariable String userId,
                                                                       final @PathVariable int year,
@@ -121,7 +121,7 @@ public class StepControllerDev {
     }
 
     @Operation(summary = "Get stepCount per day for current week for a specific user")
-    @WeekStepDTOResponse
+    @OkGetRequest(schemaImplementation = DailyWeekStepDTO.class)
     @GetMapping(value = "/stepcount/{userId}/currentweekdaily")
     public DailyWeekStepDTO getStepCountByDayForUserCurrentWeek(final @PathVariable String userId) {
         return stepServiceImpl.getStepsPerDayForWeek(userId);
@@ -135,7 +135,7 @@ public class StepControllerDev {
      * or a status 204 (NO_CONTENT) if no step data is found for the authenticated user
      */
     @Operation(summary = "Get user's latest step")
-    @StepResponse
+    @OkGetRequest(schemaImplementation = Step.class)
     @GetMapping(value = "/latest/{userId}")
     public Step getUsersLatestStep(final @PathVariable String userId) {
         return stepServiceImpl.getLatestStepByStartTimeFromUser(userId);

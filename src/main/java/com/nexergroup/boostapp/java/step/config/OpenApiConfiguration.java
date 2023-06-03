@@ -20,12 +20,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class OpenApiConfiguration {
 
-    /**
-     * Creates a custom {@link OpenAPI} object for BoostApp Step-Api.
-     *
-     * @return {@link OpenAPI} object with security requirements, components,
-     *  servers and API info set for BoostApp Step-Api.
-     */
     @Bean
     public OpenAPI customOpenAPI() {
         final String securitySchemeName = "Bearer Authorization";

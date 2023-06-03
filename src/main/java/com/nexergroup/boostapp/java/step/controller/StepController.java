@@ -69,7 +69,7 @@ public class StepController {
      *         or a status 400 (BAD_REQUEST) status if the request was invalid
      */
     @Operation(summary = "Register step entity")
-    @StepResponse
+    @OkPostResponse(schemaImplementation = Step.class)
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public Step registerStep(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                              final @RequestBody @Valid StepDTO stepDTO) {
@@ -84,7 +84,7 @@ public class StepController {
      * @return A list of {@link StepDTO} objects representing the registered steps
      */
     @Operation(summary = "Register multiple step entities")
-    @ListStepResponse
+    @OkPostResponse(schemaImplementation = Step.class)
     @PostMapping(value = "/multiple", consumes = MediaType.APPLICATION_JSON_VALUE)
     public List<Step> registerMultipleSteps(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                                final @RequestBody List<@Valid StepDTO> stepDtoList) {
@@ -98,7 +98,7 @@ public class StepController {
      * @return An Optional containing a {@link StepDTO} object in the body,
      */
     @Operation(summary = "Get user's latest step")
-    @StepResponse
+    @OkGetRequest(schemaImplementation = Step.class)
     @GetMapping(value = "/latest")
     public Step getUsersLatestStep ( final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt) {
         return stepServiceImpl.getLatestStepByStartTimeFromUser(JwtValidator.getUserId(jwt));
@@ -114,7 +114,7 @@ public class StepController {
      *         or a status 204 (NO_CONTENT) status if the step data is not available.
      */
     @Operation(summary = "Get a user's step count per month by user and year and month)")
-    @GetStepCountResponse
+    @OkGetRequest(schemaImplementation = Integer.class)
     @GetMapping(value = {"/stepcount/year/{year}/month/{month}"})
     public Integer getUserMonthStepCountForYearAndMonth(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                                                         final @PathVariable int year,
@@ -132,7 +132,7 @@ public class StepController {
      *         or a status 204 (NO_CONTENT) status if the step count is not available.
      */
     @Operation(summary = "Get a user's step count per week by user and year and week)")
-    @GetStepCountResponse
+    @OkGetRequest(schemaImplementation = Integer.class)
     @GetMapping(value = {"/stepcount/year/{year}/week/{week}"})
     public Integer getUserWeekStepCountForWeekAndYear(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt,
                                                                       final @PathVariable int year,
@@ -141,6 +141,7 @@ public class StepController {
     }
 
     @Operation(summary = "Get all week-steps for user from year")
+    @OkGetRequest(schemaImplementation = WeekStep.class)
     @GetMapping(value = "/weeksteps/user/{userId}/year/{year}")
     public List<WeekStep> getAllWeeksStepsFromYearForUser(final @PathVariable String userId,
                                                           final @PathVariable int year) {
@@ -148,6 +149,7 @@ public class StepController {
     }
 
     @Operation(summary = "Get all month-step objects for user from year")
+    @OkGetRequest(schemaImplementation = MonthStep.class)
     @GetMapping(value = "/monthsteps/user/{userId}/year/{year}")
     public List<MonthStep> getAllMonthStepsFromYearForUser(final @PathVariable String userId,
                                                            final @PathVariable int year) {
@@ -155,13 +157,14 @@ public class StepController {
     }
 
     @Operation(summary = "Get stepCount per day for current week for a specific user")
-    @WeekStepDTOResponse
+    @OkGetRequest(schemaImplementation = DailyWeekStepDTO.class)
     @GetMapping(value = "/stepcount/currentweekdaily")
     public DailyWeekStepDTO getStepCountByDayForUserCurrentWeek(final @AuthenticationPrincipal @Parameter(hidden = true) Jwt jwt) {
         return stepServiceImpl.getStepsPerDayForWeek(JwtValidator.getUserId(jwt));
     }
 
     @Operation(summary = "Get stepCount per week")
+    @OkGetRequest(schemaImplementation = WeeklyStepDTO.class)
     @GetMapping(value = "/stepcount/user/{userId}/year/{year}/weekly")
     public WeeklyStepDTO getStepCountForUserPerWeek(final @PathVariable String userId,
                                                     final @PathVariable int year) {
