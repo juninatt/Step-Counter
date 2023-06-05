@@ -140,6 +140,13 @@ public class StepController {
         return stepServiceImpl.getStepCountForUserYearAndWeek(JwtValidator.getUserId(jwt), year, week);
     }
 
+    /**
+     * Get all {@link WeekStep} objects belonging to the user for the specified year.
+     *
+     * @param userId The ID of the user
+     * @param year The year for which to retrieve the data
+     * @return A list of {@link WeekStep} objects
+     */
     @Operation(summary = "Get all week-steps for user from year")
     @OkGetRequest(schemaImplementation = WeekStep.class)
     @GetMapping(value = "/weeksteps/user/{userId}/year/{year}")
@@ -148,6 +155,13 @@ public class StepController {
         return stepServiceImpl.getWeekStepsForUserAndYear(userId, year);
     }
 
+    /**
+     * Get all {@link MonthStep} objects belonging to the user for the specified year.
+     *
+     * @param userId The ID of the user
+     * @param year The year for which to retrieve the data
+     * @return A list of {@link MonthStep} objects
+     */
     @Operation(summary = "Get all month-step objects for user from year")
     @OkGetRequest(schemaImplementation = MonthStep.class)
     @GetMapping(value = "/monthsteps/user/{userId}/year/{year}")
@@ -156,6 +170,12 @@ public class StepController {
         return stepServiceImpl.getMonthStepsFromYearForUser(userId, year);
     }
 
+    /**
+     * Get daily step count for current week from user
+     *
+     * @param jwt A JSON Web Token (JWT) representing the authenticated user
+     * @return A {@link DailyWeekStepDTO} object
+     */
     @Operation(summary = "Get stepCount per day for current week for a specific user")
     @OkGetRequest(schemaImplementation = DailyWeekStepDTO.class)
     @GetMapping(value = "/stepcount/currentweekdaily")
@@ -163,6 +183,11 @@ public class StepController {
         return stepServiceImpl.getStepsPerDayForWeek(JwtValidator.getUserId(jwt));
     }
 
+    /**
+     * @param userId The ID of the user
+     * @param year The year from which to retrieve the data
+     * @return A {@link WeeklyStepDTO} object
+     */
     @Operation(summary = "Get stepCount per week")
     @OkGetRequest(schemaImplementation = WeeklyStepDTO.class)
     @GetMapping(value = "/stepcount/user/{userId}/year/{year}/weekly")
