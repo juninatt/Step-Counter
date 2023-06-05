@@ -20,7 +20,6 @@ import java.util.Optional;
  * methods for querying the database for specific information about steps.
  * This class is annotated with {@link Repository} to mark it as a Spring Data repository.
  *
- * @see QueryHelper
  */
 @Repository
 public interface StepRepository extends JpaRepository<Step, Long> {
@@ -32,7 +31,7 @@ public interface StepRepository extends JpaRepository<Step, Long> {
      */
     @Transactional
     @Modifying
-    @Query(QueryHelper.DELETE_ALL_STEP)
+    @Query("DELETE FROM Step")
     void deleteAllFromStep();
 
     /**
@@ -50,14 +49,19 @@ public interface StepRepository extends JpaRepository<Step, Long> {
      @param endDate To end date
      @return A list of {@link StepDateDTO} objects containing the date and step count for the specified user, date range
      */
-    @Query(QueryHelper.SELECT_STEP_DATA_WITHIN_TIME_RANGE)
+    @Query("SELECT new com.nexergroup.boostapp.java.step.dto.stepdto.StepDateDTO(cast(s.startTime as date), sum(s.stepCount)) " +
+            "FROM Step s " +
+            "WHERE s.userId = :userId AND cast(s.startTime as date) " +
+            "BETWEEN :startDate AND :endDate " +
+            "GROUP BY s.userId, cast(s.startTime as date) " +
+            "ORDER BY cast(s.startTime as date) ASC")
     List<StepDateDTO> getStepDataByUserIdAndDateRange(@Param("userId") String userId, @Param("startDate") Timestamp startDate, @Param("endDate") Timestamp endDate);
 
     /**
      * Retrieves all distinct users from step table
      * @return A list of user id:s from the step table
      */
-    @Query(QueryHelper.SELECT_ALL_USER_ID)
+    @Query("SELECT DISTINCT s.userId FROM Step s")
     List<String> getListOfAllDistinctUserId();
 
     /**
@@ -68,7 +72,11 @@ public interface StepRepository extends JpaRepository<Step, Long> {
      * @param endTime   To end time
      * @return An optional containing sum of the steps from step table using userId, start,end and uploaded time.
      */
-    @Query(QueryHelper.SELECT_STEP_COUNT_WITHIN_TIME_RANGE)
+    @Query("SELECT sum(s.stepCount) " +
+            "FROM Step s " +
+            "WHERE s.userId = :userId " +
+            "AND s.uploadTime >= :startTime " +
+            "AND s.uploadTime <= :endTime")
     Optional<Integer> getStepCountByUserIdAndDateRange(@Param("userId") String userId, @Param("startTime") ZonedDateTime startTime, @Param("endTime") ZonedDateTime endTime);
 
     Optional<Step> findFirstByUserIdOrderByStartTimeDesc(String userId);
