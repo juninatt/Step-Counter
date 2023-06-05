@@ -120,6 +120,12 @@ public class StepControllerDev {
         return stepServiceImpl.getStepCountForUserYearAndWeek(userId, year, week);
     }
 
+    /**
+     * Get daily step count for current week from user
+     *
+     * @param userId The ID of the user
+     * @return A {@link DailyWeekStepDTO} object
+     */
     @Operation(summary = "Get stepCount per day for current week for a specific user")
     @OkGetRequest(schemaImplementation = DailyWeekStepDTO.class)
     @GetMapping(value = "/stepcount/{userId}/currentweekdaily")
