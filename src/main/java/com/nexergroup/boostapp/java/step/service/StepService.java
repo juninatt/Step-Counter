@@ -1,4 +1,4 @@
-package com.nexergroup.boostapp.java.step.service.stepservicelogic;
+package com.nexergroup.boostapp.java.step.service;
 
 import com.nexergroup.boostapp.java.step.builder.StepDTOBuilder;
 import com.nexergroup.boostapp.java.step.dto.stepdto.DailyWeekStepDTO;
@@ -15,23 +15,18 @@ import com.nexergroup.boostapp.java.step.repository.MonthStepRepository;
 import com.nexergroup.boostapp.java.step.repository.StepRepository;
 import com.nexergroup.boostapp.java.step.repository.WeekStepRepository;
 import com.nexergroup.boostapp.java.step.validator.boostappvalidator.StepValidator;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
-/**
- * AbstractStepService is a class which provides methods to manage and maintain step data for a user.
- * It contains methods to add, update, and delete step data,
- * as well as methods to retrieve the latest step data or step data for a specific date range.
- *
- * @see StepRepository
- * @see WeekStepRepository
- * @see MonthStepRepository
- */
-@Component
-public abstract class AbstractStepService {
+
+@Service
+public class StepService {
 
     private final StepRepository stepRepository;
     private final WeekStepRepository weekStepRepository;
@@ -39,9 +34,9 @@ public abstract class AbstractStepService {
     private final StepValidator stepValidator;
 
     /**
-     * Constructor for AbstractStepService class.
+     * Constructor for StepService class.
      */
-    public AbstractStepService(final StepRepository stepRepository,
+    public StepService(final StepRepository stepRepository,
                        final MonthStepRepository monthStepRepository,
                        final WeekStepRepository weekStepRepository) {
         this.stepRepository = stepRepository;
@@ -68,7 +63,7 @@ public abstract class AbstractStepService {
         // Checks all fields for null or bad data
         if (userId == null || !stepValidator.stepDataIsValid(stepDTO))
             throw new ValidationFailedException("userId null. Validation for Step failed");
-        // Otherwise new Step objects are created and saved/updated to each table in database
+            // Otherwise new Step objects are created and saved/updated to each table in database
         else {
             return saveToAllTables(stepDTO);
         }
@@ -194,11 +189,11 @@ public abstract class AbstractStepService {
                 addStepDataToWeekStepTable(stepDTO, stepDTO.getStepCount());
                 addStepDataToMonthStepTable(stepDTO, stepDTO.getStepCount());
             }
-            } catch (NullPointerException nullPointerException) {
-                throw new NullPointerException("NullPointerException when saving " + nullPointerException.getMessage());
-            } catch (RuntimeException runtimesException) {
-                throw new RuntimeException("Java API failed to persist new step data to database " + runtimesException.getMessage());
-            }
+        } catch (NullPointerException nullPointerException) {
+            throw new NullPointerException("NullPointerException when saving " + nullPointerException.getMessage());
+        } catch (RuntimeException runtimesException) {
+            throw new RuntimeException("Java API failed to persist new step data to database " + runtimesException.getMessage());
+        }
 
         // If persisted step-count is 0, something went wrong and RuntimeException is thrown, otherwise the new/updated step is returned to the caller
         if (updatedStep.getStepCount() > 0)

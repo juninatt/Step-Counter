@@ -21,7 +21,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class StepServiceImplTest {
+public class StepServiceTest {
 
     @Mock
     private StepRepository mockedStepRepository;
@@ -31,7 +31,7 @@ public class StepServiceImplTest {
     private MonthStepRepository mockedMonthStepRepository;
 
     @InjectMocks
-    private StepServiceImpl stepServiceImpl;
+    private StepService stepService;
 
     private final String testUserId = "testUser";
 
@@ -40,7 +40,7 @@ public class StepServiceImplTest {
     @Before
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
-        stepServiceImpl = new StepServiceImpl(mockedStepRepository, mockedMonthStepRepository, mockedWeekStepRepository);
+        stepService = new StepService(mockedStepRepository, mockedMonthStepRepository, mockedWeekStepRepository);
     }
 
     @Test
@@ -54,7 +54,7 @@ public class StepServiceImplTest {
                 .thenReturn(mockStep);
 
         // Act
-        var result = stepServiceImpl.getLatestStepByStartTimeFromUser(userID);
+        var result = stepService.getLatestStepByStartTimeFromUser(userID);
 
         // Expected stepCount
         final int expectedStep = 10;
@@ -70,7 +70,7 @@ public class StepServiceImplTest {
     @Test
     @DisplayName("Should call delete-method in repository class")
     public void whenMethodIsCalled_ShouldExecuteRepositoryMethod() {
-        stepServiceImpl.deleteStepTable();
+        stepService.deleteStepTable();
         verify(mockedStepRepository).deleteAllFromStep();
     }
     @Test
@@ -80,7 +80,7 @@ public class StepServiceImplTest {
         when(mockedWeekStepRepository.getStepCountByUserIdYearAndWeek(testUserId, 2020, 43))
                 .thenReturn(Optional.of(mockedStepsInWeek));
 
-        var optionalStep = stepServiceImpl.getStepCountForUserYearAndWeek(testUserId, 2020, 43);
+        var optionalStep = stepService.getStepCountForUserYearAndWeek(testUserId, 2020, 43);
         assertEquals(Optional.of(mockedStepsInWeek), Optional.of(optionalStep));
     }
 

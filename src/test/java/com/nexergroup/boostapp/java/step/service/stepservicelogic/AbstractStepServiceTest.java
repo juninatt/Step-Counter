@@ -8,7 +8,7 @@ import com.nexergroup.boostapp.java.step.model.Step;
 import com.nexergroup.boostapp.java.step.repository.MonthStepRepository;
 import com.nexergroup.boostapp.java.step.repository.StepRepository;
 import com.nexergroup.boostapp.java.step.repository.WeekStepRepository;
-import com.nexergroup.boostapp.java.step.service.StepServiceImpl;
+import com.nexergroup.boostapp.java.step.service.StepService;
 import com.nexergroup.boostapp.java.step.testobjects.dto.stepdto.TestStepDtoBuilder;
 import com.nexergroup.boostapp.java.step.testobjects.model.TestStepBuilder;
 import org.junit.jupiter.api.*;
@@ -26,9 +26,9 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class AbstractStepServiceImplTest {
+class AbstractStepServiceTest {
     @Autowired
-    private StepServiceImpl stepServiceImpl;
+    private StepService stepService;
     @Autowired
     private StepRepository stepRepository;
     @Autowired
@@ -43,7 +43,7 @@ class AbstractStepServiceImplTest {
 
     @AfterEach
     public void cleanUp() {
-        stepServiceImpl.deleteStepTable();
+        stepService.deleteStepTable();
         weekStepRepository.deleteAll();
         monthStepRepository.deleteAll();
     }
@@ -67,7 +67,7 @@ class AbstractStepServiceImplTest {
 
                 // Assert that correct exception is thrown when test data is passed to method
                 var result = assertThrows(
-                        ValidationFailedException.class, () -> stepServiceImpl.addSingleStepForUser(null, testStepDTO));
+                        ValidationFailedException.class, () -> stepService.addSingleStepForUser(null, testStepDTO));
                 assertTrue(result.getMessage().contains(expectedMessage),
                         "Expected exception message to be '" + expectedMessage + "' but was '" + result.getMessage() + "'");
             }
@@ -80,7 +80,7 @@ class AbstractStepServiceImplTest {
 
                 // Assert that correct exception is thrown when StepDTO passed to method is null
                 var result = assertThrows(
-                        ValidationFailedException.class, () -> stepServiceImpl.addSingleStepForUser(testUser, null));
+                        ValidationFailedException.class, () -> stepService.addSingleStepForUser(testUser, null));
                 assertTrue(result.getMessage().contains(expectedMessage),
                         "Expected exception message to be '" + expectedMessage + "' but was '" + result.getMessage() + "'");
             }
@@ -96,7 +96,7 @@ class AbstractStepServiceImplTest {
 
                 // Assert that correct exception is thrown when test data is passed to method
                 var result = assertThrows(
-                        DateTimeValueException.class, () -> stepServiceImpl.addSingleStepForUser(testUser, badTestDto));
+                        DateTimeValueException.class, () -> stepService.addSingleStepForUser(testUser, badTestDto));
                 assertTrue(result.getMessage().contains(expectedMessage),
                         "Expected exception message to be '" + expectedMessage + "' but was '" + result.getMessage() + "'");
             }
@@ -112,7 +112,7 @@ class AbstractStepServiceImplTest {
 
                 // Assert that correct exception is thrown when test data is passed to method
                 var result = assertThrows(
-                        DateTimeValueException .class, () -> stepServiceImpl.addSingleStepForUser(testUser, badTestDto));
+                        DateTimeValueException .class, () -> stepService.addSingleStepForUser(testUser, badTestDto));
                 assertTrue(result.getMessage().contains(expectedMessage),
                         "Expected exception message to be '" + expectedMessage + "' but was '" + result.getMessage() + "'");
             }
@@ -128,7 +128,7 @@ class AbstractStepServiceImplTest {
 
                 // Assert that correct exception is thrown when test data is passed to method
                 var result = assertThrows(
-                        DateTimeValueException.class, () -> stepServiceImpl.addSingleStepForUser(testUser, badTestDto));
+                        DateTimeValueException.class, () -> stepService.addSingleStepForUser(testUser, badTestDto));
                 assertTrue(result.getMessage().contains(expectedMessage),
                         "Expected exception message to be '" + expectedMessage + "' but was '" + result.getMessage() + "'");
             }
@@ -144,7 +144,7 @@ class AbstractStepServiceImplTest {
 
                 // Assert that correct exception is thrown when test data is passed to method
                 var result = assertThrows(
-                        DateTimeValueException.class, () -> stepServiceImpl.addSingleStepForUser(testUser, badTestDto));
+                        DateTimeValueException.class, () -> stepService.addSingleStepForUser(testUser, badTestDto));
                 assertTrue(result.getMessage().contains(expectedMessage),
                         "Expected exception message to be '" + expectedMessage + "' but was '" + result.getMessage() + "'");
             }
@@ -172,7 +172,7 @@ class AbstractStepServiceImplTest {
                     var testDto = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
 
                     // Pass the test data to the method to be tested
-                    var result = stepServiceImpl.addSingleStepForUser(testUser, testDto);
+                    var result = stepService.addSingleStepForUser(testUser, testDto);
 
                     // Expected class of returned object
                     var expectedClass = Step.class;
@@ -192,7 +192,7 @@ class AbstractStepServiceImplTest {
                     var testDto = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
 
                     // Pass the test data to the method to be tested
-                    var result = stepServiceImpl.addSingleStepForUser(testUser, testDto);
+                    var result = stepService.addSingleStepForUser(testUser, testDto);
 
                     // Expected userId of the returned object
                     var expectedUserId = testUser;
@@ -212,7 +212,7 @@ class AbstractStepServiceImplTest {
                     var testStepDTO = testDTOBuilder.createStepDTOOfSecondMinuteOfYear();
 
                     // Pass the test data to the method to be tested
-                    var result = stepServiceImpl.addSingleStepForUser(testUser, testStepDTO);
+                    var result = stepService.addSingleStepForUser(testUser, testStepDTO);
 
                     // Expected stepCount of the returned Step
                     var expectedStepCount = testStepDTO.getStepCount();
@@ -232,7 +232,7 @@ class AbstractStepServiceImplTest {
                     var testDto = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
 
                     // Pass the test data to the method to be tested
-                    var result = stepServiceImpl.addSingleStepForUser(testUser, testDto);
+                    var result = stepService.addSingleStepForUser(testUser, testDto);
 
                     // Expected startTime of the returned object
                     var expectedStartTime = testDto.getStartTime();
@@ -252,7 +252,7 @@ class AbstractStepServiceImplTest {
                     var testDto = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
 
                     // Pass the test data to the method to be tested
-                    var result = stepServiceImpl.addSingleStepForUser(testUser, testDto);
+                    var result = stepService.addSingleStepForUser(testUser, testDto);
 
                     // Expected endTime of the returned object
                     var expectedEndTime = testDto.getEndTime();
@@ -272,7 +272,7 @@ class AbstractStepServiceImplTest {
                     var testDto = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
 
                     // Pass the test data to the method to be tested
-                    var result = stepServiceImpl.addSingleStepForUser(testUser, testDto);
+                    var result = stepService.addSingleStepForUser(testUser, testDto);
 
                     // Expected uploadTime of the returned object
                     var expectedUploadTime = testDto.getUploadTime();
@@ -315,7 +315,7 @@ class AbstractStepServiceImplTest {
                     testStepDTO.setStartTime(testStep.getEndTime().minusSeconds(10));
 
                     // Pass the test data to the method to be tested
-                    var result = stepServiceImpl.addSingleStepForUser(testUser, testStepDTO);
+                    var result = stepService.addSingleStepForUser(testUser, testStepDTO);
 
                     // Expected userId of the returned Step
                     var expectedUserId = testUser;
@@ -337,7 +337,7 @@ class AbstractStepServiceImplTest {
                     testStepDTO.setStartTime(testStep.getEndTime().minusSeconds(10));
 
                     // Pass the test data to the method to be tested
-                    var result = stepServiceImpl.addSingleStepForUser(testUser, testStepDTO);
+                    var result = stepService.addSingleStepForUser(testUser, testStepDTO);
 
                     // Expected startTime of the returned Step
                     var expectedStartTime = testStepDTO.getStartTime();
@@ -359,7 +359,7 @@ class AbstractStepServiceImplTest {
                     testStepDTO.setStartTime(testStep.getEndTime().minusSeconds(10));
 
                     // Pass the test data to the method to be tested
-                    var result = stepServiceImpl.addSingleStepForUser(testUser, testStepDTO);
+                    var result = stepService.addSingleStepForUser(testUser, testStepDTO);
 
                     // Expected endTime of the returned Step
                     var expectedEndTime = testStepDTO.getEndTime();
@@ -381,7 +381,7 @@ class AbstractStepServiceImplTest {
                     testStepDTO.setStartTime(testStep.getEndTime().minusSeconds(10));
 
                     // Pass the test data to the method to be tested
-                    var result = stepServiceImpl.addSingleStepForUser(testUser, testStepDTO);
+                    var result = stepService.addSingleStepForUser(testUser, testStepDTO);
 
                     // Expected uploadTime of the returned Step
                     var expectedUploadTime = testStepDTO.getUploadTime();
@@ -403,7 +403,7 @@ class AbstractStepServiceImplTest {
                     testStepDTO.setStartTime(testStep.getEndTime().minusSeconds(10));
 
                     // Pass the test data to the method to be tested
-                    var result = stepServiceImpl.addSingleStepForUser(testUser, testStepDTO);
+                    var result = stepService.addSingleStepForUser(testUser, testStepDTO);
 
                     // Expected stepCount of the returned Step
                     var expectedStepCount = testStepDTO.getStepCount();
@@ -425,7 +425,7 @@ class AbstractStepServiceImplTest {
                     testStepDTO.setStartTime(testStep.getEndTime().minusSeconds(10));
 
                     // Pass the test data to the method to be tested
-                    var result = stepServiceImpl.addSingleStepForUser(testUser, testStepDTO);
+                    var result = stepService.addSingleStepForUser(testUser, testStepDTO);
 
                     // Expected id of the returned Step
                     var expectedStepId = testStep.getId();
@@ -471,7 +471,7 @@ class AbstractStepServiceImplTest {
                 var testStepDTO = new StepDTO(testUser, 1000, testStepEndTime.minusMinutes(1), testStepEndTime.plusMinutes(4), testStepEndTime.plusMinutes(5));
 
                 // Pass the StepDTO to the method to be tested to store the new data in the database
-                stepServiceImpl.addSingleStepForUser(testUser, testStepDTO);
+                stepService.addSingleStepForUser(testUser, testStepDTO);
 
                 // Expected number of objects in database
                 var expectedNumberOfObjects = 1;
@@ -493,7 +493,7 @@ class AbstractStepServiceImplTest {
                 testStepDTO.setStartTime(testStep.getEndTime().minusSeconds(10));
 
                 // Pass the test data to the method to be tested
-                stepServiceImpl.addSingleStepForUser(testUser, testStepDTO);
+                stepService.addSingleStepForUser(testUser, testStepDTO);
 
                 // Expected stepCount after Step is updated
                 var expectedStepCount = testStepDTO.getStepCount();
@@ -516,7 +516,7 @@ class AbstractStepServiceImplTest {
                 testStepDTO.setStartTime(testStep.getEndTime().minusSeconds(10));
 
                 // Pass the test data to the method to be tested
-                stepServiceImpl.addSingleStepForUser(testUser, testStepDTO);
+                stepService.addSingleStepForUser(testUser, testStepDTO);
 
                 // Expected endTime after Step is updated
                 var expectedEndTime = testStepDTO.getEndTime();
@@ -539,7 +539,7 @@ class AbstractStepServiceImplTest {
                 testStepDTO.setStartTime(testStep.getEndTime().minusSeconds(10));
 
                 // Pass the test data to the method to be tested
-                stepServiceImpl.addSingleStepForUser(testUser, testStepDTO);
+                stepService.addSingleStepForUser(testUser, testStepDTO);
 
                 // Expected uploadTime after Step is updated
                 var expectedUploadTime = testStepDTO.getUploadTime();
@@ -583,14 +583,14 @@ class AbstractStepServiceImplTest {
 
                 // Create and save step to database
                 var testDTO1 = new StepDTO(testUser, 10, now.plusMinutes(1), now.plusMinutes(2), now.plusMinutes(3));
-                stepServiceImpl.addSingleStepForUser(testUser, testDTO1);
+                stepService.addSingleStepForUser(testUser, testDTO1);
 
 
                 // Create a StepDTO to serve as test data
                 var testDTO2 = new StepDTO(testUser, 59, now.plusMinutes(3), now.plusMinutes(4), now.plusMinutes(5));
 
                 // Pass the test data to the method to be tested
-                stepServiceImpl.addSingleStepForUser(testUser, testDTO2);
+                stepService.addSingleStepForUser(testUser, testDTO2);
 
                 // Expected stepCount of WeekStep object in database
                 var expectedStepCount = testDTO2.getStepCount();
@@ -613,13 +613,13 @@ class AbstractStepServiceImplTest {
 
                 // Create DTOs to add and call test method efter each
                 var testDTO1 = new StepDTO(testUser, 10,  startOfWeek.plusMinutes(2), startOfWeek.plusMinutes(12), startOfWeek.plusMinutes(56));
-                stepServiceImpl.addSingleStepForUser(testUser, testDTO1);
+                stepService.addSingleStepForUser(testUser, testDTO1);
 
                 var testDTO2 = new StepDTO(testUser, 20,  startOfWeek.plusMinutes(58), startOfWeek.plusMinutes(68), startOfWeek.plusMinutes(78));
-                stepServiceImpl.addSingleStepForUser(testUser, testDTO2);
+                stepService.addSingleStepForUser(testUser, testDTO2);
 
                 var testDTO3 = new StepDTO(testUser, 30,  startOfWeek.plusMinutes(88), startOfWeek.plusMinutes(98), startOfWeek.plusMinutes(108));
-                stepServiceImpl.addSingleStepForUser(testUser, testDTO3);
+                stepService.addSingleStepForUser(testUser, testDTO3);
 
                 // Expected step count
                 var expectedStepCount = testDTO3.getStepCount();
@@ -650,7 +650,7 @@ class AbstractStepServiceImplTest {
                     var testStepDTO = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
 
                     // Pass the test data to the method to be tested
-                    stepServiceImpl.addSingleStepForUser(testUser, testStepDTO);
+                    stepService.addSingleStepForUser(testUser, testStepDTO);
 
                     // Assert that Step table is not empty
                     assertFalse(stepRepository.findAll().isEmpty());
@@ -664,7 +664,7 @@ class AbstractStepServiceImplTest {
                     var testStepDTO = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
 
                     // Pass the test data to the method to be tested
-                    stepServiceImpl.addSingleStepForUser(testUser, testStepDTO);
+                    stepService.addSingleStepForUser(testUser, testStepDTO);
 
                     // Assert that WeekStep table is not empty
                     assertFalse(weekStepRepository.findAll().isEmpty());
@@ -678,7 +678,7 @@ class AbstractStepServiceImplTest {
                     var testStepDTO = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
 
                     // Pass the test data to the method to be tested
-                    stepServiceImpl.addSingleStepForUser(testUser, testStepDTO);
+                    stepService.addSingleStepForUser(testUser, testStepDTO);
 
                     // Assert that MonthStep is not empty
                     assertFalse(monthStepRepository.findAll().isEmpty());
@@ -692,7 +692,7 @@ class AbstractStepServiceImplTest {
                 var testStepDTO = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
 
                 // Pass the test data to the method to be tested
-                stepServiceImpl.addSingleStepForUser(testUser, testStepDTO);
+                stepService.addSingleStepForUser(testUser, testStepDTO);
 
                 // Expected stepCount
                 var expectedStepCount = testStepDTO.getStepCount();
@@ -714,7 +714,7 @@ class AbstractStepServiceImplTest {
                 var testStepDTO = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
 
                 // Pass the test data to the method to be tested
-                stepServiceImpl.addSingleStepForUser(testUser, testStepDTO);
+                stepService.addSingleStepForUser(testUser, testStepDTO);
 
                 // Expected stepCount
                 var expectedStepCount = testStepDTO.getStepCount();
@@ -736,7 +736,7 @@ class AbstractStepServiceImplTest {
                     var testStepDTO = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
 
                     // Pass the test data to the method to be tested
-                    stepServiceImpl.addSingleStepForUser(testUser, testStepDTO);
+                    stepService.addSingleStepForUser(testUser, testStepDTO);
 
                     // Expected stepCount
                     var expectedStepCount = testStepDTO.getStepCount();
@@ -758,7 +758,7 @@ class AbstractStepServiceImplTest {
                     var testStepDTO = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
 
                     // Pass the test data to the method to be tested
-                    stepServiceImpl.addSingleStepForUser(testUser, testStepDTO);
+                    stepService.addSingleStepForUser(testUser, testStepDTO);
 
                     // Expected stepCount
                     var expectedStepCount = testStepDTO.getStepCount();
@@ -791,7 +791,7 @@ class AbstractStepServiceImplTest {
                     var testDto = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
 
                     // Pass the test data to the method to be tested
-                    stepServiceImpl.addSingleStepForUser(testUser, testDto);
+                    stepService.addSingleStepForUser(testUser, testDto);
 
                     // Expected values of object fields
                     var expectedUserId = testUser;
@@ -824,7 +824,7 @@ class AbstractStepServiceImplTest {
                     var testDto = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
 
                     // Pass the test data to the method to be tested
-                    stepServiceImpl.addSingleStepForUser(testUser, testDto);
+                    stepService.addSingleStepForUser(testUser, testDto);
 
                     // Expected values of object stored in database
                     var expectedUserId = testUser;
@@ -856,7 +856,7 @@ class AbstractStepServiceImplTest {
                 var testDto = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
 
                 // Pass the test data to the method to be tested
-                stepServiceImpl.addSingleStepForUser(testUser, testDto);
+                stepService.addSingleStepForUser(testUser, testDto);
 
                 // Expected values of object stored in database
                 var expectedUserId = testUser;
@@ -909,7 +909,7 @@ class AbstractStepServiceImplTest {
 
                 // Assert that correct exception is thrown when test data is passed to method
                 var result = assertThrows(
-                        ValidationFailedException.class, () -> stepServiceImpl.addMultipleStepsForUser(null, testStepDTOList));
+                        ValidationFailedException.class, () -> stepService.addMultipleStepsForUser(null, testStepDTOList));
                 assertTrue(result.getMessage().contains(expectedMessage),
                         "Expected exception message to be '" + expectedMessage + "' but was '" + result.getMessage() + "'");
             }
@@ -921,7 +921,7 @@ class AbstractStepServiceImplTest {
                 var expectedMessage = "Validation of new data failed";
                 // Assert that correct exception is thrown when the list passed to the method is null
                 var result = assertThrows(
-                        ValidationFailedException.class, () -> stepServiceImpl.addMultipleStepsForUser(testUser, null));
+                        ValidationFailedException.class, () -> stepService.addMultipleStepsForUser(testUser, null));
                 assertTrue(result.getMessage().contains(expectedMessage),
                         "Expected exception message to be '" + expectedMessage + "' but was '" + result.getMessage() + "'");
             }
@@ -938,7 +938,7 @@ class AbstractStepServiceImplTest {
 
                 // Assert that correct exception is thrown when the list passed to the method is null
                 var result = assertThrows(
-                        DateTimeValueException.class, () -> stepServiceImpl.addMultipleStepsForUser(testUser, testStepDTOList));
+                        DateTimeValueException.class, () -> stepService.addMultipleStepsForUser(testUser, testStepDTOList));
                 assertTrue(result.getMessage().contains(expectedMessage),
                         "Expected exception message to be '" + expectedMessage + "' but was '"+ result.getMessage() + "'");
                 testStepDTOList.remove(badTimeFieldsDTO);
@@ -956,7 +956,7 @@ class AbstractStepServiceImplTest {
 
                 // Assert that correct exception is thrown when test data is passed to method
                 var result = assertThrows(
-                        DateTimeValueException.class, () -> stepServiceImpl.addMultipleStepsForUser(testUser, testStepDTOList));
+                        DateTimeValueException.class, () -> stepService.addMultipleStepsForUser(testUser, testStepDTOList));
                 assertTrue(result.getMessage().contains(expectedMessage),
                         "Expected exception message to be '" + expectedMessage + "' but was '" + result.getMessage() + "'");
                 testStepDTOList.remove(badTestDto);
@@ -974,7 +974,7 @@ class AbstractStepServiceImplTest {
 
                 // Assert that correct exception is thrown when test data is passed to method
                 var result = assertThrows(
-                        DateTimeValueException.class, () -> stepServiceImpl.addMultipleStepsForUser(testUser, testStepDTOList));
+                        DateTimeValueException.class, () -> stepService.addMultipleStepsForUser(testUser, testStepDTOList));
                 assertTrue(result.getMessage().contains(expectedMessage),
                         "Expected exception message to be '" + expectedMessage + "' but was '" + result.getMessage() + "'");
                 testStepDTOList.remove(badTestDto);
@@ -992,7 +992,7 @@ class AbstractStepServiceImplTest {
 
                 // Assert that correct exception is thrown when test data is passed to method
                 var result = assertThrows(
-                        DateTimeValueException.class, () -> stepServiceImpl.addMultipleStepsForUser(testUser, testStepDTOList));
+                        DateTimeValueException.class, () -> stepService.addMultipleStepsForUser(testUser, testStepDTOList));
                 assertTrue(result.getMessage().contains(expectedMessage),
                         "Expected exception message to be '" + expectedMessage + "' but was '" + result.getMessage() + "'");
                 testStepDTOList.remove(badTestDto);
@@ -1012,7 +1012,7 @@ class AbstractStepServiceImplTest {
             public void testAddMultipleStepsForUser_ReturnsStepWithTotalStepCount_WhenNoUserExistsInDatabase() {
                 // Make sure the database is empty and pass the list holding the test data to the method to be tested
                 assertTrue(dataBaseIsEmpty());
-                var result = stepServiceImpl.addMultipleStepsForUser(testUser, testStepDTOList);
+                var result = stepService.addMultipleStepsForUser(testUser, testStepDTOList);
 
                 // Expected total sum of the stepCount of the test data
                 int expectedStepCount = testStepDTOList.stream()
@@ -1036,14 +1036,14 @@ class AbstractStepServiceImplTest {
         @DisplayName("getStepsPerDayOfWeek should throw ValidationFailedException when user is null")
         public void testGetStepsPerDayOfWeekWithNullUser_ThrowsValidationFailedException() {
             // Act and assert: Call the method to be tested with null userId and assert that the correct exception is thrown
-            assertThrows(ValidationFailedException.class, () -> stepServiceImpl.getStepsPerDayForWeek(null));
+            assertThrows(ValidationFailedException.class, () -> stepService.getStepsPerDayForWeek(null));
         }
 
         @Test
         @DisplayName("getStepsPerDayOfWeek should throw ValidationFailedException with correct message when user is null")
         public void testGetStepsPerDayOfWeekWithNullUser() {
             // Act and assert: Call the method to be tested with null userId and assert that the exception contains the correct exception message
-            ValidationFailedException exception = assertThrows(ValidationFailedException.class, () -> stepServiceImpl.getStepsPerDayForWeek(null));
+            ValidationFailedException exception = assertThrows(ValidationFailedException.class, () -> stepService.getStepsPerDayForWeek(null));
             assertEquals("User id and time must not be null", exception.getMessage());
         }
 
@@ -1059,7 +1059,7 @@ class AbstractStepServiceImplTest {
 
 
             // Act: Call the method to be tested to receive the data from the test steps from the database
-            var testWeekStepDTO = stepServiceImpl.getStepsPerDayForWeek(testUser);
+            var testWeekStepDTO = stepService.getStepsPerDayForWeek(testUser);
 
             // Expected values: The total stepCount of all three objects
             var expectedTotalStepCount = 10 + 20 + 30;
@@ -1096,7 +1096,7 @@ class AbstractStepServiceImplTest {
             stepRepository.saveAll(List.of(step1, step2, step3));
 
             // Act: Call method to be tested to receive the data from the database
-            var testWeekStepDTO = stepServiceImpl.getStepsPerDayForWeek(testUser);
+            var testWeekStepDTO = stepService.getStepsPerDayForWeek(testUser);
 
             // Assert: Verify step counts for each day of the week
             assertEquals(4044, testWeekStepDTO.getMondayStepCount());
@@ -1122,12 +1122,12 @@ class AbstractStepServiceImplTest {
         var stepsInCurrentWeek = new StepDTO(testUser, 1000, startOfWeek, startOfWeek.plusMinutes(1), startOfWeek.plusMinutes(2));
         var stepsInNextWeek = new StepDTO(testUser, 2000, startOfWeek.plusWeeks(1), startOfWeek.plusMinutes(1).plusWeeks(1), startOfWeek.plusMinutes(2).plusWeeks(1));
 
-        stepServiceImpl.addSingleStepForUser(testUser, stepsInCurrentWeek);
-        stepServiceImpl.addSingleStepForUser(testUser, stepsInNextWeek);
+        stepService.addSingleStepForUser(testUser, stepsInCurrentWeek);
+        stepService.addSingleStepForUser(testUser, stepsInNextWeek);
 
 
         // Invoke the method under test
-        var weeklyStepCount = stepServiceImpl.getStepCountPerWeekForUser(testUser, ZonedDateTime.now().getYear());
+        var weeklyStepCount = stepService.getStepCountPerWeekForUser(testUser, ZonedDateTime.now().getYear());
 
         // Retrieve expected values (adjust for negative array index)
         var expected1 = weeklyStepCount.getWeeklySteps().get(DateHelper.getWeek(stepsInCurrentWeek.getStartTime()));
@@ -1149,7 +1149,7 @@ class AbstractStepServiceImplTest {
         weekStepRepository.deleteAll();
 
         // Invoke the method under test
-        var result = stepServiceImpl.getStepCountPerWeekForUser(testUser, ZonedDateTime.now().getYear());
+        var result = stepService.getStepCountPerWeekForUser(testUser, ZonedDateTime.now().getYear());
 
         // Assertions
         assertNotNull(result);
@@ -1169,10 +1169,10 @@ class AbstractStepServiceImplTest {
 
         // Create WeekStep object with an invalid week
         var invalidWeek = new StepDTO(testUser, 500, startOfWeek.plusWeeks(53), startOfWeek.plusMinutes(1).plusWeeks(53), startOfWeek.plusMinutes(2).plusWeeks(53));
-        stepServiceImpl.addSingleStepForUser(testUser, invalidWeek);
+        stepService.addSingleStepForUser(testUser, invalidWeek);
 
         // Invoke the method under test
-        var result = stepServiceImpl.getStepCountPerWeekForUser(testUser, ZonedDateTime.now().getYear());
+        var result = stepService.getStepCountPerWeekForUser(testUser, ZonedDateTime.now().getYear());
 
         // Assertions
         assertNotNull(result);
@@ -1195,12 +1195,12 @@ class AbstractStepServiceImplTest {
         var stepsInWeek2 = new StepDTO(testUser, 2000, startOfWeek.plusWeeks(1), startOfWeek.plusMinutes(1).plusWeeks(1), startOfWeek.plusMinutes(2).plusWeeks(1));
         var stepsInWeek3 = new StepDTO(testUser, 1500, startOfWeek.plusWeeks(2), startOfWeek.plusMinutes(1).plusWeeks(2), startOfWeek.plusMinutes(2).plusWeeks(2));
 
-        stepServiceImpl.addSingleStepForUser(testUser, stepsInWeek1);
-        stepServiceImpl.addSingleStepForUser(testUser, stepsInWeek2);
-        stepServiceImpl.addSingleStepForUser(testUser, stepsInWeek3);
+        stepService.addSingleStepForUser(testUser, stepsInWeek1);
+        stepService.addSingleStepForUser(testUser, stepsInWeek2);
+        stepService.addSingleStepForUser(testUser, stepsInWeek3);
 
         // Invoke the method under test
-        var result = stepServiceImpl.getStepCountPerWeekForUser(testUser, ZonedDateTime.now().getYear());
+        var result = stepService.getStepCountPerWeekForUser(testUser, ZonedDateTime.now().getYear());
 
         // Retrieve expected values
         var expected1 = result.getWeeklySteps().get(DateHelper.getWeek(stepsInWeek1.getStartTime()));
@@ -1227,11 +1227,11 @@ class AbstractStepServiceImplTest {
         var additionalStepsInWeek = new StepDTO(testUser, 700, startOfWeek.plusDays(3), startOfWeek.plusMinutes(1).plusDays(3), startOfWeek.plusMinutes(2).plusDays(3));
 
         // Add data to test method
-        stepServiceImpl.addSingleStepForUser(testUser, stepsInWeek);
-        stepServiceImpl.addSingleStepForUser(testUser, additionalStepsInWeek);
+        stepService.addSingleStepForUser(testUser, stepsInWeek);
+        stepService.addSingleStepForUser(testUser, additionalStepsInWeek);
 
         // Invoke the method under test
-        var result = stepServiceImpl.getStepCountPerWeekForUser(testUser, ZonedDateTime.now().getYear());
+        var result = stepService.getStepCountPerWeekForUser(testUser, ZonedDateTime.now().getYear());
         var objectsInDataBase = weekStepRepository.findAll();
 
         // Retrieve expected value
@@ -1258,9 +1258,9 @@ class AbstractStepServiceImplTest {
         public void testAddSingleStepForUser_ThrowsValidationFailedException(String userId, boolean shouldThrow) {
             StepDTO testStepDTO = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
             if (shouldThrow) {
-                assertThrows(ValidationFailedException.class, () -> stepServiceImpl.addSingleStepForUser(userId.isEmpty() ? null : userId, testStepDTO));
+                assertThrows(ValidationFailedException.class, () -> stepService.addSingleStepForUser(userId.isEmpty() ? null : userId, testStepDTO));
             } else {
-                assertDoesNotThrow(() -> stepServiceImpl.addSingleStepForUser(userId.isEmpty() ? null : userId, testStepDTO));
+                assertDoesNotThrow(() -> stepService.addSingleStepForUser(userId.isEmpty() ? null : userId, testStepDTO));
             }
         }
     }

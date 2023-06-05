@@ -4,7 +4,7 @@ import com.nexergroup.boostapp.java.step.controller.apiresponse.*;
   import com.nexergroup.boostapp.java.step.dto.stepdto.DailyWeekStepDTO;
 import com.nexergroup.boostapp.java.step.dto.stepdto.StepDTO;
 import com.nexergroup.boostapp.java.step.model.Step;
-import com.nexergroup.boostapp.java.step.service.StepServiceImpl;
+import com.nexergroup.boostapp.java.step.service.StepService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
@@ -20,7 +20,7 @@ import java.util.List;
  * A controller for managing steps data for a single user. This class is intended for development purposes only and does not
  * require a security token.
  *
- * @see StepServiceImpl
+ * @see StepService
  * @see GroupedApiResponse
  */
 @RestController
@@ -29,14 +29,14 @@ import java.util.List;
 @RequestMapping("/steps")
 public class StepControllerDev {
 
-    private final StepServiceImpl stepServiceImpl;
+    private final StepService stepService;
 
 
     /**
-     * @param stepServiceImpl Service class containing business logic {@link StepServiceImpl}
+     * @param stepService Service class containing business logic {@link StepService}
      */
-    public StepControllerDev(StepServiceImpl stepServiceImpl) {
-        this.stepServiceImpl = stepServiceImpl;
+    public StepControllerDev(StepService stepService) {
+        this.stepService = stepService;
     }
 
     /**
@@ -48,7 +48,7 @@ public class StepControllerDev {
     //1=secund , 0=minut, 0= hours, *-dayOfTheMonth *-month MON-Monday
     @Scheduled(cron = "1 0 0 * * MON")
     public void deleteStepTable() {
-        stepServiceImpl.deleteStepTable();
+        stepService.deleteStepTable();
     }
 
     /**
@@ -64,7 +64,7 @@ public class StepControllerDev {
     @PostMapping(value = "/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Step registerStep(final @PathVariable String userId,
                                              final @RequestBody @Valid StepDTO stepDTO) {
-        return stepServiceImpl.addSingleStepForUser(userId, stepDTO);
+        return stepService.addSingleStepForUser(userId, stepDTO);
     }
 
     /**
@@ -79,7 +79,7 @@ public class StepControllerDev {
     @PostMapping(value = "/multiple/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public List<Step> registerMultipleSteps(final @PathVariable String userId,
                                                final @RequestBody List<@Valid StepDTO> stepDtoList) {
-        return List.of(stepServiceImpl.addMultipleStepsForUser(userId, stepDtoList));
+        return List.of(stepService.addMultipleStepsForUser(userId, stepDtoList));
     }
 
 
@@ -98,7 +98,7 @@ public class StepControllerDev {
     public Integer getUserMonthSteps(final @PathVariable String userId,
                                                      final @PathVariable int year,
                                                      final @PathVariable int month) {
-        return stepServiceImpl.getStepCountForUserYearAndMonth(userId, year, month);
+        return stepService.getStepCountForUserYearAndMonth(userId, year, month);
     }
 
 
@@ -117,7 +117,7 @@ public class StepControllerDev {
     public Integer getUserWeekStepCountForWeekAndYear(final @PathVariable String userId,
                                                                       final @PathVariable int year,
                                                                       final @PathVariable int week) {
-        return stepServiceImpl.getStepCountForUserYearAndWeek(userId, year, week);
+        return stepService.getStepCountForUserYearAndWeek(userId, year, week);
     }
 
     /**
@@ -130,7 +130,7 @@ public class StepControllerDev {
     @OkGetRequest(schemaImplementation = DailyWeekStepDTO.class)
     @GetMapping(value = "/stepcount/{userId}/currentweekdaily")
     public DailyWeekStepDTO getStepCountByDayForUserCurrentWeek(final @PathVariable String userId) {
-        return stepServiceImpl.getStepsPerDayForWeek(userId);
+        return stepService.getStepsPerDayForWeek(userId);
     }
 
     /**
@@ -144,7 +144,7 @@ public class StepControllerDev {
     @OkGetRequest(schemaImplementation = Step.class)
     @GetMapping(value = "/latest/{userId}")
     public Step getUsersLatestStep(final @PathVariable String userId) {
-        return stepServiceImpl.getLatestStepByStartTimeFromUser(userId);
+        return stepService.getLatestStepByStartTimeFromUser(userId);
     }
 }
 
