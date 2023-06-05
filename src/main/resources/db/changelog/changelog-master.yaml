@@ -1,7 +1,0 @@
-databaseChangeLog:
-  - include:
-      file: db/changelog/changelog-create-table-weekstep.yaml
-  - include:
-      file: db/changelog/changelog-create-table-monthstep.yaml
-  - include:
-      file: db/changelog/changelog-create-table-step.yaml
