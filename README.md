@@ -8,17 +8,20 @@ This service receives step data from the phones and persists it in a database.
 The Step-Counter application utilizes the following technologies:
 
 * Maven 3.7.0
-* Spring Boot v2.1.6
-* Spring Security 
-* Docker 
+* Spring Boot v2.1.6.RELEASE
+  * Spring Security
 * Liquibase v3.6.3
-* Swagger2 v2.8.0 
+* OpenAPI UI (Swagger) v1.5.8
+* Mapstruct v1.4.1.Final
+* Guava v28.2-jre
+* Junit v5.9.1
 
 ### Prerequisites
 
 Before running the Step-Counter application locally, make sure you have the following software installed:
 
-* PostgreSQL with a database named postgres (username and password: postgres)    
+* PostgreSQL with a database named postgres (username and password: postgres) for "dev" profile
+* Microsoft SQL Server for "prod" profile 
 * Maven
 * JDK 11
 
