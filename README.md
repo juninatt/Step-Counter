@@ -1,4 +1,4 @@
-# Boost-app-step
+# Step-Counter
 ### Application:
 Web application to store step data from Android & iOS phones. 
 Step data are sent from the phone to this service and is persisted in a database.
@@ -23,22 +23,3 @@ To Run:<br>
 
 To view the API documentation in swagger when server is running, 
 go to [http://localhost:8080/swagger](http://localhost:8080/swagger) in your browser.
-
-### To run prod enviroment:
-
-To Run:<br>
-
-`mvn springboot:run`
-
-Data will register in Azure SQL Database
-You can find connection **url** and **password** to Azure SQL database in application-prod.properties
-
-To view the API documentation in swagger go to 
-[https://boostappstepapi.azurewebsites.net/swagger](https://boostappstepapi.azurewebsites.net/swagger) in your browser.
-and use generated Token in Authorize button without "Bearer " prefix.
-
-### Notes:
-* This application validate JWT's from Sigma's Azure Active Directory
-* Validation of JWT is done class webSecurityConfig
-* Issuer of JWT is stored in application.properties
-* JWT is also used in StepController to read the oid-key in the token to store as User ID in the database
