@@ -1,8 +1,13 @@
 databaseChangeLog:
   - changeSet:
       id: create-table-weekstep
-      author: svallingson
+      author: Petter Bergström
       changes:
+        - preConditions:
+            onFail: MARK_RAN
+            not:
+              tableExists:
+                tableName: weekstep
         - createTable:
             tableName: weekstep
             columns:
@@ -27,13 +32,20 @@ databaseChangeLog:
               - column:
                   name: steps
                   type: int
-
+            rollback:
+              dropTable:
+                tableName: weekstep
 
   - changeSet:
       id: change-userIdTyp2
-      author: Sigma
+      author: Petter Bergström
       changes:
-        - modifyDataType:
+        - preConditions:
+            onFail: MARK_RAN
+            columnExists:
               columnName: user_id
-              newDataType: varchar(255)
-              tableName:  weekstep
+              tableName: weekstep
+        - modifyDataType:
+            columnName: user_id
+            newDataType: varchar(255)
+            tableName: weekstep

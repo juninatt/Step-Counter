@@ -1,374 +1,401 @@
 databaseChangeLog:
-
-   - changeSet:
-      id: boost-app-step-1.0
-      author: Sigma
+  - changeSet:
+      id: stepcounter-1.0
+      author: Petter Bergström
       changes:
-      - createTable:
-         tableName: step
-         columns:
-            - column:
-               name: id
-               type: int
-               autoIncrement: true
-               constraints:
-                  primaryKey: true
-                  nullable: false
-            - column:
-               name: step_count
-               type: int
-               constraints:
-                  nullable: false
-            - column:
-               name: start_time
-               type: datetime
-            - column:
-               name: end_time
-               type: datetime
-            - column:
-               name: user_id
-               type: varchar
-               constraints:
-                  nullable: false
-            - column:
-               name: uploaded
-               type: datetime
+        - preConditions:
+            onFail: MARK_RAN
+            not:
+              tableExists:
+                tableName: step
+        - createTable:
+            tableName: step
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: step_count
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: start_time
+                  type: datetime
+              - column:
+                  name: end_time
+                  type: datetime
+              - column:
+                  name: user_id
+                  type: varchar
+                  constraints:
+                    nullable: false
+              - column:
+                  name: uploaded
+                  type: datetime
+            rollback:
+              dropTable:
+                tableName: step
 
-   -  changeSet:
-         id: insert-values-step-1.0
-         author: Sigma
-         changes:
-         -   insert:
-                tableName: step
-                columns:
-                -  column:
-                     name: step_count
-                     value: 2000
-                -  column:
-                     name: start_time
-                     value: 2019-10-24T10:00:00
-                -  column:
-                     name: end_time
-                     value: 2019-10-24T13:00:00
-                -  column:
-                     name: user_id
-                     value: f3a8948f-1485-49ea-b3a0-e0feb19266af
-                -  column:
-                     name: uploaded
-                     value: 2019-11-18T10:46:00
-         -   insert:
-                tableName: step
-                columns:
-                -  column:
-                     name: step_count
-                     value: 3000
-                -  column:
-                     name: start_time
-                     value: 2019-10-24T15:30:00
-                -  column:
-                     name: end_time
-                     value: 2019-10-24T16:00:00
-                -  column:
-                     name: user_id
-                     value: f3a8948f-1485-49ea-b3a0-e0feb19266af
-                -  column:
-                     name: uploaded
-                     value: 2019-11-18T10:46:00
-         -   insert:
-                tableName: step
-                columns:
-                -  column:
-                     name: step_count
-                     value: 4000
-                -  column:
-                     name: start_time
-                     value: 2019-10-26T08:45:00
-                -  column:
-                     name: end_time
-                     value: 2019-10-26T09:30:00
-                -  column:
-                     name: user_id
-                     value: f3a8948f-1485-49ea-b3a0-e0feb19266af
-                -  column:
-                     name: uploaded
-                     value: 2019-11-18T10:46:00
-         -   insert:
-                tableName: step
-                columns:
-                -  column:
-                     name: step_count
-                     value: 8000
-                -  column:
-                     name: start_time
-                     value: 2019-10-28T16:15:00
-                -  column:
-                     name: end_time
-                     value: 2019-10-28T17:15:00
-                -  column:
-                     name: user_id
-                     value: f3a8948f-1485-49ea-b3a0-e0feb19266af
-                -  column:
-                     name: uploaded
-                     value: 2019-11-18T10:46:00
-         -   insert:
-                tableName: step
-                columns:
-                -  column:
-                     name: step_count
-                     value: 7000
-                -  column:
-                     name: start_time
-                     value: 2019-10-30T14:45:00
-                -  column:
-                     name: end_time
-                     value: 2019-10-30T17:05:00
-                -  column:
-                     name: user_id
-                     value: f3a8948f-1485-49ea-b3a0-e0feb19266af
-                -  column:
-                     name: uploaded
-                     value: 2019-11-18T10:46:00
-         -   insert:
-                tableName: step
-                columns:
-                -  column:
-                     name: step_count
-                     value: 1000
-                -  column:
-                     name: start_time
-                     value: 2019-11-01T06:30:00
-                -  column:
-                     name: end_time
-                     value: 2019-11-01T07:05:00
-                -  column:
-                     name: user_id
-                     value: f3a8948f-1485-49ea-b3a0-e0feb19266af
-                -  column:
-                     name: uploaded
-                     value: 2019-11-18T10:46:00
-         -   insert:
-                tableName: step
-                columns:
-                -  column:
-                     name: step_count
-                     value: 10000
-                -  column:
-                     name: start_time
-                     value: 2019-11-03T12:30:00
-                -  column:
-                     name: end_time
-                     value: 2019-11-03T15:15:00
-                -  column:
-                     name: user_id
-                     value: f3a8948f-1485-49ea-b3a0-e0feb19266af
-                -  column:
-                     name: uploaded
-                     value: 2019-11-18T10:46:00
+  - changeSet:
+      id: insert-values-step-1.0
+      author: Petter Bergström
+      changes:
+        - insert:
+            tableName: step
+            columns:
+              - column:
+                  name: step_count
+                  value: 2000
+              - column:
+                  name: start_time
+                  value: 2019-10-24T10:00:00
+              - column:
+                  name: end_time
+                  value: 2019-10-24T13:00:00
+              - column:
+                  name: user_id
+                  value: f3a8948f-1485-49ea-b3a0-e0feb19266af
+              - column:
+                  name: uploaded
+                  value: 2019-11-18T10:46:00
+        - insert:
+            tableName: step
+            columns:
+              - column:
+                  name: step_count
+                  value: 3000
+              - column:
+                  name: start_time
+                  value: 2019-10-24T15:30:00
+              - column:
+                  name: end_time
+                  value: 2019-10-24T16:00:00
+              - column:
+                  name: user_id
+                  value: f3a8948f-1485-49ea-b3a0-e0feb19266af
+              - column:
+                  name: uploaded
+                  value: 2019-11-18T10:46:00
+        - insert:
+            tableName: step
+            columns:
+              - column:
+                  name: step_count
+                  value: 4000
+              - column:
+                  name: start_time
+                  value: 2019-10-26T08:45:00
+              - column:
+                  name: end_time
+                  value: 2019-10-26T09:30:00
+              - column:
+                  name: user_id
+                  value: f3a8948f-1485-49ea-b3a0-e0feb19266af
+              - column:
+                  name: uploaded
+                  value: 2019-11-18T10:46:00
+        - insert:
+            tableName: step
+            columns:
+              - column:
+                  name: step_count
+                  value: 8000
+              - column:
+                  name: start_time
+                  value: 2019-10-28T16:15:00
+              - column:
+                  name: end_time
+                  value: 2019-10-28T17:15:00
+              - column:
+                  name: user_id
+                  value: f3a8948f-1485-49ea-b3a0-e0feb19266af
+              - column:
+                  name: uploaded
+                  value: 2019-11-18T10:46:00
+        - insert:
+            tableName: step
+            columns:
+              - column:
+                  name: step_count
+                  value: 7000
+              - column:
+                  name: start_time
+                  value: 2019-10-30T14:45:00
+              - column:
+                  name: end_time
+                  value: 2019-10-30T17:05:00
+              - column:
+                  name: user_id
+                  value: f3a8948f-1485-49ea-b3a0-e0feb19266af
+              - column:
+                  name: uploaded
+                  value: 2019-11-18T10:46:00
+        - insert:
+            tableName: step
+            columns:
+              - column:
+                  name: step_count
+                  value: 1000
+              - column:
+                  name: start_time
+                  value: 2019-11-01T06:30:00
+              - column:
+                  name: end_time
+                  value: 2019-11-01T07:05:00
+              - column:
+                  name: user_id
+                  value: f3a8948f-1485-49ea-b3a0-e0feb19266af
+              - column:
+                  name: uploaded
+                  value: 2019-11-18T10:46:00
+        - insert:
+            tableName: step
+            columns:
+              - column:
+                  name: step_count
+                  value: 10000
+              - column:
+                  name: start_time
+                  value: 2019-11-03T12:30:00
+              - column:
+                  name: end_time
+                  value: 2019-11-03T15:15:00
+              - column:
+                  name: user_id
+                  value: f3a8948f-1485-49ea-b3a0-e0feb19266af
+              - column:
+                  name: uploaded
+                  value: 2019-11-18T10:46:00
 
-   -  changeSet:
-         id: insert-values-step-1.1
-         author: Sigma
-         changes:
-         -   insert:
+  - changeSet:
+      id: insert-values-step-1.1
+      author: Petter Bergström
+      changes:
+        - insert:
+            tableName: step
+            columns:
+              - column:
+                  name: step_count
+                  value: 2000
+              - column:
+                  name: start_time
+                  value: 2019-11-10T10:00:00
+              - column:
+                  name: end_time
+                  value: 2019-11-10T13:00:00
+              - column:
+                  name: user_id
+                  value: f3a8948f-1485-49ea-b3a0-e0feb19266af
+              - column:
+                  name: uploaded
+                  value: 2019-11-18T10:46:00
+        - insert:
+            tableName: step
+            columns:
+              - column:
+                  name: step_count
+                  value: 3000
+              - column:
+                  name: start_time
+                  value: 2019-11-11T15:30:00
+              - column:
+                  name: end_time
+                  value: 2019-11-11T16:00:00
+              - column:
+                  name: user_id
+                  value: f3a8948f-1485-49ea-b3a0-e0feb19266af
+              - column:
+                  name: uploaded
+                  value: 2019-11-18T10:46:00
+        - insert:
+            tableName: step
+            columns:
+              - column:
+                  name: step_count
+                  value: 4000
+              - column:
+                  name: start_time
+                  value: 2019-11-12T08:45:00
+              - column:
+                  name: end_time
+                  value: 2019-11-12T09:30:00
+              - column:
+                  name: user_id
+                  value: f3a8948f-1485-49ea-b3a0-e0feb19266af
+              - column:
+                  name: uploaded
+                  value: 2019-11-18T10:46:00
+        - insert:
+            tableName: step
+            columns:
+              - column:
+                  name: step_count
+                  value: 8000
+              - column:
+                  name: start_time
+                  value: 2019-11-13T16:15:00
+              - column:
+                  name: end_time
+                  value: 2019-11-13T17:15:00
+              - column:
+                  name: user_id
+                  value: f3a8948f-1485-49ea-b3a0-e0feb19266af
+              - column:
+                  name: uploaded
+                  value: 2019-11-18T10:46:00
+        - insert:
+            tableName: step
+            columns:
+              - column:
+                  name: step_count
+                  value: 7000
+              - column:
+                  name: start_time
+                  value: 2019-11-15T14:45:00
+              - column:
+                  name: end_time
+                  value: 2019-11-15T17:05:00
+              - column:
+                  name: user_id
+                  value: f3a8948f-1485-49ea-b3a0-e0feb19266af
+              - column:
+                  name: uploaded
+                  value: 2019-11-18T10:46:00
+        - insert:
+            tableName: step
+            columns:
+              - column:
+                  name: step_count
+                  value: 1000
+              - column:
+                  name: start_time
+                  value: 2019-11-17T06:30:00
+              - column:
+                  name: end_time
+                  value: 2019-11-17T07:05:00
+              - column:
+                  name: user_id
+                  value: f3a8948f-1485-49ea-b3a0-e0feb19266af
+              - column:
+                  name: uploaded
+                  value: 2019-11-18T10:46:00
+        - insert:
+            tableName: step
+            columns:
+              - column:
+                  name: step_count
+                  value: 10000
+              - column:
+                  name: start_time
+                  value: 2019-11-18T12:30:00
+              - column:
+                  name: end_time
+                  value: 2019-11-18T15:15:00
+              - column:
+                  name: user_id
+                  value: f3a8948f-1485-49ea-b3a0-e0feb19266af
+              - column:
+                  name: uploaded
+                  value: 2019-11-18T10:46:00
+  - changeSet:
+      id: insert-values-step-1.2
+      author: Petter Bergström
+      changes:
+        - insert:
+            tableName: step
+            columns:
+              - column:
+                  name: step_count
+                  value: 2000
+              - column:
+                  name: start_time
+                  value: 2019-11-14T10:00:00
+              - column:
+                  name: end_time
+                  value: 2019-11-14T13:00:00
+              - column:
+                  name: user_id
+                  value: f3a8948f-1485-49ea-b3a0-e0feb19266af
+              - column:
+                  name: uploaded
+                  value: 2019-11-18T10:46:00
+        - insert:
+            tableName: step
+            columns:
+              - column:
+                  name: step_count
+                  value: 2000
+              - column:
+                  name: start_time
+                  value: 2019-11-16T10:00:00
+              - column:
+                  name: end_time
+                  value: 2019-11-16T13:00:00
+              - column:
+                  name: user_id
+                  value: f3a8948f-1485-49ea-b3a0-e0feb19266af
+              - column:
+                  name: uploaded
+                  value: 2019-11-18T10:46:00
+  - changeSet:
+      id: stepcounter-index
+      author: Petter Bergström
+      changes:
+        - createIndex:
+            catalogName: cat-step
+            clustered: false
+            columns:
+              - column:
+                  name: user_id
+            indexName: idx_user_id
+            tableName: step
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          indexExists:
+            indexName: idx_user_id
+            tableName: step
+
+  - changeSet:
+      id: stepcounter-index-date
+      author: Petter Bergström
+      changes:
+        - createIndex:
+            clustered: false
+            columns:
+              - column:
+                  name: start_time
+            indexName: idx_start_date
+            tableName: step
+        - createIndex:
+            clustered: false
+            columns:
+              - column:
+                  name: end_time
+            indexName: idx_end_date
+            tableName: step
+        - createIndex:
+            clustered: false
+            columns:
+              - column:
+                  name: uploaded
+            indexName: idx_uploaded
+            tableName: step
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          or:
+            - indexExists:
+                indexName: idx_start_date
                 tableName: step
-                columns:
-                -  column:
-                     name: step_count
-                     value: 2000
-                -  column:
-                     name: start_time
-                     value: 2019-11-10T10:00:00
-                -  column:
-                     name: end_time
-                     value: 2019-11-10T13:00:00
-                -  column:
-                     name: user_id
-                     value: f3a8948f-1485-49ea-b3a0-e0feb19266af
-                -  column:
-                     name: uploaded
-                     value: 2019-11-18T10:46:00
-         -   insert:
+            - indexExists:
+                indexName: idx_end_date
                 tableName: step
-                columns:
-                -  column:
-                     name: step_count
-                     value: 3000
-                -  column:
-                     name: start_time
-                     value: 2019-11-11T15:30:00
-                -  column:
-                     name: end_time
-                     value: 2019-11-11T16:00:00
-                -  column:
-                     name: user_id
-                     value: f3a8948f-1485-49ea-b3a0-e0feb19266af
-                -  column:
-                     name: uploaded
-                     value: 2019-11-18T10:46:00
-         -   insert:
+            - indexExists:
+                indexName: idx_uploaded
                 tableName: step
-                columns:
-                -  column:
-                     name: step_count
-                     value: 4000
-                -  column:
-                     name: start_time
-                     value: 2019-11-12T08:45:00
-                -  column:
-                     name: end_time
-                     value: 2019-11-12T09:30:00
-                -  column:
-                     name: user_id
-                     value: f3a8948f-1485-49ea-b3a0-e0feb19266af
-                -  column:
-                     name: uploaded
-                     value: 2019-11-18T10:46:00
-         -   insert:
-                tableName: step
-                columns:
-                -  column:
-                     name: step_count
-                     value: 8000
-                -  column:
-                     name: start_time
-                     value: 2019-11-13T16:15:00
-                -  column:
-                     name: end_time
-                     value: 2019-11-13T17:15:00
-                -  column:
-                     name: user_id
-                     value: f3a8948f-1485-49ea-b3a0-e0feb19266af
-                -  column:
-                     name: uploaded
-                     value: 2019-11-18T10:46:00
-         -   insert:
-                tableName: step
-                columns:
-                -  column:
-                     name: step_count
-                     value: 7000
-                -  column:
-                     name: start_time
-                     value: 2019-11-15T14:45:00
-                -  column:
-                     name: end_time
-                     value: 2019-11-15T17:05:00
-                -  column:
-                     name: user_id
-                     value: f3a8948f-1485-49ea-b3a0-e0feb19266af
-                -  column:
-                     name: uploaded
-                     value: 2019-11-18T10:46:00
-         -   insert:
-                tableName: step
-                columns:
-                -  column:
-                     name: step_count
-                     value: 1000
-                -  column:
-                     name: start_time
-                     value: 2019-11-17T06:30:00
-                -  column:
-                     name: end_time
-                     value: 2019-11-17T07:05:00
-                -  column:
-                     name: user_id
-                     value: f3a8948f-1485-49ea-b3a0-e0feb19266af
-                -  column:
-                     name: uploaded
-                     value: 2019-11-18T10:46:00
-         -   insert:
-                tableName: step
-                columns:
-                -  column:
-                     name: step_count
-                     value: 10000
-                -  column:
-                     name: start_time
-                     value: 2019-11-18T12:30:00
-                -  column:
-                     name: end_time
-                     value: 2019-11-18T15:15:00
-                -  column:
-                     name: user_id
-                     value: f3a8948f-1485-49ea-b3a0-e0feb19266af
-                -  column:
-                     name: uploaded
-                     value: 2019-11-18T10:46:00
-   -  changeSet:
-         id: insert-values-step-1.2
-         author: Sigma
-         changes:
-         -   insert:
-                tableName: step
-                columns:
-                -  column:
-                     name: step_count
-                     value: 2000
-                -  column:
-                     name: start_time
-                     value: 2019-11-14T10:00:00
-                -  column:
-                     name: end_time
-                     value: 2019-11-14T13:00:00
-                -  column:
-                     name: user_id
-                     value: f3a8948f-1485-49ea-b3a0-e0feb19266af
-                -  column:
-                     name: uploaded
-                     value: 2019-11-18T10:46:00   
-         -   insert:
-                tableName: step
-                columns:
-                -  column:
-                     name: step_count
-                     value: 2000
-                -  column:
-                     name: start_time
-                     value: 2019-11-16T10:00:00
-                -  column:
-                     name: end_time
-                     value: 2019-11-16T13:00:00
-                -  column:
-                     name: user_id
-                     value: f3a8948f-1485-49ea-b3a0-e0feb19266af
-                -  column:
-                     name: uploaded
-                     value: 2019-11-18T10:46:00
-   - changeSet:
-       id: boost-app-step-index
-       author: Sigma
-       changes:
-         - createIndex:
-             catalogName: cat-step
-             clustered: false
-             columns:
-               - column:
-                   name: user_id
-             indexName: idx_user_id
-             tableName: step
-   - changeSet:
-       id: boost-app-step-index-date
-       author: Sigma
-       changes:
-         - createIndex:
-             clustered: false
-             columns:
-               - column:
-                   name: start_time
-             indexName: idx_start_date
-             tableName: step
-         - createIndex:
-             clustered: false
-             columns:
-               - column:
-                   name: end_time
-             indexName: idx_end_date
-             tableName: step
-         - createIndex:
-             clustered: false
-             columns:
-               - column:
-                   name: uploaded
-             indexName: idx_uploaded
-             tableName: step

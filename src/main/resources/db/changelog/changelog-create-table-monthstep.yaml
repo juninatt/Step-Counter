@@ -1,40 +1,35 @@
 databaseChangeLog:
   - changeSet:
       id: create-table-monthstep
-      author: svallingson
+      author: Petter Bergström
       changes:
+        - preConditions:
+            onFail: MARK_RAN
+            not:
+              tableExists:
+                tableName: monthstep
         - createTable:
             tableName: monthstep
             columns:
               - column:
                   name: id
-                  type: int
-                  autoIncrement: true
+                  type: BIGSERIAL
                   constraints:
                     primaryKey: true
-                    nullable: false
               - column:
                   name: user_id
-                  type: varchar
+                  type: VARCHAR(255)
                   constraints:
                     nullable: false
               - column:
                   name: month
-                  type: int
+                  type: INTEGER
               - column:
                   name: year
-                  type: int
+                  type: INTEGER
               - column:
                   name: steps
-                  type: int
-
- 
-
-  - changeSet:
-      id: change-userIdTyp2
-      author: Sigma
-      changes:
-        - modifyDataType:
-              columnName: user_id
-              newDataType: varchar(255)
-              tableName:  monthstep
+                  type: INTEGER
+            rollback:
+              dropTable:
+                tableName: monthstep

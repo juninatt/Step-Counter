@@ -1,8 +1,13 @@
 databaseChangeLog:
   - changeSet:
       id: create-table-step
-      author: svallingson
+      author: Petter Bergström
       changes:
+        - preConditions:
+            onFail: MARK_RAN
+            not:
+              tableExists:
+                tableName: step
         - createTable:
             tableName: step
             columns:
@@ -38,13 +43,20 @@ databaseChangeLog:
                   type: datetime
                   constraints:
                     nullable: false
+            rollback:
+              dropTable:
+                tableName: step
 
   - changeSet:
       id: change-userIdTyp2
-      author: Sigma
+      author: Petter Bergström
       changes:
+        - preConditions:
+            onFail: MARK_RAN
+            columnExists:
+              columnName: user_id
+              tableName: step
         - modifyDataType:
             columnName: user_id
             newDataType: varchar(255)
-            tableName:  step
-
+            tableName: step
