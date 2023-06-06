@@ -48,7 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class StepApiControllerTest {
+public class StepControllerTest {
     @MockBean
     private StarPointService starPointService;
     @MockBean
@@ -63,7 +63,7 @@ public class StepApiControllerTest {
     @DisplayName("Step Controller")
     class StepControllerDevTest {
 
-        private final MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new StepControllerDev(stepService)).build();
+        private final MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new StepController(stepService)).build();
         private final TestStepBuilder testStepBuilder = new TestStepBuilder();
         private final TestStepDtoBuilder testDTOBuilder = new TestStepDtoBuilder();
         private final String testUserId = "testUser";
@@ -234,7 +234,7 @@ public class StepApiControllerTest {
          * Tests the behavior of the UserController's getUserWeekStepSteps() method when given valid input.
          */
         @Test
-        @DisplayName("getUserWeekStepSteps with valid input returns status OK and correct steps")
+        @DisplayName("getUserWeekStep with valid input returns status OK and correct steps")
         public void getUserWeekStepSteps_WithValidInput_ReturnsStatusOKAndCorrectSteps() throws Exception {
             // Set up test data
             String url = "/steps/stepcount/{userId}/year/{year}/week/{week}";
@@ -303,7 +303,7 @@ public class StepApiControllerTest {
     @DisplayName("GetStepCountByDayForUserAndDate method tests")
     class GetStepCountByDayForUserAndDate {
 
-        private final MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new StepControllerDev(stepService)).build();
+        private final MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new StepController(stepService)).build();
 
         @Test
         @DisplayName("Test getting daily step count for user and date returns correct fields")
