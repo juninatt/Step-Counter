@@ -6,6 +6,8 @@ public class ErrorResponse<T> {
     private long timeStamp;
     private T details;
 
+    public ErrorResponse() {}
+
     public ErrorResponse(int status, String message, long timeStamp) {
         this.status = status;
         this.message = message;
