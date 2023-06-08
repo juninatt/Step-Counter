@@ -1,10 +1,12 @@
 package se.pbt.stepcounter.service;
 
+import org.springframework.stereotype.Service;
 import se.pbt.stepcounter.builder.StepDTOBuilder;
 import se.pbt.stepcounter.dto.stepdto.DailyWeekStepDTO;
 import se.pbt.stepcounter.dto.stepdto.StepDTO;
 import se.pbt.stepcounter.dto.stepdto.WeeklyStepDTO;
 import se.pbt.stepcounter.exception.NotFoundException;
+import se.pbt.stepcounter.exception.InvalidUserIdException;
 import se.pbt.stepcounter.exception.ValidationFailedException;
 import se.pbt.stepcounter.mapper.DateHelper;
 import se.pbt.stepcounter.mapper.StepMapper;
@@ -15,9 +17,7 @@ import se.pbt.stepcounter.repository.MonthStepRepository;
 import se.pbt.stepcounter.repository.StepRepository;
 import se.pbt.stepcounter.repository.WeekStepRepository;
 import se.pbt.stepcounter.validator.boostappvalidator.StepValidator;
-import org.springframework.stereotype.Service;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,6 +47,7 @@ public class StepService {
 
     /**
      * Deletes all records from the step table.
+     * This method relies on the StepRepository to perform the deletion.
      */
     public void deleteStepTable() {
         stepRepository.deleteAllFromStep();
@@ -62,7 +63,7 @@ public class StepService {
     public Step addSingleStepForUser(String userId, StepDTO stepDTO) {
         // Checks all fields for null or bad data
         if (userId == null || !stepValidator.stepDataIsValid(stepDTO))
-            throw new ValidationFailedException("userId null. Validation for Step failed");
+            throw new InvalidUserIdException(userId);
             // Otherwise new Step objects are created and saved/updated to each table in database
         else {
             return saveToAllTables(stepDTO);
@@ -79,7 +80,7 @@ public class StepService {
     public Step addMultipleStepsForUser(String userId, List<StepDTO> stepDTOList) {
         // Checks all fields for null or bad data
         if (userId == null || !stepValidator.stepDataIsValid(stepDTOList)) {
-            throw new ValidationFailedException("Validation of new data failed");
+            throw new InvalidUserIdException(userId);
         }
         else {
             // If valid, gathers the data into a single StepDTO object that gets added to database
@@ -135,9 +136,8 @@ public class StepService {
      * @return the users most recently stored {@link Step} object
      */
     public Step getLatestStepByStartTimeFromUser(String userId) {
-        var now = ZonedDateTime.now(ZoneId.systemDefault());
         return stepRepository.findFirstByUserIdOrderByStartTimeDesc(userId)
-                .orElse(new Step(userId, 0, now, now.plusSeconds(1), now.plusSeconds(2)));
+                .orElseThrow(() -> new InvalidUserIdException(userId));
     }
 
     /**

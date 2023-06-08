@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import se.pbt.stepcounter.dto.stepdto.StepDTO;
 import se.pbt.stepcounter.exception.DateTimeValueException;
+import se.pbt.stepcounter.exception.InvalidUserIdException;
 import se.pbt.stepcounter.exception.ValidationFailedException;
 import se.pbt.stepcounter.mapper.DateHelper;
 import se.pbt.stepcounter.model.Step;
@@ -57,16 +58,17 @@ class StepServiceTest {
 
             @Test
             @DisplayName("Should throw 'ValidationFailedException' when userId-input is null")
-            public void testAddSingleStepForUser_ThrowsValidationFailedException_WhenUserIdIsNull() {
+            public void testAddSingleStepForUser_ThrowsUserIdValueException_WhenUserIdIsNull() {
                 // Create a StepDTO where userId is null to serve as test data
                 var testStepDTO = testDTOBuilder.createStepDTOWhereUserIdIsNull();
 
                 // Expected exception message
-                var expectedMessage = "userId null. Validation for Step failed";
+                var expectedMessage = "User ID Cannot be null or empty";
 
                 // Assert that correct exception is thrown when test data is passed to method
-                var result = assertThrows(
-                        ValidationFailedException.class, () -> stepService.addSingleStepForUser(null, testStepDTO));
+                var result = assertThrows(InvalidUserIdException.class,
+                        () -> stepService.addSingleStepForUser(null, testStepDTO));
+
                 assertTrue(result.getMessage().contains(expectedMessage),
                         "Expected exception message to be '" + expectedMessage + "' but was '" + result.getMessage() + "'");
             }
@@ -925,7 +927,7 @@ class StepServiceTest {
                 var expectedMessage = "Validation of new data failed";
                 // Assert that correct exception is thrown when the list passed to the method is null
                 var result = assertThrows(
-                        ValidationFailedException.class, () -> stepService.addMultipleStepsForUser(testUser, null));
+                        InvalidUserIdException.class, () -> stepService.addMultipleStepsForUser(testUser, null));
                 assertTrue(result.getMessage().contains(expectedMessage),
                         "Expected exception message to be '" + expectedMessage + "' but was '" + result.getMessage() + "'");
             }
@@ -1259,10 +1261,10 @@ class StepServiceTest {
                 "'', true",
                 "1, false",
         })
-        public void testAddSingleStepForUser_ThrowsValidationFailedException(String userId, boolean shouldThrow) {
+        public void testAddSingleStepForUser_ThrowsUserIdValueException(String userId, boolean shouldThrow) {
             StepDTO testStepDTO = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
             if (shouldThrow) {
-                assertThrows(ValidationFailedException.class, () -> stepService.addSingleStepForUser(userId.isEmpty() ? null : userId, testStepDTO));
+                assertThrows(InvalidUserIdException.class, () -> stepService.addSingleStepForUser(userId.isEmpty() ? null : userId, testStepDTO));
             } else {
                 assertDoesNotThrow(() -> stepService.addSingleStepForUser(userId.isEmpty() ? null : userId, testStepDTO));
             }

@@ -2,7 +2,7 @@ package se.pbt.stepcounter.validator.boostappvalidator;
 
 import se.pbt.stepcounter.dto.stepdto.StepDTO;
 import se.pbt.stepcounter.exception.DateTimeValueException;
-import se.pbt.stepcounter.exception.UserIdValueException;
+import se.pbt.stepcounter.exception.InvalidUserIdException;
 import se.pbt.stepcounter.exception.ValidationFailedException;
 import se.pbt.stepcounter.model.Step;
 import se.pbt.stepcounter.repository.StepRepository;
@@ -92,7 +92,7 @@ public class StepValidator {
 
         // Check each field and throw exception if null value is found
         if (stepDto.getUserId() == null)
-            throw new UserIdValueException("User ID cant be null");
+            throw new InvalidUserIdException("User ID cant be null");
         else if (stepDto.getStepCount() < 1)
             throw new IllegalArgumentException("Step count must be greater than 0");
         else if (stepDto.getStartTime() == null)

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import se.pbt.stepcounter.exception.NotFoundException;
-import se.pbt.stepcounter.exception.UserIdValueException;
+import se.pbt.stepcounter.exception.InvalidUserIdException;
 
 /**
  *
@@ -34,11 +34,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
 	}
 
-	@ExceptionHandler(UserIdValueException.class)
-	public ResponseEntity<ErrorResponse<?>> handleUserIdValueException(UserIdValueException userIdValueException) {
+	@ExceptionHandler(InvalidUserIdException.class)
+	public ResponseEntity<ErrorResponse<?>> handleUserIdValueException(InvalidUserIdException invalidUserIdException) {
 		var errorResponse = new ErrorResponse<>();
 		errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-		errorResponse.setMessage(userIdValueException.getMessage());
+		errorResponse.setMessage(invalidUserIdException.getMessage());
 		errorResponse.setTimeStamp(System.currentTimeMillis());
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
 	}
