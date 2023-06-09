@@ -3,7 +3,9 @@ package se.pbt.stepcounter.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -42,10 +44,9 @@ public class StepController {
     }
 
     /**
-     * Deletes the step table.
-     * This method is scheduled to run at 00:01 (1 minute past midnight) every Monday.
+     * Scheduled task to delete the step table.
+     * This method runs at 00:01 (1 minute past midnight) every Monday.
      * It is conditioned by the presence of the "deleting.enabled" property, which defaults to true if missing.
-     * If the property is present and set to true, the step table will be deleted by invoking the {@link StepService#deleteStepTable()} method.
      */
     @ConditionalOnProperty(name = "deleting.enabled", matchIfMissing = true)
     @Scheduled(cron = "1 0 0 * * MON")
@@ -53,105 +54,89 @@ public class StepController {
         stepService.deleteStepTable();
     }
 
-    /**
-     * Registers a new step entity for the specified user.
-     *
-     * @param userId  The ID of the user
-     * @param stepDTO A {@link StepDTO} object containing step data
-     * @return A ResponseEntity containing a {@link Step} object representing the registered step,
-     *         or a status 400 (BAD_REQUEST) status if the request was invalid
-     */
-    @Operation(summary = "Register step entity")
+
+    @Operation(summary = "Adds new step data to the database for a specified user")
     @OkPostResponse(schemaImplementation = Step.class)
     @PostMapping(value = "/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Step registerStep(final @PathVariable String userId,
-                                             final @RequestBody @Valid StepDTO stepDTO) {
-        return stepService.addSingleStepForUser(userId, stepDTO);
+    public ResponseEntity<Step> addStepForUser(final @PathVariable String userId,
+                                              final @RequestBody @Valid StepDTO newStepData) {
+            var addedStep = stepService.addSingleStepForUser(userId, newStepData);
+            return ResponseEntity.ok(addedStep);
     }
 
-    /**
-     * Registers multiple step entities for the specified user.
-     *
-     * @param userId      The ID of the user
-     * @param stepDtoList A list of {@link StepDTO} objects to register
-     * @return A list of {@link StepDTO} objects representing the registered steps
-     */
-    @Operation(summary = "Register multiple step entities")
+
+    @Operation(summary = "Adds new step data to the database from a list of DTO objects for a specified user")
     @OkPostResponse(schemaImplementation = Step.class)
     @PostMapping(value = "/multiple/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public List<Step> registerMultipleSteps(final @PathVariable String userId,
-                                               final @RequestBody List<@Valid StepDTO> stepDtoList) {
-        return List.of(stepService.addMultipleStepsForUser(userId, stepDtoList));
+    public ResponseEntity<Step> addStepListForUser(final @PathVariable String userId,
+                                                   final @RequestBody List<@Valid StepDTO> stepDtoList) {
+            var addedStep = stepService.addMultipleStepsForUser(userId, stepDtoList);
+            return new ResponseEntity<>(addedStep, HttpStatus.CREATED);
     }
 
-    /**
-     * Get the latest step for a specific user
-     *
-     * @param userId The ID of the user whose latest step is being retrieved
-     * @return A ResponseEntity containing a {@link Step} object in the body,
-     * or a status 204 (NO_CONTENT) if no step data is found for the authenticated user
-     */
-    @Operation(summary = "Get user's latest step")
+
+    @Operation(summary = "Retrieve the most recently stored step object of the user")
     @OkGetRequest(schemaImplementation = Step.class)
     @GetMapping(value = "/latest/{userId}")
-    public Step getUsersLatestStep(final @PathVariable String userId) {
-        return stepService.getLatestStepByStartTimeFromUser(userId);
+    public ResponseEntity<Step> getUsersLatestStep(final @PathVariable String userId) {
+        var retrievedStep = stepService.getLatestStepByStartTimeFromUser(userId);
+        return new ResponseEntity<>(retrievedStep, HttpStatus.OK);
     }
 
     @Operation(summary = "Get a user's step count per month by user and year and month)")
     @OkGetRequest(schemaImplementation = Integer.class)
     @GetMapping(value = {"/stepcount/{userId}/year/{year}/month/{month}"})
-    public Integer getUserMonthStepCountForYearAndMonth(final @PathVariable String userId,
+    public ResponseEntity<Integer> getUserMonthStepCountForYearAndMonth(final @PathVariable String userId,
                                                         final @PathVariable int year,
                                                         final @PathVariable int month) {
-        return stepService.getStepCountForUserYearAndMonth(userId, year, month);
+        var monthStepCount =  stepService.getStepCountForUserYearAndMonth(userId, year, month);
+        return new ResponseEntity<>(monthStepCount, HttpStatus.OK);
     }
 
     @Operation(summary = "Get a user's step count per week by user and year and week)")
     @OkGetRequest(schemaImplementation = Integer.class)
     @GetMapping(value = {"/stepcount/{userId}/year/{year}/week/{week}"})
-    public Integer getUserWeekStepCountForWeekAndYear(final @PathVariable String userId,
+    public ResponseEntity<Integer> getUserWeekStepCountForWeekAndYear(final @PathVariable String userId,
                                                       final @PathVariable int year,
                                                       final @PathVariable int week) {
-        return stepService.getStepCountForUserYearAndWeek(userId, year, week);
+        var weekStepCount = stepService.getStepCountForUserYearAndWeek(userId, year, week);
+        return new ResponseEntity<>(weekStepCount, HttpStatus.OK);
     }
 
     @Operation(summary = "Get all month-step objects for user from year")
     @OkGetRequest(schemaImplementation = MonthStep.class)
     @GetMapping(value = "/monthsteps/user/{userId}/year/{year}")
-    public List<MonthStep> getAllMonthStepsFromYearForUser(final @PathVariable String userId,
+    public ResponseEntity<List<MonthStep>> getAllMonthStepsFromYearForUser(final @PathVariable String userId,
                                                            final @PathVariable int year) {
-        return stepService.getMonthStepsFromYearForUser(userId, year);
+        var listOfMonthSteps = stepService.getMonthStepsFromYearForUser(userId, year);
+        return new ResponseEntity<>(listOfMonthSteps, HttpStatus.OK);
     }
 
     @Operation(summary = "Get all week-steps for user from year")
     @OkGetRequest(schemaImplementation = WeekStep.class)
     @GetMapping(value = "/weeksteps/user/{userId}/year/{year}")
-    public List<WeekStep> getAllWeeksStepsFromYearForUser(final @PathVariable String userId,
+    public ResponseEntity<List<WeekStep>> getAllWeeksStepsFromYearForUser(final @PathVariable String userId,
                                                           final @PathVariable int year) {
-        return stepService.getWeekStepsForUserAndYear(userId, year);
+        var listOfWeekSteps = stepService.getWeekStepsForUserAndYear(userId, year);
+        return new ResponseEntity<>(listOfWeekSteps, HttpStatus.OK);
     }
 
 
-    /**
-     * Get daily step count for current week from user
-     *
-     * @param userId The ID of the user
-     * @return A {@link DailyWeekStepDTO} object
-     */
     @Operation(summary = "Get stepCount per day for current week for a specific user")
     @OkGetRequest(schemaImplementation = DailyWeekStepDTO.class)
     @GetMapping(value = "/stepcount/{userId}/currentweekdaily")
-    public DailyWeekStepDTO getStepCountByDayForUserCurrentWeek(final @PathVariable String userId) {
-        return stepService.getStepsPerDayForWeek(userId);
+    public ResponseEntity<DailyWeekStepDTO> getStepCountByDayForUserCurrentWeek(final @PathVariable String userId) {
+        var stepsPerDayCurrentWeek = stepService.getStepsPerDayForWeek(userId);
+        return new ResponseEntity<>(stepsPerDayCurrentWeek, HttpStatus.OK);
     }
 
-    @Operation(summary = "Get stepCount per week")
+    @Operation(summary = "Get stepCount per week for year")
     @OkGetRequest(schemaImplementation = WeeklyStepDTO.class)
     @GetMapping(value = "/stepcount/user/{userId}/year/{year}/weekly")
-    public WeeklyStepDTO getStepCountForUserPerWeek(final @PathVariable String userId,
+    public ResponseEntity<WeeklyStepDTO> getStepCountForUserPerWeek(final @PathVariable String userId,
                                                     final @PathVariable int year) {
-        return stepService.getStepCountPerWeekForUser(userId, year);
+         var stepsPerWeekForYear = stepService.getStepCountPerWeekForUser(userId, year);
+         return new ResponseEntity<>(stepsPerWeekForYear, HttpStatus.OK);
     }
 }
 
