@@ -44,11 +44,15 @@ class StepServiceTest {
     private int month;
     private int year;
 
+    ZonedDateTime startTime;
+    ZonedDateTime endTime;
+    ZonedDateTime uploadTime;
+
     TestStepDtoBuilder testDTOBuilder = new TestStepDtoBuilder();
     TestStepBuilder testStepBuilder = new TestStepBuilder();
 
     @AfterEach
-    public void cleanUp() {
+    public void resetDataBase() {
         stepService.deleteStepTable();
         weekStepRepository.deleteAll();
         monthStepRepository.deleteAll();
@@ -168,15 +172,10 @@ class StepServiceTest {
         public class AddSingleStepReturnsTest {
 
             Step testStep;
-            ZonedDateTime startTime;
-            ZonedDateTime endTime;
-            ZonedDateTime uploadTime;
 
 
             @BeforeEach
             void setup() {
-                // Make sure database is empty
-                assertTrue(dataBaseIsEmpty());
                 // Create and save the created test Step object to all tables in database
                 year = 2023;
                 month = 1;
@@ -191,11 +190,6 @@ class StepServiceTest {
                         .atZone(zone);
 
                 testStep = new Step(testUser, 13, startTime, endTime, uploadTime);
-            }
-
-            @AfterEach
-            void cleanUp() {
-                dropAllTables();
             }
 
             @Test
@@ -288,13 +282,6 @@ class StepServiceTest {
             }
         }
 
-
-        @Nested
-        @DisplayName("Something")
-        public class AddSingleStepShouldReturnCorrectValues {
-
-
-        }
 
         @Nested
         @DisplayName("Updates database:")
@@ -749,20 +736,34 @@ class StepServiceTest {
         // Create a list to hold the test data
         List<StepDTO> testStepDTOList = new ArrayList<>();
 
+
+
         @BeforeEach
         public void setUp() {
+            year = 2023;
+            month = 1;
+            week = 1;
+            var zone = ZoneId.systemDefault();
+
+            startTime = LocalDateTime.of(year, month, 1, 1, 1)
+                    .atZone(zone);
+            endTime = LocalDateTime.of(year, month, 1, 1, 2)
+                    .atZone(zone);
+            uploadTime = LocalDateTime.of(year, month, 1, 1, 3)
+                    .atZone(zone);
+
             // Create and add StepDTO:s to the test list
-            testStepDTOList.add(testDTOBuilder.createStepDTOOfFirstMinuteOfYear());
-            testStepDTOList.add(testDTOBuilder.createStepDTOOfSecondMinuteOfYear());
-            testStepDTOList.add(testDTOBuilder.createStepDTOOfThirdMinuteOfYear());
+            testStepDTOList.add(new StepDTO(testUser, 10, startTime, endTime, uploadTime));
+            testStepDTOList.add(new StepDTO(testUser, 20, startTime.plusMinutes(1), endTime.plusMinutes(1), uploadTime.plusMinutes(1)));
+            testStepDTOList.add(new StepDTO(testUser, 30, startTime.plusMinutes(2), endTime.plusMinutes(2), uploadTime.plusMinutes(2)));
         }
 
         @Nested
-        @DisplayName("Throws exception")
+        @DisplayName("Throws:")
         public class AddMultipleStepsShouldThrowException {
 
             @Test
-                @DisplayName("Throws 'InvalidUserIdException'' when userId parameter is null")
+            @DisplayName("Throws 'InvalidUserIdException'' when input: userId, is null")
             public void testAddMultipleStepsForUser_ThrowsInvalidUserIdException_WhenUserIdInputIsNull() {
                 // Expected exception message
                 var expectedMessage = "User ID cannot be null or empty";
@@ -775,7 +776,7 @@ class StepServiceTest {
             }
 
             @Test
-            @DisplayName("Throws 'InvalidUserIdException'' when dto-list passed to method null")
+            @DisplayName("Throws 'InvalidUserIdException'' when input: dtoList, is null")
             public void  testAddMultipleStepsForUser_ThrowsInvalidUserIdException_WhenListIsNull() {
                 // Expected exception message
                 var expectedMessage = "User ID cannot be null or empty";
@@ -789,7 +790,7 @@ class StepServiceTest {
             }
 
             @Test
-            @DisplayName("Throws 'DateTimeValueException' when dto-list passed to method contains StepDTO with incompatible time fields")
+            @DisplayName("Throws 'DateTimeValueException' when StepDTO with incompatible time fields is encountered")
             public void testAddMultipleStepsForUser_ThrowsDateTimeValueException_WhenListContainsBadTimeFields() {
                 // Create StepDTO with incompatible time fields and add to test list
                 var badTimeFieldsDTO = testDTOBuilder.createStepDTOWhereTimeFieldsAreIncompatible();
@@ -808,7 +809,7 @@ class StepServiceTest {
             }
 
             @Test
-            @DisplayName("Throws 'DateTimeValueException' when list contains object with null startTime")
+            @DisplayName("Throws 'DateTimeValueException' when StepDTO with null startTime is encountered")
             public void testMultipleStepsForUser_ThrowsDateTimeValueException_WhenStartTimeIsNull() {
                 // Create a StepDTO where startTime is null
                 var badTestDto = testDTOBuilder.createStepDTOWhereStartTimeIsNull();
@@ -827,7 +828,7 @@ class StepServiceTest {
             }
 
             @Test
-            @DisplayName("Throws 'DateTimeValueException' when StepDTO endTime is null")
+            @DisplayName("Throws 'DateTimeValueException' when StepDTO with null endTime is encountered")
             public void testAddSingleStepForUser_ThrowsDateTimeValueException_WhenEndTimeIsNull() {
                 // Create a StepDTO where endTim is null
                 var badTestDto = testDTOBuilder.createStepDTOWhereEndTimeIsNull();
@@ -846,7 +847,7 @@ class StepServiceTest {
             }
 
             @Test
-            @DisplayName("Throws 'DateTimeValueException' when StepDTO uploadTime is null")
+            @DisplayName("Throws 'DateTimeValueException' when StepDTO with null uploadTime is encountered")
             public void testAddSingleStepForUser_ThrowsDateTimeValueException_WhenUploadTimeIsNull() {
                 // Create a StepDTO where uploadTime is null
                 var badTestDto = testDTOBuilder.createStepDTOWhereUploadTimeIsNull();
@@ -866,12 +867,8 @@ class StepServiceTest {
         }
 
         @Nested
-        @DisplayName("Returns correct values")
+        @DisplayName("Returns:")
         public class AddMultipleStepsShouldReturnCorrectValues {
-            @BeforeEach
-            void setUp() {
-                dropAllTables();
-            }
 
             @Test
             @DisplayName("Returns a Step object with the total stepCount of the objects in list passed as input")
