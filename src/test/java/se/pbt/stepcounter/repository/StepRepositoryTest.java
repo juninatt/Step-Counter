@@ -1,5 +1,6 @@
 package se.pbt.stepcounter.repository;
 
+import org.junit.jupiter.api.Nested;
 import se.pbt.stepcounter.model.Step;
 import se.pbt.stepcounter.testobjects.model.TestStepBuilder;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,37 +39,6 @@ public class StepRepositoryTest {
     }
 
     @Test
-    @DisplayName("ok")
-    public void testFindFirstMethod_ShouldReturnLatestStep() {
-        // Use the method to be tested to retrieve a step from the default test userId
-        var step = stepRepository.findFirstByUserIdOrderByStartTimeDesc(testUser);
-
-        // Expected id of returned Step object
-        var expectedId = step3.getId();
-
-        // Actual id of returned object
-        var actualId = step.orElseThrow().getId();
-
-        // Assert that the id retrieved Step object is correct
-        assertEquals(expectedId, actualId);
-    }
-
-    @Test
-    @DisplayName("Should return list of same length as number of stored user id objects")
-    public void testGetListOfAllDistinctUserId_ReturnsListOfCorrectLength() {
-        // Call the method to be tested
-        var result = stepRepository.getListOfAllDistinctUserId();
-
-        // Expected number of retrieved objects
-        var expectedLength = 2;
-
-        // Actual number of retrieved objects
-        var actualLength = result.size();
-
-        assertEquals(expectedLength, actualLength);
-    }
-
-    @Test
     @DisplayName("Should return list of correct length")
     public void testGetListOfSteps_ReturnsCorrectSize(){
         // Use the method to be tested to fetch Step objects som the default test userId
@@ -94,40 +64,92 @@ public class StepRepositoryTest {
         assertTrue(stepRepository.findAll().isEmpty());
     }
 
-    @Test
-    @DisplayName("Method returns list of correct size")
-    public void  testGetStepDataByUserId_ReturnsCorrectLength(){
-        // Call the method to be tested to retrieve data from the default test user
-        var startTime = Timestamp.valueOf(step1.getEndTime().minusDays(1).toLocalDateTime());
-        var endTime = Timestamp.valueOf(step1.getEndTime().plusDays(1).toLocalDateTime());
-        var result = stepRepository.getStepDataByUserIdAndDateRange(
-                testUser,  startTime, endTime);
+    @Nested
+    @DisplayName("getStepCountByUserIdAndDateRange():")
+    public class GetStepCountByUserIdAndDateRangeTest {
 
-        // Expected number of objects retrieved
-        var expectedSize = 1;
+        @Test
+        @DisplayName("Should return correct stepCount")
+        public void testGetStepCountSum_ReturnsCorrectStepCount(){
+            // Call the method to be tested to retrieve data from the default test user
+            var startTime = step1.getEndTime().minusDays(1);
+            var endTime = step1.getEndTime().plusDays(1);
+            var result = stepRepository.getStepCountByUserIdAndDateRange(
+                    testUser, startTime, endTime);
 
-        // Actual number of retrieved objects
-        var actualSize = result.size();
+            // Expected stepCount
+            var expectedStepCount = 60;
 
-        // Assert that the number of retrieved objects are correct
-        assertEquals(expectedSize, actualSize);
+            // Actual stepCount
+            var actualStepCount = (int)result.orElseThrow();
+
+            assertEquals(expectedStepCount, actualStepCount);
+        }
     }
 
-    @Test
-    @DisplayName("Should return correct stepCount")
-    public void testGetStepCountSum_ReturnsCorrectStepCount(){
-        // Call the method to be tested to retrieve data from the default test user
-        var startTime = step1.getEndTime().minusDays(1);
-        var endTime = step1.getEndTime().plusDays(1);
-        var result = stepRepository.getStepCountByUserIdAndDateRange(
-                testUser, startTime, endTime);
+    @Nested
+    @DisplayName("findFirstByUserIdOrderByStartTimeDesc():")
+    public class FindFirstByUserIdOrderByStartTimeDescTest {
 
-        // Expected stepCount
-        var expectedStepCount = 60;
+        @Test
+        @DisplayName("Returns most recent step")
+        public void testFindFirstMethod_ShouldReturnLatestStep() {
+            // Use the method to be tested to retrieve a step from the default test userId
+            var step = stepRepository.findFirstByUserIdOrderByStartTimeDesc(testUser);
 
-        // Actual stepCount
-        var actualStepCount = (int)result.orElseThrow();
+            // Expected id of returned Step object
+            var expectedId = step3.getId();
 
-        assertEquals(expectedStepCount, actualStepCount);
+            // Actual id of returned object
+            var actualId = step.orElseThrow().getId();
+
+            // Assert that the id retrieved Step object is correct
+            assertEquals(expectedId, actualId);
+        }
+
+    }
+
+    @Nested
+    @DisplayName("getListOfAllDistinctUserId():")
+    public class GetListOfAllDistinctUserIdTest {
+
+        @Test
+        @DisplayName("Should return list of same length as number of stored user id objects")
+        public void testGetListOfAllDistinctUserId_ReturnsListOfCorrectLength() {
+            // Call the method to be tested
+            var result = stepRepository.getListOfAllDistinctUserId();
+
+            // Expected number of retrieved objects
+            var expectedLength = 2;
+
+            // Actual number of retrieved objects
+            var actualLength = result.size();
+
+            assertEquals(expectedLength, actualLength);
+        }
+    }
+
+    @Nested
+    @DisplayName("getStepDataByUserIdAndDateRange():")
+    public class GetStepDataByUserIdAndDateRangeTest {
+
+        @Test
+        @DisplayName("Method returns list of correct size")
+        public void  testGetStepDataByUserId_ReturnsCorrectLength(){
+            // Call the method to be tested to retrieve data from the default test user
+            var startTime = Timestamp.valueOf(step1.getEndTime().minusDays(1).toLocalDateTime());
+            var endTime = Timestamp.valueOf(step1.getEndTime().plusDays(1).toLocalDateTime());
+            var result = stepRepository.getStepDataByUserIdAndDateRange(
+                    testUser,  startTime, endTime);
+
+            // Expected number of objects retrieved
+            var expectedSize = 1;
+
+            // Actual number of retrieved objects
+            var actualSize = result.size();
+
+            // Assert that the number of retrieved objects are correct
+            assertEquals(expectedSize, actualSize);
+        }
     }
 }
