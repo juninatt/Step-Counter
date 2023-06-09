@@ -63,7 +63,7 @@ public class StepService {
     public Step addSingleStepForUser(String userId, StepDTO stepDTO) {
         // Checks all fields for null or bad data
         if (userId == null || !stepValidator.stepDataIsValid(stepDTO))
-            throw new InvalidUserIdException(userId);
+            throw new InvalidUserIdException("User ID cannot be null or empty");
             // Otherwise new Step objects are created and saved/updated to each table in database
         else {
             return saveToAllTables(stepDTO);
@@ -80,7 +80,7 @@ public class StepService {
     public Step addMultipleStepsForUser(String userId, List<StepDTO> stepDTOList) {
         // Checks all fields for null or bad data
         if (userId == null || !stepValidator.stepDataIsValid(stepDTOList)) {
-            throw new InvalidUserIdException(userId);
+            throw new InvalidUserIdException("User ID cannot be null or empty");
         }
         else {
             // If valid, gathers the data into a single StepDTO object that gets added to database
