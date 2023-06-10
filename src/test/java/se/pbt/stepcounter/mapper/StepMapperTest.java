@@ -14,6 +14,7 @@ import java.util.Date;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
+@DisplayName("StepMapper:")
 public class StepMapperTest {
 
     private final StepMapper stepMapper = StepMapper.mapper;

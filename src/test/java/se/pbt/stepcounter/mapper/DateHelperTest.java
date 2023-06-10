@@ -11,7 +11,7 @@ import java.time.ZonedDateTime;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-@DisplayName("DateHelper should help orient the current day of the week")
+@DisplayName("DateHelper:")
 public class DateHelperTest {
 
     private ZonedDateTime firstMinuteOfYear;

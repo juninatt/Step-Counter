@@ -59,7 +59,7 @@ public class StepControllerTest {
     private StepRepository stepRepository;
 
     @Nested
-    @DisplayName("Step Controller")
+    @DisplayName("StepController:")
     class StepControllerDevTest {
 
         private final MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new StepController(stepService)).build();

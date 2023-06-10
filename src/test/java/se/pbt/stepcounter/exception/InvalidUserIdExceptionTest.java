@@ -1,9 +1,11 @@
 package se.pbt.stepcounter.exception;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
+@DisplayName("InvalidUserIdException:")
 public class InvalidUserIdExceptionTest {
 
     @Test

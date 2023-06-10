@@ -12,6 +12,7 @@ import se.pbt.stepcounter.exception.NotFoundException;
 import static org.junit.jupiter.api.Assertions.*;
 
 @WebMvcTest(GlobalExceptionHandler.class)
+@DisplayName("GlobalExceptionHandler:")
 public class GlobalExceptionHandlerTest {
 
     @Autowired

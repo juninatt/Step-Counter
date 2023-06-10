@@ -1,5 +1,6 @@
 package se.pbt.stepcounter.repository;
 
+import org.junit.jupiter.api.DisplayName;
 import se.pbt.stepcounter.model.MonthStep;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,6 +13,7 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
+@DisplayName("MonthRepository:")
 public class MonthRepositoryTest {
 
     @Autowired

@@ -5,11 +5,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-@DisplayName("ValidationFailedException:")
+@DisplayName("InvalidStepDataException:")
 public class InvalidStepDataExceptionTest {
 
     @Test
-    @DisplayName("Test ValidationFailedException Constructor")
+    @DisplayName("Test InvalidStepDataException Constructor")
     public void testValidationFailedExceptionConstructor() {
         String errorMessage = "Validation failed for step entity";
         InvalidStepDataException exception = new InvalidStepDataException(errorMessage);

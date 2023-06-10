@@ -5,7 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-@DisplayName("UnhandledException Unit Tests")
+@DisplayName("UnhandledException:")
 public class UnhandledExceptionTest {
 
     @Test

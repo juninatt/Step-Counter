@@ -1,5 +1,6 @@
 package se.pbt.stepcounter.repository;
 
+import org.junit.jupiter.api.DisplayName;
 import se.pbt.stepcounter.model.WeekStep;
 import org.junit.Assert;
 import org.junit.Before;
@@ -14,6 +15,7 @@ import java.util.Optional;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
+@DisplayName("WeekRepository:")
 public class WeekStepRepositoryTest {
 
     @Autowired
