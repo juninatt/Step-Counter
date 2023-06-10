@@ -3,8 +3,7 @@ package se.pbt.stepcounter.mapper;
 import se.pbt.stepcounter.dto.stepdto.StepDTO;
 import se.pbt.stepcounter.model.MonthStep;
 import se.pbt.stepcounter.model.WeekStep;
-import se.pbt.stepcounter.testobjects.dto.stepdto.TestStepDtoBuilder;
-import se.pbt.stepcounter.testobjects.model.TestStepBuilder;
+import se.pbt.stepcounter.testobjects.TestObjectBuilder;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,14 +18,14 @@ public class StepMapperTest {
 
     private final StepMapper stepMapper = StepMapper.mapper;
 
-    TestStepDtoBuilder testDTOBuilder = new TestStepDtoBuilder();
+    TestObjectBuilder testObjectBuilder = new TestObjectBuilder(2023);
 
     StepDTO testStepDTO;
 
     @Test
-    @DisplayName("Test StepDTO to Step mapping")
+    @DisplayName("Maps StepDTO to Step")
     public void testStepDtoToStep() {
-        testStepDTO = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
+        testStepDTO = testObjectBuilder.getTestStepDTO();
         var step = stepMapper.stepDtoToStep(testStepDTO);
 
         assertThat(testStepDTO.getStepCount()).isEqualTo(step.getStepCount());
@@ -36,9 +35,9 @@ public class StepMapperTest {
     }
 
     @Test
-    @DisplayName("Test StepDTO to WeekStep mapping")
+    @DisplayName("Maps StepDTO to WeekStep")
     public void testStepDtoToWeekStep() {
-        testStepDTO = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
+        testStepDTO = testObjectBuilder.getTestStepDTO();
         WeekStep weekStep = stepMapper.stepDtoToWeekStep(testStepDTO);
 
         assertThat(testStepDTO.getStartTime().getYear()).isEqualTo(weekStep.getYear());
@@ -47,9 +46,9 @@ public class StepMapperTest {
     }
 
     @Test
-    @DisplayName("Test StepDTO to MonthStep mapping")
+    @DisplayName("Maps StepDTO to MonthStep")
     public void testStepDtoToMonthStep() {
-        testStepDTO = testDTOBuilder.createStepDTOOfFirstMinuteOfYear();
+        testStepDTO = testObjectBuilder.getTestStepDTO();
         MonthStep monthStep = stepMapper.stepDtoToMonthStep(testStepDTO);
 
         assertThat(testStepDTO.getStartTime().getYear()).isEqualTo(monthStep.getYear());
@@ -58,10 +57,10 @@ public class StepMapperTest {
     }
 
     @Test
-    @DisplayName("Test Step to StepDateDTO mapping")
+    @DisplayName("Maps Step to StepDateDTO")
     public void testStepToStepDateDto() {
-        var testStepBuilder = new TestStepBuilder();
-        var step = testStepBuilder.createStepOfFirstMinuteOfYear();
+        var testStepBuilder = new TestObjectBuilder(2023);
+        var step = testStepBuilder.getTestStep();
 
         var stepDateDto = stepMapper.stepToStepDateDto(step);
 

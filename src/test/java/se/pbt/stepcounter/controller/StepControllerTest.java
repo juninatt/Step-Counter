@@ -29,8 +29,7 @@ import se.pbt.stepcounter.model.Step;
 import se.pbt.stepcounter.repository.StepRepository;
 import se.pbt.stepcounter.service.StarPointService;
 import se.pbt.stepcounter.service.StepService;
-import se.pbt.stepcounter.testobjects.dto.stepdto.TestStepDtoBuilder;
-import se.pbt.stepcounter.testobjects.model.TestStepBuilder;
+import se.pbt.stepcounter.testobjects.TestObjectBuilder;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -64,8 +63,7 @@ public class StepControllerTest {
     class StepControllerDevTest {
 
         private final MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new StepController(stepService)).build();
-        private final TestStepBuilder stepBuilder = new TestStepBuilder();
-        private final TestStepDtoBuilder dtoBuilder = new TestStepDtoBuilder();
+        private final TestObjectBuilder testObjectBuilder = new TestObjectBuilder(2023);
         private final String testUserId = "testUser";
 
 
@@ -103,7 +101,7 @@ public class StepControllerTest {
                 objectMapper.registerModule(new JavaTimeModule());
 
                 // Create a StepDTO object for testing with a step count of 0
-                var stepDTO = dtoBuilder.createStepDTOOfFirstMinuteOfYear();
+                var stepDTO = testObjectBuilder.getTestStepDTO();
                 stepDTO.setStepCount(0);
 
                 // Act: Send a POST request to the "/steps/{userId}" endpoint with the test StepDTO as the request body
@@ -123,12 +121,12 @@ public class StepControllerTest {
 
 
             @Test
-            @DisplayName("Should successfully register user steps")
+            @DisplayName("Returns 200 OK and correct userId")
             public void shouldRegisterUserSteps() throws Exception {
                 // Set up: create objects needed for the test with the test object builder classes
                 objectMapper.registerModule(new JavaTimeModule()); // Register JavaTimeModule with ObjectMapper
-                var mockStep = stepBuilder.createStepOfFirstMinuteOfYear(); // Create mock step for testing
-                var stepDTO = dtoBuilder.createStepDTOOfSecondMinuteOfYear(); // Create StepDTO for testing
+                var mockStep = testObjectBuilder.getTestStep(); // Create mock step for testing
+                var stepDTO = testObjectBuilder.getTestStepDTO(); // Create StepDTO for testing
 
                 // Mock the addSingleStepForUser method of the step service
                 when(stepService.addSingleStepForUser(Mockito.anyString(),
@@ -166,9 +164,9 @@ public class StepControllerTest {
                 objectMapper.registerModule(new JavaTimeModule());
 
                 // Create three StepDTO objects representing steps taken during the first, second, and third minutes of the year
-                var dto1 = dtoBuilder.createStepDTOOfFirstMinuteOfYear();
-                var dto2 = dtoBuilder.createStepDTOOfSecondMinuteOfYear();
-                var dto3 = dtoBuilder.createStepDTOOfThirdMinuteOfYear();
+                var dto1 = testObjectBuilder.getTestStepDTO();
+                var dto2 = testObjectBuilder.copyAndPostponeMinutes(dto1, 1);
+                var dto3 = testObjectBuilder.copyAndPostponeMinutes(dto2, 1);
 
                 // Add the StepDTO objects to the list
                 stepDTOList.add(dto1);
