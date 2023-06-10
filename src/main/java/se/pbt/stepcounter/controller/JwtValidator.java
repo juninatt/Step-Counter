@@ -12,6 +12,7 @@ import java.util.Optional;
  * If the JWT is invalid or the user ID claim is not present, a default value is returned.
  *
  */
+@Deprecated
 public class JwtValidator {
 
     private static final String OID_CLAIM = "oid";
