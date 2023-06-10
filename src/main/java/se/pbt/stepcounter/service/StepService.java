@@ -178,7 +178,6 @@ public class StepService {
      */
     private Step  saveToAllTables(StepDTO stepDTO) {
         Step updatedStep;
-        try {
             // If new data is from same day as latest step object, the step is updated
             if (stepValidator.shouldUpdateStep(stepDTO)) {
                 updatedStep = updateStep(stepDTO);
@@ -189,17 +188,7 @@ public class StepService {
                 addStepDataToWeekStepTable(stepDTO, stepDTO.getStepCount());
                 addStepDataToMonthStepTable(stepDTO, stepDTO.getStepCount());
             }
-        } catch (NullPointerException nullPointerException) {
-            throw new NullPointerException("NullPointerException when saving " + nullPointerException.getMessage());
-        } catch (RuntimeException runtimesException) {
-            throw new RuntimeException("Java API failed to persist new step data to database " + runtimesException.getMessage());
-        }
-
-        // If persisted step-count is 0, something went wrong and RuntimeException is thrown, otherwise the new/updated step is returned to the caller
-        if (updatedStep.getStepCount() > 0)
-            return updatedStep;
-        else
-            throw new NotFoundException("Unknown error in Java save function. Step was not persisted to database");
+        return updatedStep;
     }
 
     private Step updateStep(StepDTO stepDTO) {
@@ -210,8 +199,8 @@ public class StepService {
         var stepCountIncrease = Math.abs(latestStepInDB.getStepCount() - stepDTO.getStepCount());
         // Add stepCount to all tables without creating new objects in database
         updatedStep = updateStep(latestStepInDB, stepDTO);
-        updateWeekStepForUser(stepDTO.getUserId(), stepCountIncrease);
-        updateMonthStep(stepDTO.getUserId(), stepCountIncrease);
+        updateUsersLatestWeekStep(stepDTO.getUserId(), stepCountIncrease);
+        updateUsersLatestMonthStep(stepDTO.getUserId(), stepCountIncrease);
         return updatedStep;
     }
 
@@ -302,17 +291,23 @@ public class StepService {
         step.setUploadTime(stepDTO.getUploadTime());
         return stepRepository.save(step);
     }
-    private void updateMonthStep(String userId, int stepCount) {
-        var monthStep = monthStepRepository.findTopByUserIdOrderByIdDesc(userId).get();
-        monthStep.setStepCount(monthStep.getStepCount() + stepCount);
-        monthStepRepository.save(monthStep);
+    private void updateUsersLatestMonthStep(String userId, int stepCount) {
+        monthStepRepository.findTopByUserIdOrderByIdDesc(userId)
+                .ifPresent(monthStep -> {
+                    monthStep.setStepCount(monthStep.getStepCount() + stepCount);
+                    monthStepRepository.save(monthStep);
+                });
     }
 
-    private void updateWeekStepForUser(String userId, int stepCount) {
-        var weekStep = weekStepRepository.findTopByUserIdOrderByIdDesc(userId).get();
-        weekStep.setStepCount(weekStep.getStepCount() + stepCount);
-        weekStepRepository.save(weekStep);
+
+    private void updateUsersLatestWeekStep(String userId, int stepCount) {
+        weekStepRepository.findTopByUserIdOrderByIdDesc(userId)
+                .ifPresent(weekStep -> {
+                    weekStep.setStepCount(weekStep.getStepCount() + stepCount);
+                    weekStepRepository.save(weekStep);
+                });
     }
+
 
     public List<WeekStep> getWeekStepsForUserAndYear(String userId, int year) {
         return weekStepRepository.findByUserIdAndYear(userId, year);
