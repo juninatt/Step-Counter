@@ -6,7 +6,8 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import java.time.Instant;
 import java.util.HashMap;
 
-@DisplayName(" <== JwtValidator Test ==>")
+@DisplayName("JwtValidator:")
+@Deprecated
 public class JwtValidatorTest {
     String tokenValue = "JWT";
     Instant thisInstant = Instant.now();
