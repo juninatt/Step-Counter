@@ -24,7 +24,7 @@ import se.pbt.stepcounter.dto.starpointdto.RequestStarPointsDTO;
 import se.pbt.stepcounter.dto.starpointdto.StarPointDateDTO;
 import se.pbt.stepcounter.dto.stepdto.DailyWeekStepDTO;
 import se.pbt.stepcounter.dto.stepdto.StepDTO;
-import se.pbt.stepcounter.exception.ValidationFailedException;
+import se.pbt.stepcounter.exception.InvalidStepDataException;
 import se.pbt.stepcounter.model.Step;
 import se.pbt.stepcounter.repository.StepRepository;
 import se.pbt.stepcounter.service.StarPointService;
@@ -199,19 +199,19 @@ public class StepControllerTest {
         public class GetUserWeekStepCountForWeekAndYearTest {
 
             @Test
-            @DisplayName("getUserWeekStepSteps with invalid input returns HTTP status code 409")
-            public void getUserWeekStepSteps_WithInvalidInput_ReturnsStatusConflict() throws Exception {
+            @DisplayName("getUserWeekStepSteps with invalid input returns HTTP status code 400")
+            public void getUserWeekStepSteps_WithInvalidInput_ReturnsStatusBadRequest() throws Exception {
                 // Arrange
                 String url = "/steps/stepcount/{userId}/year/{year}/week/{week}";
                 int year = 2023;
                 int week = 10;
 
                 when(stepService.getStepCountForUserYearAndWeek("nonExistingUser", year, week))
-                        .thenThrow(ValidationFailedException.class);
+                        .thenThrow(InvalidStepDataException.class);
 
                 // Act and Assert
                 mockMvc.perform(get(url, "nonExistingUser", year, week))
-                        .andExpect(status().isConflict())
+                        .andExpect(status().isBadRequest())
                         .andReturn();
             }
 
@@ -251,17 +251,17 @@ public class StepControllerTest {
         public class GetUserMonthStepCountForYearAndMonthTest {
 
             @Test
-            @DisplayName("getUserMonthSteps with invalid input should return status Conflict")
-            public void getUserMonthSteps_withInvalidInput_ReturnsStatusConflict() throws Exception {
+            @DisplayName("getUserMonthSteps with invalid input should return status 400")
+            public void getUserMonthSteps_withInvalidInput_ReturnsStatusBadRequest() throws Exception {
                 String url = "/steps/stepcount/{userId}/year/{year}/month/{month}";
                 int year = 2021;
                 int month = 1;
 
                 when(stepService.getStepCountForUserYearAndMonth("badUser", year, month))
-                        .thenThrow(ValidationFailedException.class);
+                        .thenThrow(InvalidStepDataException.class);
 
                 mockMvc.perform(get(url, "badUser", year, month))
-                        .andExpect(status().isConflict())
+                        .andExpect(status().isBadRequest())
                         .andReturn();
             }
         }

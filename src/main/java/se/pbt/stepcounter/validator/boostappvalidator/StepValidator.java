@@ -3,7 +3,7 @@ package se.pbt.stepcounter.validator.boostappvalidator;
 import se.pbt.stepcounter.dto.stepdto.StepDTO;
 import se.pbt.stepcounter.exception.DateTimeValueException;
 import se.pbt.stepcounter.exception.InvalidUserIdException;
-import se.pbt.stepcounter.exception.ValidationFailedException;
+import se.pbt.stepcounter.exception.InvalidStepDataException;
 import se.pbt.stepcounter.model.Step;
 import se.pbt.stepcounter.repository.StepRepository;
 import org.springframework.lang.NonNull;
@@ -88,7 +88,7 @@ public class StepValidator {
      */
     private boolean noFieldsAreNull(@NotNull StepDTO stepDto) {
         if (stepDto == null)
-            throw new ValidationFailedException("Object holding new data cant be null");
+            throw new InvalidStepDataException("Object holding new data cant be null");
 
         // Check each field and throw exception if null value is found
         if (stepDto.getUserId() == null)

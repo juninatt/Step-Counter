@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import se.pbt.stepcounter.dto.stepdto.StepDTO;
 import se.pbt.stepcounter.exception.DateTimeValueException;
 import se.pbt.stepcounter.exception.InvalidUserIdException;
-import se.pbt.stepcounter.exception.ValidationFailedException;
+import se.pbt.stepcounter.exception.InvalidStepDataException;
 import se.pbt.stepcounter.mapper.DateHelper;
 import se.pbt.stepcounter.mapper.StepMapper;
 import se.pbt.stepcounter.model.Step;
@@ -85,7 +85,7 @@ class StepServiceTest {
                 var expectedMessage = "Object holding new data cant be null";
 
                 // Assert that correct exception is thrown when StepDTO passed to method is null
-                var result = assertThrows(ValidationFailedException.class,
+                var result = assertThrows(InvalidStepDataException.class,
                         () -> stepService.addSingleStepForUser(testUser, null));
 
                 assertTrue(result.getMessage().contains(expectedMessage),
@@ -969,14 +969,14 @@ class StepServiceTest {
         @DisplayName("Throws  ValidationFailedException when user is null")
         public void testGetStepsPerDayOfWeekWithNullUser_ThrowsValidationFailedException() {
             // Act and assert: Call the method to be tested with null userId and assert that the correct exception is thrown
-            assertThrows(ValidationFailedException.class, () -> stepService.getStepsPerDayForWeek(null));
+            assertThrows(InvalidStepDataException.class, () -> stepService.getStepsPerDayForWeek(null));
         }
 
         @Test
         @DisplayName("Throws ValidationFailedException with correct message when user is null")
         public void testGetStepsPerDayOfWeekWithNullUser() {
             // Act and assert: Call the method to be tested with null userId and assert that the exception contains the correct exception message
-            ValidationFailedException exception = assertThrows(ValidationFailedException.class, () -> stepService.getStepsPerDayForWeek(null));
+            InvalidStepDataException exception = assertThrows(InvalidStepDataException.class, () -> stepService.getStepsPerDayForWeek(null));
             assertEquals("User id and time must not be null", exception.getMessage());
         }
 
