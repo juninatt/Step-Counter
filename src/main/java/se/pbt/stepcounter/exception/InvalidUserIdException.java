@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 public class InvalidUserIdException extends RuntimeException {
 
+    public InvalidUserIdException() { super("User ID is invalid.");
+    }
+
     public InvalidUserIdException(String message) {
         super(message);
     }
